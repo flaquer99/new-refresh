@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+
+allowBuilds:
+  esbuild: true
+  sharp: false
+  unrs-resolver: false
+
+catalog:
+  "@biomejs/biome": 2.5.15
+  ultracite: 7.12.4

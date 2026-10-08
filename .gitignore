@@ -1,0 +1,30 @@
+# dependencies
+node_modules
+.pnp
+.pnp.*
+
+# turborepo
+.turbo
+
+# build outputs
+.next
+out
+dist
+build
+coverage
+*.tsbuildinfo
+
+# env
+.env*
+!.env.example
+
+# crawler output
+apps/scan-worker/output
+
+# vercel
+.vercel
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*

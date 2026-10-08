@@ -1,0 +1,16 @@
+{
+  "name": "@refresh/config",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./biome/base": "./biome.base.json",
+    "./biome/next": "./biome.next.json"
+  },
+  "dependencies": {
+    "@biomejs/biome": "catalog:",
+    "ultracite": "catalog:"
+  },
+  "scripts": {
+    "lint": "biome check"
+  }
+}
