@@ -59,6 +59,14 @@ export const seedScans = (
     }),
   );
 
+export const deleteScans = (
+  databaseUrl: string,
+  scanIds: readonly string[],
+): Promise<void> =>
+  withPrisma(databaseUrl, (prisma) =>
+    prisma.scan.deleteMany({ where: { id: { in: [...scanIds] } } }),
+  );
+
 export const resetScans = (databaseUrl: string): Promise<void> =>
   withPrisma(
     databaseUrl,

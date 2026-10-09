@@ -1,39 +1,46 @@
 import { fixtureUrl } from "./support/ports";
+import { ScanHistoryPage } from "./support/scan-history-page";
 import { CLIENT_ID_HEADER, clientIdFor, expect, test } from "./support/test";
 
 const CLEAN_URL = fixtureUrl("/clean/");
 const LARGE_SITE_URL = fixtureUrl("/large/");
 const HTTP_CONFLICT = 409;
+const ALREADY_RUNNING = /already running for you/;
 
-test.describe("E2E-09 — reload on a report asks for confirmation", () => {
-	test("asks the browser to confirm before reloading", async ({ app }) => {
+test.describe("E2E-03 — a reloaded scan link keeps its report", () => {
+	test("shows the same summary after a reload", async ({ app }) => {
 		// GIVEN
 		await app.scanToReport({ url: CLEAN_URL });
+		const before = await app.page
+			.getByRole("region", { name: "Summary" })
+			.textContent();
 
 		// WHEN
-		const dialogType = await app.reloadAccepting();
+		await app.page.reload();
 
 		// THEN
-		expect(dialogType).toBe("beforeunload");
+		await expect(app.page.getByRole("region", { name: "Summary" })).toHaveText(
+			before ?? "",
+		);
 	});
 
-	test("shows the form and drops the report after the reload", async ({
-		app,
-	}) => {
+	test("does not ask for confirmation before reloading", async ({ app }) => {
 		// GIVEN
 		await app.scanToReport({ url: CLEAN_URL });
+		const dialogs: string[] = [];
+		app.page.on("dialog", (dialog) => dialogs.push(dialog.type()));
 
 		// WHEN
-		await app.reloadAccepting();
+		await app.page.reload();
 
 		// THEN
-		await expect(app.urlField()).toBeVisible();
-		await expect(app.reportHeading()).toHaveCount(0);
+		await expect(app.reportHeading()).toBeVisible();
+		expect(dialogs).toEqual([]);
 	});
 });
 
-test.describe("E2E-10 — a second scan cannot start while one runs", () => {
-	test("offers no form while a scan is in progress", async ({ app }) => {
+test.describe("E2E-14 — a second scan cannot start while one runs", () => {
+	test("offers no form on the running scan's link", async ({ app }) => {
 		// GIVEN
 		await app.submit({ url: LARGE_SITE_URL, depth: 1 });
 
@@ -58,6 +65,34 @@ test.describe("E2E-10 — a second scan cannot start while one runs", () => {
 
 		// THEN
 		expect(response.status()).toBe(HTTP_CONFLICT);
+		await app.cancelToReport();
+	});
+
+	test("shows the conflict inline and adds no history entry", async ({
+		app,
+		context,
+	}, testInfo) => {
+		// GIVEN
+		const secondUrl = fixtureUrl(`/clean/?second=${testInfo.testId}`);
+		await app.submit({ url: LARGE_SITE_URL, depth: 1 });
+		await expect(app.progressHeading()).toBeVisible();
+		const second = await context.newPage();
+		await second.setExtraHTTPHeaders({
+			[CLIENT_ID_HEADER]: clientIdFor(testInfo),
+		});
+		await second.goto("/");
+
+		// WHEN
+		await second.getByLabel("Website address").fill(secondUrl);
+		await second.getByRole("button", { name: "Scan", exact: true }).click();
+
+		// THEN
+		await expect(second.getByRole("main").getByRole("alert")).toHaveText(
+			ALREADY_RUNNING,
+		);
+		const history = new ScanHistoryPage(second);
+		await history.open();
+		await expect(history.entriesFor(secondUrl)).toHaveCount(0);
 		await app.cancelToReport();
 	});
 });

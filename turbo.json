@@ -82,6 +82,7 @@
         "E2E_FIXTURES_PORT",
         "E2E_CLOSED_PORT",
         "E2E_SCAN_WORKER_TOKEN",
+        "E2E_SCAN_CALLBACK_TOKEN",
         "DOCKER_HOST",
         "TESTCONTAINERS_*",
         "CI"

@@ -23,46 +23,24 @@ const cancelWithKeyboard = async (app: ScanApp): Promise<void> => {
 	await expect(app.reportHeading()).toBeFocused({ timeout: SCAN_TIMEOUT_MS });
 };
 
-const openNewScanDialog = async (app: ScanApp): Promise<void> => {
-	await tabTo(app.page, button(app, "New scan"));
-	await app.page.keyboard.press("Enter");
-};
-
-test.describe("E2E-12 — the full journey works with the keyboard only", () => {
-	test("completes scan, cancel, and new scan with the keyboard", async ({
+test.describe("E2E-13 — the full journey works with the keyboard only", () => {
+	test("completes scan, cancel, and a new scan with the keyboard", async ({
 		app,
 	}) => {
 		// GIVEN
 		await startWithKeyboard(app);
 		await cancelWithKeyboard(app);
-		await openNewScanDialog(app);
-		await app.page.keyboard.press("Escape");
-		await openNewScanDialog(app);
 
 		// WHEN
-		await tabTo(app.page, button(app, "Start a new scan"));
+		await tabTo(
+			app.page,
+			app.page.getByRole("main").getByRole("link", { name: "New scan" }),
+		);
 		await app.page.keyboard.press("Enter");
 
 		// THEN
-		await expect(
-			app.page.getByRole("heading", { name: "Scan a website" }),
-		).toBeFocused();
-	});
-
-	test("keeps the report when the new scan dialog is closed with Esc", async ({
-		app,
-	}) => {
-		// GIVEN
-		await startWithKeyboard(app);
-		await cancelWithKeyboard(app);
-		await openNewScanDialog(app);
-
-		// WHEN
-		await app.page.keyboard.press("Escape");
-
-		// THEN
-		await expect(app.page.getByRole("dialog")).toHaveCount(0);
-		await expect(app.reportHeading()).toBeVisible();
+		await expect(app.page).toHaveURL(/\/$/);
+		await expect(app.urlField()).toBeVisible();
 	});
 
 	test("shows a visible focus indicator on every form control", async ({

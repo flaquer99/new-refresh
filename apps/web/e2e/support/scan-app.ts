@@ -62,15 +62,6 @@ export class ScanApp {
 		});
 	}
 
-	async reloadAccepting(): Promise<string> {
-		const dialogShown = this.page.waitForEvent("dialog");
-		const reloaded = this.page.reload();
-		const dialog = await dialogShown;
-		await dialog.accept();
-		await reloaded;
-		return dialog.type();
-	}
-
 	async cancelToReport(): Promise<void> {
 		await this.page.getByRole("button", { name: "Cancel scan" }).click();
 		await expect(this.reportHeading()).toBeVisible({

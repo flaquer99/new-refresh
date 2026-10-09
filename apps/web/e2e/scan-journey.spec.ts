@@ -1,4 +1,5 @@
 import { fixtureUrl } from "./support/ports";
+import { waitForScanLink } from "./support/scan-link-page";
 import { expect, test } from "./support/test";
 
 const MISSING_ALT_URL = fixtureUrl("/missing-alt/");
@@ -6,6 +7,18 @@ const UNDERSTANDING_NON_TEXT =
 	"https://www.w3.org/WAI/WCAG22/Understanding/non-text-content.html";
 
 test.describe("E2E-01 — a user scans a single page and reads the report", () => {
+	test("lands on the scan's own link with progress then the report", async ({
+		app,
+	}) => {
+		// WHEN
+		await app.submit({ url: MISSING_ALT_URL });
+		const scanId = await waitForScanLink(app.page);
+
+		// THEN
+		await expect(app.reportHeading()).toBeVisible({ timeout: 60_000 });
+		expect(app.page.url()).toContain(`/scans/${scanId}`);
+	});
+
 	test("lists the submitted page as the only scanned page", async ({ app }) => {
 		// WHEN
 		await app.scanToReport({ url: MISSING_ALT_URL });
