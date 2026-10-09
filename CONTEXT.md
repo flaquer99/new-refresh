@@ -1,14 +1,22 @@
 # Accessibility Scan
 
-`refresh` checks a website against WCAG 2.2 Level A and AA and tells the user what is wrong, where, and how to fix it. Decisions behind it: [ADR-0001](./docs/adr/0001-wcag-accessibility-scan.md).
+`refresh` checks a website against WCAG 2.2 Level A and AA and tells the user what is wrong, where, and how to fix it. Decisions behind it: [ADR-0001](./docs/adr/0001-wcag-accessibility-scan.md), [ADR-0002](./docs/adr/0002-persist-scans-in-web-owned-postgres.md).
 
 ## Language
 
 ### Scanning
 
 **Scan**:
-One run of the checker, started from a single submitted URL and a crawl depth, producing one report. Scans are anonymous and ephemeral.
+One run of the checker, started from a single submitted URL and a crawl depth, producing one report. Scans are anonymous: no one owns a scan, and every scan is visible to everyone through the scan history.
 _Avoid_: Audit, job, test run
+
+**Scan link**:
+The permanent, unguessable address of one scan. Opening it shows the scan's progress or its report, including after a reload.
+_Avoid_: Share link, permalink, report URL
+
+**Scan history**:
+The list of all scans, newest first, open to every visitor. Each entry leads to its scan link. Any visitor can delete a scan that is no longer running, which removes it and its report for good.
+_Avoid_: Dashboard, audit log, my scans
 
 **Start URL**:
 The URL the user submits. It is always scanned, regardless of `robots.txt`.
@@ -27,7 +35,7 @@ One of the two widths every page is checked at: desktop (1280 px) or mobile (320
 _Avoid_: Breakpoint, device
 
 **Scan outcome**:
-How a finished scan ended: complete, cancelled by the user, page limit reached, or time limit reached. Every outcome except complete yields a partial report. A scan that cannot reach its start URL fails and has no report.
+How a finished scan ended: complete, cancelled by the user, page limit reached, or time limit reached. Every outcome except complete yields a partial report. A scan that cannot reach its start URL, or that is cut short by the checker restarting (interrupted), fails and has no report.
 _Avoid_: Result, state
 
 ### Findings
@@ -59,7 +67,7 @@ _Avoid_: Potential issue
 ### Report
 
 **Report**:
-The deliverable of a scan: summary, violations, needs-review items, coverage, and the disclaimer. Never stored; gone on reload.
+The deliverable of a scan: summary, violations, needs-review items, coverage, and the disclaimer. Stored with its scan and reachable through the scan link.
 _Avoid_: Results page, audit
 
 **Page result**:
