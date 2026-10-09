@@ -41,6 +41,7 @@ pnpm + Turborepo monorepo. Workspaces: `apps/*` and `packages/*`. Package names 
 | Shared lint/format config | `packages/config/` |
 | Code shared by several workspaces | new package under `packages/<name>/` (`@refresh/<name>`) |
 | Project rules / skills for agents | `.claude/rules/` / `.claude/skills/` |
+| SDD feature artifacts (PRD, TechSpec, tasks, review, QA) | `tasks/prd-[slug]/` |
 
 ## Conventions
 

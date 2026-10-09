@@ -77,3 +77,16 @@ Project skills live in `.claude/skills/`. They load on demand, only when the tas
 | Skill | Load when |
 | --- | --- |
 | `react-rules` (`.claude/skills/react-rules/SKILL.md`) | writing, editing, or reviewing any `.tsx` file, React component, hook, or Tailwind styling (Next.js App Router + React 19 + Tailwind v4). Invoke it before touching React code. |
+
+## Spec-driven development (SDD) flow
+
+Features follow PRD → TechSpec → tasks → implementation → review → QA. All artifacts live in `tasks/prd-[slug]/` (`prd.md`, `techspec.md`, `tasks.md`, `task_[num].md`, `codereview.md`, `qa.md`, `evidences/`).
+
+| Skill | Load when |
+| --- | --- |
+| `create-prd` (`.claude/skills/create-prd/SKILL.md`) | defining requirements and scope of a new feature. Outputs `prd.md`. |
+| `create-techspec` (`.claude/skills/create-techspec/SKILL.md`) | designing the architecture of a feature that already has a PRD. Outputs `techspec.md`. |
+| `create-tasks` (`.claude/skills/create-tasks/SKILL.md`) | breaking a feature with PRD + TechSpec into implementation tasks. Outputs `tasks.md` + `task_[num].md`. |
+| `execute-task` (`.claude/skills/execute-task/SKILL.md`) | implementing the next incomplete task of a feature. |
+| `execute-review` (`.claude/skills/execute-review/SKILL.md`) | reviewing a feature's code against rules, TechSpec, and tasks. Outputs `codereview.md`. |
+| `execute-qa` (`.claude/skills/execute-qa/SKILL.md`) | validating an implemented feature against the PRD acceptance criteria. Outputs `qa.md`. |
