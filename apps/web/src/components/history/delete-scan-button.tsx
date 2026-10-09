@@ -9,7 +9,8 @@ type DeleteScanButtonProps = {
 };
 
 export function DeleteScanButton({ scanId, startUrl }: DeleteScanButtonProps) {
-	const { dialogRef, triggerRef, open, close, restoreFocus } = useModalDialog();
+	const { dialogRef, triggerRef, open, close, dismiss, restoreFocus } =
+		useModalDialog();
 	return (
 		<>
 			<button
@@ -25,6 +26,7 @@ export function DeleteScanButton({ scanId, startUrl }: DeleteScanButtonProps) {
 				dialogRef={dialogRef}
 				onCancel={close}
 				onClose={restoreFocus}
+				onDeleted={dismiss}
 				scanId={scanId}
 				startUrl={startUrl}
 			/>

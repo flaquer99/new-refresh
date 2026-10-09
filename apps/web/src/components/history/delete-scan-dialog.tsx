@@ -11,6 +11,7 @@ type DeleteScanDialogProps = {
 	dialogRef: RefObject<HTMLDialogElement | null>;
 	onCancel: () => void;
 	onClose: () => void;
+	onDeleted: () => void;
 };
 
 export function DeleteScanDialog({
@@ -19,8 +20,13 @@ export function DeleteScanDialog({
 	dialogRef,
 	onCancel,
 	onClose,
+	onDeleted,
 }: DeleteScanDialogProps) {
-	const { state, formAction, isPending } = useDeleteScan({ scanId, startUrl });
+	const { state, formAction, isPending } = useDeleteScan({
+		scanId,
+		startUrl,
+		onDeleted,
+	});
 	const titleId = `delete-${scanId}-title`;
 	const descriptionId = `delete-${scanId}-description`;
 	return (

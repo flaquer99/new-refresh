@@ -3,13 +3,18 @@ import { deleteScanAction } from "@/app/scans/actions";
 import { HistoryAnnouncerContext } from "@/components/history/history-announcer-context";
 import type { DeleteScanState } from "@/server/scans/delete-scan";
 
-type DeleteTarget = { scanId: string; startUrl: string };
+type DeleteTarget = {
+	scanId: string;
+	startUrl: string;
+	onDeleted: () => void;
+};
 
-export function useDeleteScan({ scanId, startUrl }: DeleteTarget) {
+export function useDeleteScan({ scanId, startUrl, onDeleted }: DeleteTarget) {
 	const announce = use(HistoryAnnouncerContext);
 	const run = async (previous: DeleteScanState | null) => {
 		const result = await deleteScanAction(scanId, previous);
 		if (result.ok) {
+			onDeleted();
 			announce(`Scan of ${startUrl} deleted.`);
 		}
 		return result;
