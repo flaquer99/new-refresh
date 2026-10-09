@@ -1,12 +1,9 @@
 import { SCAN_INTERRUPTED_MESSAGE } from "@refresh/scan-contracts/errors";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	buildStoredScan,
-	RUNNING_STORED_SCAN,
-	useFakeScanStore,
-} from "@/testing/fake-scan-store";
+import { useFakeScanStore } from "@/testing/fake-scan-store";
 import { RUNNING_STATUS, SCAN_ID } from "@/testing/scan-route-requests";
 import { spyOnServerLog } from "@/testing/server-log-spy";
+import { buildStoredScan, RUNNING_STORED_SCAN } from "@/testing/stored-scans";
 import { stubWorker } from "@/testing/stub-worker";
 import { readScanStatus } from "./read-scan-status";
 

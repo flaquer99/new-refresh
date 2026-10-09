@@ -15,7 +15,7 @@ const TRANSIENT_ERROR_CODES: ReadonlySet<ScanErrorCode> = new Set([
 	"INTERNAL_ERROR",
 ]);
 
-type ResultHandler = (result: ApiResult<ScanStatus>) => Promise<void>;
+type ResultHandler = (result: ApiResult<ScanStatus>) => void;
 
 type UseScanPollingParams = {
 	scanId: string | null;
@@ -55,7 +55,7 @@ const schedulePolling = (scanId: string, onResult: ResultHandler) => {
 			timer = setTimeout(poll, POLL_INTERVAL_MS);
 		}
 		if (!retrying) {
-			await onResult(result);
+			onResult(result);
 		}
 	};
 	timer = setTimeout(poll, POLL_INTERVAL_MS);

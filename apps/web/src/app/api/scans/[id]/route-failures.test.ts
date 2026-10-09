@@ -1,8 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-	RUNNING_STORED_SCAN,
-	useFakeScanStore,
-} from "@/testing/fake-scan-store";
+import { useFakeScanStore } from "@/testing/fake-scan-store";
 import {
 	RUNNING_STATUS,
 	SCAN_ID,
@@ -10,6 +7,7 @@ import {
 	scanRouteContext,
 } from "@/testing/scan-route-requests";
 import { spyOnServerLog } from "@/testing/server-log-spy";
+import { RUNNING_STORED_SCAN } from "@/testing/stored-scans";
 import { stubUnreachableWorker, stubWorker } from "@/testing/stub-worker";
 import { GET } from "./route";
 
