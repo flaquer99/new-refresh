@@ -1,16 +1,14 @@
 import { resolveClientId } from "@/server/scans/client-id";
 import { readScanRequest } from "@/server/scans/read-scan-request";
-import { forwardToWorker } from "@/server/scans/worker-client";
+import { startScan } from "@/server/scans/start-scan";
 
 export async function POST(request: Request): Promise<Response> {
 	const result = await readScanRequest(request);
 	if (!result.ok) {
 		return result.response;
 	}
-	return await forwardToWorker({
-		method: "POST",
-		path: "/scans",
+	return await startScan({
+		request: result.scanRequest,
 		clientId: resolveClientId(request.headers),
-		body: result.scanRequest,
 	});
 }

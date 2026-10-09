@@ -108,6 +108,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@refresh/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@refresh/scan-contracts':
         specifier: workspace:*
         version: link:../../packages/scan-contracts

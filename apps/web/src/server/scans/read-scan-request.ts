@@ -6,6 +6,7 @@ import {
 } from "@refresh/scan-contracts/scan-request";
 import type { z } from "zod";
 import { errorResponse } from "./error-response";
+import { readJson } from "./read-json";
 
 const MALFORMED_BODY_MESSAGE =
 	"Send a JSON body with a url and a depth to start a scan.";
@@ -18,14 +19,6 @@ const FIELD_MESSAGES: Record<string, string> = {
 export type ScanRequestResult =
 	| { ok: true; scanRequest: ScanRequest }
 	| { ok: false; response: Response };
-
-const readJson = async (request: Request): Promise<unknown> => {
-	try {
-		return await request.json();
-	} catch {
-		return null;
-	}
-};
 
 const invalidMessage = (error: z.ZodError): string => {
 	const field = String(error.issues[0]?.path[0] ?? "");
