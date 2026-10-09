@@ -2,11 +2,15 @@ import { describe, expect, it } from "vitest";
 import { loadConfig } from "./config.js";
 
 const TOKEN = "t".repeat(32);
+const CALLBACK_TOKEN = "c".repeat(32);
 
 describe("loadConfig", () => {
   it("applies the documented defaults when only the token is set", () => {
     // GIVEN
-    const env = { SCAN_WORKER_TOKEN: TOKEN };
+    const env = {
+      SCAN_WORKER_TOKEN: TOKEN,
+      SCAN_CALLBACK_TOKEN: CALLBACK_TOKEN,
+    };
 
     // WHEN
     const config = loadConfig(env);
@@ -16,6 +20,8 @@ describe("loadConfig", () => {
       host: "127.0.0.1",
       port: 3001,
       token: TOKEN,
+      callbackUrl: "http://127.0.0.1:3000/api/internal/scans",
+      callbackToken: CALLBACK_TOKEN,
       egressAllowlist: new Set(),
       logLevel: "info",
     });
@@ -25,6 +31,7 @@ describe("loadConfig", () => {
     // GIVEN
     const env = {
       SCAN_WORKER_TOKEN: TOKEN,
+      SCAN_CALLBACK_TOKEN: CALLBACK_TOKEN,
       SCAN_WORKER_HOST: "0.0.0.0",
       SCAN_WORKER_PORT: "3055",
       SCAN_EGRESS_ALLOWLIST: " 127.0.0.1:4100, Fixtures.Test:80 ,",
@@ -39,6 +46,8 @@ describe("loadConfig", () => {
       host: "0.0.0.0",
       port: 3055,
       token: TOKEN,
+      callbackUrl: "http://127.0.0.1:3000/api/internal/scans",
+      callbackToken: CALLBACK_TOKEN,
       egressAllowlist: new Set(["127.0.0.1:4100", "fixtures.test:80"]),
       logLevel: "debug",
     });
@@ -46,7 +55,11 @@ describe("loadConfig", () => {
 
   it("refuses a port outside the valid TCP range", () => {
     // GIVEN
-    const env = { SCAN_WORKER_TOKEN: TOKEN, SCAN_WORKER_PORT: "70000" };
+    const env = {
+      SCAN_WORKER_TOKEN: TOKEN,
+      SCAN_CALLBACK_TOKEN: CALLBACK_TOKEN,
+      SCAN_WORKER_PORT: "70000",
+    };
 
     // WHEN
     const loading = () => loadConfig(env);
@@ -57,7 +70,11 @@ describe("loadConfig", () => {
 
   it("refuses an allowlist entry that is not host:port", () => {
     // GIVEN
-    const env = { SCAN_WORKER_TOKEN: TOKEN, SCAN_EGRESS_ALLOWLIST: "fixtures" };
+    const env = {
+      SCAN_WORKER_TOKEN: TOKEN,
+      SCAN_CALLBACK_TOKEN: CALLBACK_TOKEN,
+      SCAN_EGRESS_ALLOWLIST: "fixtures",
+    };
 
     // WHEN
     const loading = () => loadConfig(env);

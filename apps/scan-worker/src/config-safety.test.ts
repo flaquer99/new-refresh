@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import { loadConfig } from "./config.js";
 
 const TOKEN = "t".repeat(32);
+const CALLBACK_TOKEN = "c".repeat(32);
 
 describe("loadConfig safety checks", () => {
   it("refuses an egress allowlist when NODE_ENV is production", () => {
     // GIVEN
     const env = {
       SCAN_WORKER_TOKEN: TOKEN,
+      SCAN_CALLBACK_TOKEN: CALLBACK_TOKEN,
       SCAN_EGRESS_ALLOWLIST: "127.0.0.1:4100",
       NODE_ENV: "production",
     };
@@ -25,6 +27,7 @@ describe("loadConfig safety checks", () => {
     // GIVEN
     const env = {
       SCAN_WORKER_TOKEN: TOKEN,
+      SCAN_CALLBACK_TOKEN: CALLBACK_TOKEN,
       SCAN_EGRESS_ALLOWLIST: "",
       NODE_ENV: "production",
     };
@@ -49,7 +52,10 @@ describe("loadConfig safety checks", () => {
 
   it("refuses a token shorter than 32 characters", () => {
     // GIVEN
-    const env = { SCAN_WORKER_TOKEN: "t".repeat(31) };
+    const env = {
+      SCAN_WORKER_TOKEN: "t".repeat(31),
+      SCAN_CALLBACK_TOKEN: CALLBACK_TOKEN,
+    };
 
     // WHEN
     const loading = () => loadConfig(env);

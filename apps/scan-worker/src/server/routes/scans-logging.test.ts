@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createRecordingFastifyLogger } from "../../testing/fastify-logger.js";
+import { scanIdFor } from "../../testing/scan-ids.js";
 import {
   postScan,
   SERVER_SCAN_ID,
@@ -40,7 +41,7 @@ describe("POST /scans logging", () => {
     await postScan(app, "alice");
 
     // WHEN
-    await postScan(app, "alice");
+    await postScan(app, "alice", scanIdFor(2));
 
     // THEN
     expect(logger.warn).toHaveBeenCalledWith(

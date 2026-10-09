@@ -1,11 +1,11 @@
+import { MAX_SCAN_DURATION_MS } from "@refresh/scan-contracts/limits";
 import { CapacityError, ScanConflictError } from "./scan-limit-errors.js";
 
 export const PAGE_DELAY_MS = 500;
-export const SCAN_DEADLINE_MS = 600_000;
+export const SCAN_DEADLINE_MS = MAX_SCAN_DURATION_MS;
 export const MAX_ACTIVE_SCANS = 2;
 export const MAX_ACTIVE_SCANS_PER_CLIENT = 1;
 export const FINISHED_SCAN_TTL_MS = 600_000;
-export const ABANDON_TIMEOUT_MS = 60_000;
 
 export type ScanLimits = {
   reserve: (clientId: string) => void;

@@ -12,6 +12,8 @@ const CONFIG: WorkerConfig = {
   host: "127.0.0.1",
   port: 0,
   token: BOOT_TOKEN,
+  callbackUrl: "http://127.0.0.1:9/api/internal/scans",
+  callbackToken: "c".repeat(32),
   egressAllowlist: new Set(),
   logLevel: "info",
 };

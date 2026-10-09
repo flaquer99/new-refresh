@@ -1,14 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  REGISTRY_SCAN_ID,
-  startRegistryScan,
-} from "../testing/registry-harness.js";
+import { startRegistryScan } from "../testing/registry-harness.js";
 import { ScanFailedError } from "./scan-failed-error.js";
 
 describe("ScanRegistry failures and unknown scans", () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.spyOn(crypto, "randomUUID").mockReturnValue(REGISTRY_SCAN_ID);
   });
 
   afterEach(() => {

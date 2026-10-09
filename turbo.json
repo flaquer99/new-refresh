@@ -22,6 +22,8 @@
         "SCAN_WORKER_HOST",
         "SCAN_WORKER_PORT",
         "SCAN_EGRESS_ALLOWLIST",
+        "SCAN_CALLBACK_URL",
+        "SCAN_CALLBACK_TOKEN",
         "DATABASE_URL",
         "LOG_LEVEL",
         "NODE_ENV"
@@ -37,6 +39,8 @@
         "SCAN_WORKER_HOST",
         "SCAN_WORKER_PORT",
         "SCAN_EGRESS_ALLOWLIST",
+        "SCAN_CALLBACK_URL",
+        "SCAN_CALLBACK_TOKEN",
         "DATABASE_URL",
         "LOG_LEVEL",
         "NODE_ENV"
@@ -60,6 +64,8 @@
         "SCAN_WORKER_HOST",
         "SCAN_WORKER_PORT",
         "SCAN_EGRESS_ALLOWLIST",
+        "SCAN_CALLBACK_URL",
+        "SCAN_CALLBACK_TOKEN",
         "DATABASE_URL",
         "DOCKER_HOST",
         "TESTCONTAINERS_*",
