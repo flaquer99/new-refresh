@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Popup page</title>
+  </head>
+  <body>
+    <main>
+      <h1>A page that opens popup windows</h1>
+      <a id="blank-link" href="/clean/" target="_blank">Opens in a new tab</a>
+    </main>
+    <script>
+      for (let i = 0; i < 3; i += 1) {
+        window.open("/popups/opener.html");
+      }
+      document.getElementById("blank-link").click();
+    </script>
+  </body>
+</html>

@@ -1,4 +1,16 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-	"extends": ["@refresh/config/biome/next"]
+	"extends": ["@refresh/config/biome/next"],
+	"files": {
+		"includes": [
+			"!node_modules",
+			"!.next",
+			"!dist",
+			"!build",
+			"!public",
+			"!coverage",
+			"!test-results",
+			"!playwright-report"
+		]
+	}
 }

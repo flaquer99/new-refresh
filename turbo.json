@@ -8,8 +8,32 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": [
+        "SCAN_WORKER_URL",
+        "SCAN_WORKER_TOKEN",
+        "SCAN_WORKER_HOST",
+        "SCAN_WORKER_PORT",
+        "SCAN_EGRESS_ALLOWLIST",
+        "LOG_LEVEL",
+        "NODE_ENV"
+      ]
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true,
+      "passThroughEnv": [
+        "SCAN_WORKER_URL",
+        "SCAN_WORKER_TOKEN",
+        "SCAN_WORKER_HOST",
+        "SCAN_WORKER_PORT",
+        "SCAN_EGRESS_ALLOWLIST",
+        "LOG_LEVEL",
+        "NODE_ENV"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -18,11 +42,32 @@
       "cache": false
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^build", "^check-types"]
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "passThroughEnv": [
+        "SCAN_WORKER_URL",
+        "SCAN_WORKER_TOKEN",
+        "SCAN_WORKER_HOST",
+        "SCAN_WORKER_PORT",
+        "SCAN_EGRESS_ALLOWLIST",
+        "LOG_LEVEL",
+        "NODE_ENV"
+      ]
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "passThroughEnv": [
+        "E2E_WEB_PORT",
+        "E2E_WORKER_PORT",
+        "E2E_FIXTURES_PORT",
+        "E2E_CLOSED_PORT",
+        "E2E_SCAN_WORKER_TOKEN",
+        "CI"
+      ]
     }
   }
 }

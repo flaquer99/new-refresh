@@ -28,3 +28,6 @@ apps/scan-worker/output
 .DS_Store
 *.pem
 npm-debug.log*
+
+# SDD feature artifacts (local only)
+tasks/

@@ -6,22 +6,33 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
     "check-types": "tsc --noEmit",
     "lint": "biome check",
     "format": "biome format --write",
     "check": "ultracite check",
-    "fix": "ultracite fix"
+    "fix": "ultracite fix",
+    "test": "vitest run --coverage"
   },
   "dependencies": {
-    "playwright": "^1"
+    "@axe-core/playwright": "^4.13.0",
+    "@refresh/scan-contracts": "workspace:*",
+    "fastify": "^5.12.5",
+    "ipaddr.js": "^2",
+    "playwright": "catalog:",
+    "robots-parser": "^3.0.1",
+    "undici": "^7",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@biomejs/biome": "catalog:",
+    "@refresh/a11y-fixtures": "workspace:*",
     "@refresh/config": "workspace:*",
     "@types/node": "^22",
+    "@vitest/coverage-v8": "catalog:",
     "tsx": "^4",
     "typescript": "^5",
-    "ultracite": "catalog:"
+    "ultracite": "catalog:",
+    "vitest": "catalog:"
   }
 }
