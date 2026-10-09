@@ -10,6 +10,9 @@ export const SCAN_ERROR_CODES = [
   "WORKER_UNAVAILABLE",
   "SITE_UNREACHABLE",
   "START_URL_BLOCKED",
+  "SCAN_INTERRUPTED",
+  "SCAN_ID_TAKEN",
+  "SCAN_STILL_RUNNING",
   "INTERNAL_ERROR",
 ] as const;
 
@@ -32,7 +35,7 @@ export type ErrorEnvelope = z.infer<typeof ErrorEnvelopeSchema>;
 
 export type HttpScanErrorCode = Exclude<
   ScanErrorCode,
-  "SITE_UNREACHABLE" | "START_URL_BLOCKED"
+  "SITE_UNREACHABLE" | "START_URL_BLOCKED" | "SCAN_INTERRUPTED"
 >;
 
 export const SCAN_ERROR_HTTP_STATUS = {
@@ -40,8 +43,16 @@ export const SCAN_ERROR_HTTP_STATUS = {
   UNAUTHORIZED: 401,
   SCAN_NOT_FOUND: 404,
   SCAN_ALREADY_RUNNING: 409,
+  SCAN_ID_TAKEN: 409,
+  SCAN_STILL_RUNNING: 409,
   URL_NOT_ALLOWED: 422,
   INTERNAL_ERROR: 500,
   WORKER_UNAVAILABLE: 502,
   CAPACITY_REACHED: 503,
 } as const satisfies Record<HttpScanErrorCode, number>;
+
+export const SCAN_INTERRUPTED_MESSAGE =
+  "Interrupted: the checker restarted. Run the scan again.";
+
+export const SCAN_STILL_RUNNING_MESSAGE =
+  "This scan is still running. Cancel it and wait for it to finish before deleting it.";
