@@ -1,0 +1,55 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ScanStatusValue {
+  running
+  completed
+  cancelled
+  failed
+
+  @@map("scan_status")
+}
+
+enum ReportOutcomeValue {
+  complete
+  cancelled
+  page_limit_reached @map("page-limit-reached")
+  time_limit_reached @map("time-limit-reached")
+
+  @@map("report_outcome")
+}
+
+model Scan {
+  id                 String              @id @db.Uuid
+  startUrl           String              @map("start_url")
+  depth              Int
+  status             ScanStatusValue
+  outcome            ReportOutcomeValue?
+  origin             String?
+  errorCode          String?             @map("error_code")
+  errorMessage       String?             @map("error_message")
+  pagesScanned       Int                 @default(0) @map("pages_scanned")
+  violationsCritical Int                 @default(0) @map("violations_critical")
+  violationsSerious  Int                 @default(0) @map("violations_serious")
+  violationsModerate Int                 @default(0) @map("violations_moderate")
+  violationsMinor    Int                 @default(0) @map("violations_minor")
+  totalViolations    Int                 @default(0) @map("total_violations")
+  needsReviewCount   Int                 @default(0) @map("needs_review_count")
+  report             Json?
+  reportVersion      Int?                @map("report_version")
+  startedAt          DateTime            @map("started_at") @db.Timestamptz(3)
+  finishedAt         DateTime?           @map("finished_at") @db.Timestamptz(3)
+  updatedAt          DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([startedAt(sort: Desc), id(sort: Desc)])
+  @@index([status, startedAt])
+  @@map("scans")
+}
