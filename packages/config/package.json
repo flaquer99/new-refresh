@@ -4,7 +4,11 @@
   "private": true,
   "exports": {
     "./biome/base": "./biome.base.json",
-    "./biome/next": "./biome.next.json"
+    "./biome/next": "./biome.next.json",
+    "./vitest/base": {
+      "types": "./vitest/base.d.mts",
+      "default": "./vitest/base.mjs"
+    }
   },
   "dependencies": {
     "@biomejs/biome": "catalog:",

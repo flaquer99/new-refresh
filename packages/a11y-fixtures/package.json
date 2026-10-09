@@ -1,0 +1,35 @@
+{
+  "name": "@refresh/a11y-fixtures",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./serve-fixtures": {
+      "types": "./dist/serve-fixtures.d.ts",
+      "default": "./dist/serve-fixtures.js"
+    }
+  },
+  "files": [
+    "dist",
+    "sites"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "check-types": "tsc --noEmit",
+    "lint": "biome check",
+    "format": "biome format --write",
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "test": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@refresh/config": "workspace:*",
+    "@types/node": "^22",
+    "@vitest/coverage-v8": "catalog:",
+    "typescript": "^5",
+    "ultracite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

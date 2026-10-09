@@ -17,6 +17,14 @@
     }
   },
   "files": {
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!public"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!public",
+      "!coverage"
+    ]
   }
 }

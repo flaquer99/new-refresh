@@ -1,0 +1,97 @@
+{
+  "violations": [
+    {
+      "id": "color-contrast",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "tags": ["cat.color", "wcag2aa", "wcag143", "TTv5", "EN-9.1.4.3"],
+      "nodes": [
+        {
+          "target": ["footer > p.legal"],
+          "html": "<p class=\"legal\">© 2026 Example</p>",
+          "impact": "serious",
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.9"
+        }
+      ]
+    },
+    {
+      "id": "image-alt",
+      "help": "Images must have alternative text",
+      "tags": ["cat.text-alternatives", "wcag2a", "wcag111", "section508"],
+      "nodes": [
+        {
+          "target": ["img.hero"],
+          "html": "<img class=\"hero\" src=\"hero.png\">",
+          "impact": "critical",
+          "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute"
+        }
+      ]
+    },
+    {
+      "id": "color-contrast-enhanced",
+      "help": "Elements must meet enhanced color contrast ratio thresholds",
+      "tags": ["cat.color", "wcag2aaa", "wcag146"],
+      "nodes": [
+        {
+          "target": ["main > p.intro"],
+          "html": "<p class=\"intro\">Welcome</p>",
+          "impact": "serious",
+          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 5.2"
+        }
+      ]
+    },
+    {
+      "id": "region",
+      "help": "All page content should be contained by landmarks",
+      "tags": ["cat.keyboard", "best-practice"],
+      "nodes": [
+        {
+          "target": ["body > div.banner"],
+          "html": "<div class=\"banner\">Sale</div>",
+          "impact": "moderate",
+          "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
+        }
+      ]
+    },
+    {
+      "id": "duplicate-id",
+      "help": "id attribute value must be unique",
+      "tags": ["cat.parsing", "wcag2a-obsolete", "wcag411"],
+      "nodes": [
+        {
+          "target": ["#main"],
+          "html": "<div id=\"main\"></div>",
+          "impact": "minor",
+          "failureSummary": "Fix any of the following:\n  Document has multiple elements with the same id"
+        }
+      ]
+    }
+  ],
+  "incomplete": [
+    {
+      "id": "color-contrast",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "tags": ["cat.color", "wcag2aa", "wcag143"],
+      "nodes": [
+        {
+          "target": ["header h1"],
+          "html": "<h1>Example</h1>",
+          "impact": "serious",
+          "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a background image"
+        }
+      ]
+    },
+    {
+      "id": "region",
+      "help": "All page content should be contained by landmarks",
+      "tags": ["cat.keyboard", "best-practice"],
+      "nodes": [
+        {
+          "target": ["body > aside"],
+          "html": "<aside></aside>",
+          "impact": "moderate",
+          "failureSummary": ""
+        }
+      ]
+    }
+  ]
+}

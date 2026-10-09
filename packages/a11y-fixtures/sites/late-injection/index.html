@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Content injected after load</title>
+  </head>
+  <body>
+    <main>
+      <h1>Content injected after load</h1>
+      <p>A chart is added to this page shortly after it loads.</p>
+      <div id="late-slot"></div>
+      <script>
+        window.addEventListener("load", () => {
+          setTimeout(() => {
+            const image = document.createElement("img");
+            image.id = "late-chart";
+            image.src = "/assets/chart.svg";
+            image.width = 200;
+            image.height = 100;
+            document.getElementById("late-slot").append(image);
+          }, 100);
+        });
+      </script>
+    </main>
+  </body>
+</html>

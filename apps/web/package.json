@@ -10,22 +10,38 @@
 		"format": "biome format --write",
 		"check": "ultracite check",
 		"fix": "ultracite fix",
-		"check-types": "tsc --noEmit"
+		"check-types": "next typegen && tsc --noEmit",
+		"test": "vitest run --coverage",
+		"test:e2e": "playwright test"
 	},
 	"dependencies": {
+		"@refresh/scan-contracts": "workspace:*",
+		"clsx": "^2.1.1",
 		"next": "16.4.0",
 		"react": "19.3.0",
-		"react-dom": "19.3.0"
+		"react-dom": "19.3.0",
+		"tailwind-merge": "^3.7.0",
+		"zod": "catalog:"
 	},
 	"devDependencies": {
+		"@axe-core/playwright": "^4.13.0",
 		"@biomejs/biome": "catalog:",
+		"@playwright/test": "catalog:",
+		"@refresh/a11y-fixtures": "workspace:*",
 		"@refresh/config": "workspace:*",
 		"@tailwindcss/turbopack": "^4",
+		"@testing-library/dom": "^10.4.2",
+		"@testing-library/react": "^16.3.3",
+		"@testing-library/user-event": "^14.6.7",
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
+		"@vitejs/plugin-react": "^6.1.2",
+		"@vitest/coverage-v8": "catalog:",
+		"jsdom": "^30.1.2",
 		"tailwindcss": "^4",
 		"typescript": "^5",
-		"ultracite": "catalog:"
+		"ultracite": "catalog:",
+		"vitest": "catalog:"
 	}
 }
