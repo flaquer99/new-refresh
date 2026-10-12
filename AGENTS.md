@@ -11,7 +11,7 @@ This block is written and re-added by `turbo` before repository-scoped commands 
 
 # Project overview
 
-`refresh` — pnpm + Turborepo monorepo (`pnpm@11.9.0`, Node `>=22`). Packages scoped `@refresh/*`.
+`refresh` — pnpm + Turborepo monorepo (`pnpm@11.9.0`, Node `>=22.9`). Packages scoped `@refresh/*`.
 
 ## Folder structure
 
@@ -29,7 +29,7 @@ See `.claude/rules/folder-structure.md` for the full tree and where each kind of
 ### `apps/scan-worker` (`@refresh/scan-worker`)
 - **Role:** internal HTTP service that owns scans: crawls same-origin pages (BFS, max 50) in one shared Chromium, audits each page at desktop and mobile with axe-core, maps findings to WCAG 2.2 A/AA criteria, and keeps running scans in memory only. It stores nothing: when a scan ends (or the worker shuts down) it posts the final `ScanResult` once to web's callback route, retrying 5xx and network errors after 1, 2, and 4 s. Every outbound request goes through an in-process egress guard that blocks private and local addresses. Routes: `POST /scans` (body carries the web-generated `scanId`), `GET /scans/:id`, `DELETE /scans/:id` (bearer token required) and `GET /health`.
 - **Tech:** Node ESM (`"type": "module"`), TypeScript 5, `tsx` runner, Fastify 5, Playwright 1.63 + `@axe-core/playwright`, zod. Compiled with `tsc`. Tests: Vitest (`src/**/*.test.ts`). Many suites launch real headless Chromium against `@refresh/a11y-fixtures` (the `audit/`, `browser/`, and `crawl/` browser tests and the `*.integration.test.ts` scan-runner suites), so install Chromium before `pnpm test`; `*.integration.test.ts` marks the full crawl-and-audit runs, not every Chromium test.
-- **Runs on:** `http://127.0.0.1:3001` (port in the repo's `30**` range). It does not load `.env` files, so pass the env inline: `SCAN_WORKER_TOKEN=<token> SCAN_CALLBACK_TOKEN=<callback-token> pnpm --filter @refresh/scan-worker dev`.
+- **Runs on:** `http://127.0.0.1:3001` (port in the repo's `30**` range). `dev` and `start` load `apps/scan-worker/.env` when it exists (`tsx --env-file-if-exists=.env`; copy `.env.example`). Variables already set in the shell win over the file, which is how the E2E suite passes its own values.
 - **Env (`apps/scan-worker/.env.example`):** `SCAN_WORKER_TOKEN` (required, ≥ 32 chars, e.g. `openssl rand -hex 32`), `SCAN_CALLBACK_TOKEN` (required, ≥ 32 chars, must differ from `SCAN_WORKER_TOKEN`), `SCAN_CALLBACK_URL` (default `http://127.0.0.1:3000/api/internal/scans`), `SCAN_WORKER_HOST` (default `127.0.0.1`), `SCAN_WORKER_PORT` (default `3001`), `SCAN_EGRESS_ALLOWLIST` (tests only, comma-separated `host:port`; startup fails if set with `NODE_ENV=production`), `LOG_LEVEL` (default `info`).
 - **Playwright:** browsers may need install: `pnpm --filter @refresh/scan-worker exec playwright install chromium`.
 
@@ -56,7 +56,7 @@ Run from repo root unless noted. Package manager is **pnpm** (never npm/yarn).
 | Install deps | `pnpm install` |
 | Local database | `pnpm db:up` (Postgres 17 in `docker-compose.yml` on `127.0.0.1:5432`), then `DATABASE_URL=postgresql://refresh:refresh@127.0.0.1:5432/refresh pnpm db:migrate`; stop with `pnpm db:down` |
 | New migration | edit `packages/db/prisma/schema.prisma`, then `pnpm --filter @refresh/db migrate:dev --name <name>` (needs `DATABASE_URL`) |
-| Dev (all apps, TUI) | `SCAN_WORKER_TOKEN=<token> SCAN_CALLBACK_TOKEN=<callback-token> DATABASE_URL=<url> pnpm dev` (the worker refuses to start without both tokens; put the same values in `apps/web/.env.local`) |
+| Dev (all apps, TUI) | `pnpm dev`, after creating `apps/web/.env.local`, `apps/scan-worker/.env`, and `packages/db/.env` from their `.env.example` files with matching tokens (see `README.md`; the worker refuses to start without both tokens) |
 | Dev single app | `pnpm --filter @refresh/web dev` / `pnpm --filter @refresh/scan-worker dev` |
 | Build all | `pnpm build` (`turbo run build`; outputs `.next/**`, `dist/**`) |
 | Build single | `pnpm --filter @refresh/web build` |

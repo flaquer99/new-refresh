@@ -6,6 +6,7 @@ pnpm + Turborepo monorepo. Workspaces: `apps/*` and `packages/*`. Package names 
 
 ```
 .
+├── README.md                  # how to set up and run the app locally
 ├── AGENTS.md                  # agent entrypoint (rules, skills, commands)
 ├── package.json               # root scripts, all delegate to turbo
 ├── pnpm-workspace.yaml        # workspaces + shared dependency catalog
@@ -48,7 +49,7 @@ pnpm + Turborepo monorepo. Workspaces: `apps/*` and `packages/*`. Package names 
 │       ├── vitest.config.ts   # extends @refresh/config/vitest/base, longer timeouts for Chromium suites
 │       ├── tsconfig.json
 │       ├── tsconfig.build.json # build-only config (excludes tests and src/testing/)
-│       ├── .env.example       # SCAN_WORKER_TOKEN, SCAN_CALLBACK_URL/TOKEN, SCAN_WORKER_HOST/PORT, SCAN_EGRESS_ALLOWLIST, LOG_LEVEL
+│       ├── .env.example       # SCAN_WORKER_TOKEN, SCAN_CALLBACK_URL/TOKEN, SCAN_WORKER_HOST/PORT, SCAN_EGRESS_ALLOWLIST, LOG_LEVEL (copy to .env)
 │       └── biome.json         # extends @refresh/config/biome/base
 └── packages/
     ├── config/                # @refresh/config — shared tooling config only
