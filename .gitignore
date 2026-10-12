@@ -37,3 +37,6 @@ npm-debug.log*
 
 # SDD feature artifacts (local only)
 tasks/
+
+#claude
+.claude/worktrees
