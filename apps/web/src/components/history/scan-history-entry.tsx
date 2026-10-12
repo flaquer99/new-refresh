@@ -14,22 +14,20 @@ export function ScanHistoryEntry({ entry, now }: ScanHistoryEntryProps) {
 	return (
 		<article
 			aria-labelledby={titleId}
-			className="flex flex-col gap-3 rounded-lg border border-border p-4"
+			className="hud-frame grid gap-4 rounded-md bg-card p-4 text-card-foreground md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_auto] md:items-start md:gap-6"
 		>
-			<div className="flex flex-wrap items-start justify-between gap-2">
-				<h2 className="break-all font-semibold text-lg" id={titleId}>
-					<Link
-						className="text-primary underline underline-offset-4"
-						href={scanLinkPath(entry.scanId)}
-					>
-						{entry.startUrl}
-					</Link>
-				</h2>
-				{entry.deletable ? (
-					<DeleteScanButton scanId={entry.scanId} startUrl={entry.startUrl} />
-				) : null}
-			</div>
+			<h2 className="break-all font-mono font-semibold text-base" id={titleId}>
+				<Link
+					className="text-primary underline underline-offset-4"
+					href={scanLinkPath(entry.scanId)}
+				>
+					{entry.startUrl}
+				</Link>
+			</h2>
 			<ScanEntryDetails entry={entry} now={now} />
+			{entry.deletable ? (
+				<DeleteScanButton scanId={entry.scanId} startUrl={entry.startUrl} />
+			) : null}
 		</article>
 	);
 }

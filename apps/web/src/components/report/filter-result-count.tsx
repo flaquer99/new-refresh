@@ -5,7 +5,10 @@ type FilterResultCountProps = {
 
 export function FilterResultCount({ visible, total }: FilterResultCountProps) {
 	return (
-		<output aria-live="polite" className="text-sm">
+		<output
+			aria-live="polite"
+			className="font-mono text-muted-foreground text-sm"
+		>
 			Showing {visible} of {total} violations
 		</output>
 	);

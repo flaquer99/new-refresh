@@ -1,4 +1,11 @@
 import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import {
+	Empty,
+	EmptyContent,
+	EmptyDescription,
+	EmptyHeader,
+} from "@/components/ui/empty";
 import { NEW_SCAN_PATH } from "@/lib/scans/scan-links";
 
 const NO_SCANS_MESSAGE =
@@ -12,14 +19,17 @@ type EmptyHistoryProps = {
 
 export function EmptyHistory({ isPaged }: EmptyHistoryProps) {
 	return (
-		<div className="flex flex-col items-start gap-3 rounded-lg border border-border p-4">
-			<p>{isPaged ? NO_OLDER_SCANS_MESSAGE : NO_SCANS_MESSAGE}</p>
-			<Link
-				className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground"
-				href={NEW_SCAN_PATH}
-			>
-				Start a new scan
-			</Link>
-		</div>
+		<Empty className="hud-frame bg-card">
+			<EmptyHeader>
+				<EmptyDescription>
+					{isPaged ? NO_OLDER_SCANS_MESSAGE : NO_SCANS_MESSAGE}
+				</EmptyDescription>
+			</EmptyHeader>
+			<EmptyContent>
+				<Link className={buttonVariants()} href={NEW_SCAN_PATH}>
+					Start a new scan
+				</Link>
+			</EmptyContent>
+		</Empty>
 	);
 }

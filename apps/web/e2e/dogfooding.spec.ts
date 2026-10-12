@@ -14,6 +14,19 @@ test.describe("E2E-11 — the app passes its own scan", () => {
 		await expect(app.report.summaryValue("Violations")).toHaveText("0");
 	});
 
+	test("has no WCAG A/AA violations in the form in the project's color scheme", async ({
+		page,
+	}) => {
+		// GIVEN
+		await page.goto("/");
+
+		// WHEN
+		const violations = await findWcagViolations(page);
+
+		// THEN
+		expect(violations).toEqual([]);
+	});
+
 	test("has no WCAG A/AA violations in the progress view", async ({ app }) => {
 		// GIVEN
 		await app.submit({ url: fixtureUrl("/large/"), depth: 1 });

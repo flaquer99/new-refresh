@@ -18,6 +18,28 @@ describe("ScanFailure", () => {
 		expect(screen.queryAllByText(SCAN_INTERRUPTED_MESSAGE)).toHaveLength(1);
 	});
 
+	it("keeps the region named The scan couldn't finish", () => {
+		// WHEN
+		render(<ScanFailure depth={1} error={INTERRUPTED} startUrl={START_URL} />);
+
+		// THEN
+		expect(
+			screen.getAllByRole("region", { name: "The scan couldn't finish" }),
+		).toHaveLength(1);
+	});
+
+	it("links to the scan history", () => {
+		// WHEN
+		render(<ScanFailure depth={1} error={INTERRUPTED} startUrl={START_URL} />);
+
+		// THEN
+		expect(
+			screen
+				.getByRole("link", { name: "View scan history" })
+				.getAttribute("href"),
+		).toBe("/scans");
+	});
+
 	it("links Run again to the form prefilled with the same url and depth", () => {
 		// WHEN
 		render(<ScanFailure depth={1} error={INTERRUPTED} startUrl={START_URL} />);

@@ -3,6 +3,7 @@ import { EmptyHistory } from "@/components/history/empty-history";
 import { HistoryAnnouncer } from "@/components/history/history-announcer";
 import { HistoryPagination } from "@/components/history/history-pagination";
 import { ScanHistoryList } from "@/components/history/scan-history-list";
+import { PageMain } from "@/components/layout/page-main";
 import { historyTitle } from "@/lib/scans/page-titles";
 import { readHistoryCursor } from "@/server/scans/history-cursor-param";
 import { loadHistory } from "@/server/scans/load-history";
@@ -21,7 +22,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
 	const before = readHistoryCursor(await searchParams);
 	const page = await loadHistory(before);
 	return (
-		<main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
+		<PageMain className="gap-6">
 			<h1 className="font-semibold text-3xl" id={HEADING_ID} tabIndex={-1}>
 				{historyTitle(before)}
 			</h1>
@@ -40,6 +41,6 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
 				isPaged={before !== null}
 				nextBefore={page.nextBefore}
 			/>
-		</main>
+		</PageMain>
 	);
 }

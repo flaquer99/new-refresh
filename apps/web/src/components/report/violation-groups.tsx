@@ -13,7 +13,7 @@ export function ViolationGroups({ groups }: ViolationGroupsProps) {
 		<div className="flex flex-col gap-6">
 			{groups.map((group) => (
 				<section className="flex min-w-0 flex-col gap-3" key={group.key}>
-					<h3 className="break-all font-semibold text-lg">
+					<h3 className="break-all font-heading font-semibold text-lg">
 						{group.label} ({group.count})
 					</h3>
 					<ul className="flex flex-col gap-3">

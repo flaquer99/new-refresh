@@ -14,8 +14,11 @@ export function NeedsReviewSection({
 	manualChecks,
 }: NeedsReviewSectionProps) {
 	return (
-		<section aria-labelledby={HEADING_ID} className="flex flex-col gap-4">
-			<h2 className="font-semibold text-xl" id={HEADING_ID}>
+		<section
+			aria-labelledby={HEADING_ID}
+			className="flex flex-col gap-4 border-needs-review border-t pt-6"
+		>
+			<h2 className="font-heading font-semibold text-xl" id={HEADING_ID}>
 				Needs review
 			</h2>
 			<p className="text-muted-foreground">

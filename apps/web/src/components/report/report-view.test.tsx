@@ -50,6 +50,6 @@ describe("ReportView", () => {
 		render(<ReportView report={buildReport()} />);
 
 		// THEN
-		expect(screen.queryByRole("dialog", { hidden: true })).toBeNull();
+		expect(screen.queryByRole("alertdialog", { hidden: true })).toBeNull();
 	});
 });

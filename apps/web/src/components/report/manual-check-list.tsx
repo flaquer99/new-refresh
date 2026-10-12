@@ -8,7 +8,7 @@ type ManualCheckListProps = {
 export function ManualCheckList({ checks }: ManualCheckListProps) {
 	return (
 		<section className="flex min-w-0 flex-col gap-3">
-			<h3 className="font-semibold text-lg">Manual checks</h3>
+			<h3 className="font-heading font-semibold text-lg">Manual checks</h3>
 			{checks.length === 0 ? (
 				<p>None found.</p>
 			) : (

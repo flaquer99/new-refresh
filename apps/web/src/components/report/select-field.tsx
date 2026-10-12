@@ -1,4 +1,6 @@
 import type { ChangeEvent } from "react";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { NativeSelect } from "@/components/ui/native-select";
 import type { SelectOption } from "@/lib/report/filter-options";
 
 type SelectFieldProps<T extends string> = {
@@ -31,12 +33,10 @@ export function SelectField<T extends string>({
 	onChange,
 }: SelectFieldProps<T>) {
 	return (
-		<div className="flex min-w-0 flex-col gap-1">
-			<label className="font-medium text-sm" htmlFor={id}>
-				{label}
-			</label>
-			<select
-				className="w-full min-w-0 rounded-md border border-border bg-background px-3 py-2"
+		<Field className="min-w-0">
+			<FieldLabel htmlFor={id}>{label}</FieldLabel>
+			<NativeSelect
+				className="w-full"
 				id={id}
 				onChange={selectHandler(options, onChange)}
 				value={value}
@@ -46,7 +46,7 @@ export function SelectField<T extends string>({
 						{option.label}
 					</option>
 				))}
-			</select>
-		</div>
+			</NativeSelect>
+		</Field>
 	);
 }

@@ -1,5 +1,9 @@
 import type { Viewport } from "@refresh/scan-contracts/findings";
+import { CodeBlock } from "@/components/hud/code-block";
+import { MonoValue } from "@/components/hud/mono-value";
 import { formatViewports } from "@/lib/report/labels";
+
+const HTML_LABEL = "HTML snippet";
 
 type FindingDetailsProps = {
 	pageUrl: string;
@@ -15,20 +19,20 @@ export function FindingDetails({
 	viewports,
 }: FindingDetailsProps) {
 	return (
-		<dl className="grid gap-x-3 gap-y-1 text-sm sm:grid-cols-[auto_1fr]">
-			<dt className="font-medium">Page</dt>
-			<dd className="break-all">{pageUrl}</dd>
-			<dt className="font-medium">Element</dt>
+		<dl className="grid min-w-0 gap-x-3 gap-y-1 text-sm sm:grid-cols-[auto_minmax(0,1fr)]">
+			<dt className="font-medium text-muted-foreground">Page</dt>
 			<dd>
-				<code className="break-all font-mono">{selector}</code>
+				<MonoValue>{pageUrl}</MonoValue>
 			</dd>
-			<dt className="font-medium">HTML</dt>
+			<dt className="font-medium text-muted-foreground">Element</dt>
 			<dd>
-				<code className="block whitespace-pre-wrap break-all rounded bg-muted p-2 font-mono">
-					{html}
-				</code>
+				<MonoValue>{selector}</MonoValue>
 			</dd>
-			<dt className="font-medium">Viewports</dt>
+			<dt className="font-medium text-muted-foreground">HTML</dt>
+			<dd className="min-w-0">
+				<CodeBlock code={html} label={HTML_LABEL} />
+			</dd>
+			<dt className="font-medium text-muted-foreground">Viewports</dt>
 			<dd>{formatViewports(viewports)}</dd>
 		</dl>
 	);

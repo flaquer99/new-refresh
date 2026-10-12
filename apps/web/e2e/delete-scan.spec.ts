@@ -27,6 +27,7 @@ test.describe("E2E-09 — a user deletes a finished scan", () => {
 		await history.dialog().getByRole("button", { name: "Delete scan" }).click();
 
 		// THEN
+		await expect(history.dialog()).toBeHidden();
 		await expect(history.entry(scanId)).toHaveCount(0);
 		await app.page.reload();
 		await expect(history.entry(scanId)).toHaveCount(0);
@@ -40,6 +41,7 @@ test.describe("E2E-09 — a user deletes a finished scan", () => {
 		const { scanId, history } = await scanAndOpenHistory(app, url);
 		await history.deleteButton(url).click();
 		await history.dialog().getByRole("button", { name: "Delete scan" }).click();
+		await expect(history.dialog()).toBeHidden();
 		await expect(history.entry(scanId)).toHaveCount(0);
 
 		// WHEN

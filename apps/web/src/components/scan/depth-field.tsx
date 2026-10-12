@@ -1,3 +1,8 @@
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import {
+	NativeSelect,
+	NativeSelectOption,
+} from "@/components/ui/native-select";
 import { DEPTH_HINT, DEPTH_OPTIONS } from "@/lib/scans/depth-options";
 
 const SELECT_ID = "scan-depth";
@@ -10,27 +15,23 @@ type DepthFieldProps = {
 
 export function DepthField({ value, onChange }: DepthFieldProps) {
 	return (
-		<div className="flex flex-col gap-1">
-			<label className="font-medium" htmlFor={SELECT_ID}>
-				Crawl depth
-			</label>
-			<p className="text-muted-foreground text-sm" id={HINT_ID}>
-				{DEPTH_HINT}
-			</p>
-			<select
+		<Field>
+			<FieldLabel htmlFor={SELECT_ID}>Crawl depth</FieldLabel>
+			<FieldDescription id={HINT_ID}>{DEPTH_HINT}</FieldDescription>
+			<NativeSelect
 				aria-describedby={HINT_ID}
-				className="w-full min-w-0 rounded-md border border-border bg-background px-3 py-2"
+				className="w-full"
 				id={SELECT_ID}
 				name="depth"
 				onChange={(event) => onChange(Number(event.target.value))}
 				value={value}
 			>
 				{DEPTH_OPTIONS.map((option) => (
-					<option key={option.value} value={option.value}>
+					<NativeSelectOption key={option.value} value={option.value}>
 						{option.label}
-					</option>
+					</NativeSelectOption>
 				))}
-			</select>
-		</div>
+			</NativeSelect>
+		</Field>
 	);
 }

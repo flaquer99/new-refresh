@@ -1,3 +1,4 @@
+import { FieldLegend, FieldSet } from "@/components/ui/field";
 import type { SetFilter } from "@/hooks/use-report-filters";
 import { GROUP_BY_SELECT_OPTIONS } from "@/lib/report/filter-options";
 import type { ViolationFilters } from "@/lib/report/filter-violations";
@@ -19,10 +20,10 @@ export function ReportFilters({
 	onGroupByChange,
 }: ReportFiltersProps) {
 	return (
-		<fieldset className="flex min-w-0 flex-col gap-3 rounded-lg border border-border p-4">
-			<legend className="px-1 font-semibold">
+		<FieldSet className="hud-frame min-w-0 gap-3 rounded-md bg-card p-4">
+			<FieldLegend className="mb-0 px-1 font-heading font-semibold">
 				Group and filter violations
-			</legend>
+			</FieldLegend>
 			<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 				<SelectField
 					id="violations-group-by"
@@ -36,6 +37,6 @@ export function ReportFilters({
 					onFilterChange={onFilterChange}
 				/>
 			</div>
-		</fieldset>
+		</FieldSet>
 	);
 }

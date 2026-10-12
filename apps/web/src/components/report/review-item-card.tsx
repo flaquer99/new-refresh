@@ -3,6 +3,9 @@ import { CriteriaList } from "./criteria-list";
 import { FindingDetails } from "./finding-details";
 import { GuidanceBlock } from "./guidance-block";
 
+export const NEEDS_REVIEW_CARD_CLASSES =
+	"flex flex-col gap-3 rounded-md border border-needs-review border-dashed bg-transparent p-4";
+
 type ReviewItemCardProps = {
 	item: ReviewItem;
 };
@@ -10,11 +13,8 @@ type ReviewItemCardProps = {
 export function ReviewItemCard({ item }: ReviewItemCardProps) {
 	const headingId = `review-${item.id}`;
 	return (
-		<article
-			aria-labelledby={headingId}
-			className="flex flex-col gap-3 rounded-lg border border-border p-4"
-		>
-			<h4 className="font-semibold" id={headingId}>
+		<article aria-labelledby={headingId} className={NEEDS_REVIEW_CARD_CLASSES}>
+			<h4 className="font-heading font-semibold" id={headingId}>
 				Check the “{item.ruleId}” result
 			</h4>
 			<CriteriaList criteria={item.criteria} />

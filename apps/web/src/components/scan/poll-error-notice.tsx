@@ -1,4 +1,6 @@
 import type { ScanError } from "@refresh/scan-contracts/errors";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 type PollErrorNoticeProps = {
 	error: ScanError;
@@ -7,17 +9,20 @@ type PollErrorNoticeProps = {
 
 export function PollErrorNotice({ error, onRetry }: PollErrorNoticeProps) {
 	return (
-		<div className="flex flex-col gap-3 rounded-lg border border-destructive p-4">
-			<p className="text-destructive" role="alert">
-				We lost contact with the scanner: {error.message}
-			</p>
-			<button
-				className="self-start rounded-md border border-border px-4 py-2 font-medium"
+		<div className="flex flex-col gap-3">
+			<Alert variant="destructive">
+				<AlertDescription>
+					We lost contact with the scanner: {error.message}
+				</AlertDescription>
+			</Alert>
+			<Button
+				className="self-start"
 				onClick={onRetry}
 				type="button"
+				variant="outline"
 			>
 				Check again
-			</button>
+			</Button>
 		</div>
 	);
 }

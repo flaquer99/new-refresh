@@ -14,4 +14,22 @@ describe("ReportDisclaimer", () => {
 		);
 		expect(note.textContent).toContain("must be checked by a person");
 	});
+
+	it("keeps role note named About this report", () => {
+		// GIVEN / WHEN
+		render(<ReportDisclaimer />);
+
+		// THEN
+		expect(
+			screen.getAllByRole("note", { name: "About this report" }),
+		).toHaveLength(1);
+	});
+
+	it("is not announced as an alert", () => {
+		// GIVEN / WHEN
+		render(<ReportDisclaimer />);
+
+		// THEN
+		expect(screen.queryByRole("alert")).toBeNull();
+	});
 });

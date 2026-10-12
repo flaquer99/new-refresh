@@ -1,15 +1,18 @@
+import { Button } from "@/components/ui/button";
+
 type StartScanButtonProps = {
 	isStarting: boolean;
 };
 
 export function StartScanButton({ isStarting }: StartScanButtonProps) {
 	return (
-		<button
-			className="self-start rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground disabled:opacity-70"
+		<Button
+			className="self-start"
 			disabled={isStarting}
+			size="lg"
 			type="submit"
 		>
 			{isStarting ? "Starting scan…" : "Scan"}
-		</button>
+		</Button>
 	);
 }
