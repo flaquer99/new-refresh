@@ -6,8 +6,7 @@ import {
   useServerTestClock,
 } from "../../testing/server-harness.js";
 
-const ABANDON_TIMEOUT_MS = 60_000;
-const ALMOST_ABANDONED_MS = 59_000;
+const UNWATCHED_MS = 5 * 60_000;
 
 describe("GET /scans/:id polling", () => {
   useServerTestClock();
@@ -24,29 +23,15 @@ describe("GET /scans/:id polling", () => {
     expect(response.headers["cache-control"]).toBe("no-store");
   });
 
-  it("refreshes the last poll so a watched scan is not abandoned", async () => {
+  it("keeps a scan running when nobody polls it", async () => {
     // GIVEN
     const { app, controlled } = startTestServer();
     await postScan(app);
-    await vi.advanceTimersByTimeAsync(ALMOST_ABANDONED_MS);
 
     // WHEN
-    await scanRequest(app, "GET");
-    await vi.advanceTimersByTimeAsync(ABANDON_TIMEOUT_MS - 1);
+    await vi.advanceTimersByTimeAsync(UNWATCHED_MS);
 
     // THEN
     expect(controlled.latest().input.signal.aborted).toBe(false);
-  });
-
-  it("abandons a scan that nobody polls for 60 seconds", async () => {
-    // GIVEN
-    const { app, controlled } = startTestServer();
-    await postScan(app);
-
-    // WHEN
-    await vi.advanceTimersByTimeAsync(ABANDON_TIMEOUT_MS);
-
-    // THEN
-    expect(controlled.latest().input.signal.aborted).toBe(true);
   });
 });

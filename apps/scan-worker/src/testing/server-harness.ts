@@ -4,6 +4,7 @@ import { validateTarget } from "../network/validate-target.js";
 import { createScanRegistry } from "../scans/scan-registry.js";
 import { createApp, mountRoutes } from "../server/build-server.js";
 import { createControlledRunner } from "./controlled-runner.js";
+import { scanIdFromSeed } from "./scan-ids.js";
 import { stubResolver } from "./stub-resolver.js";
 
 export const WORKER_TOKEN = "w".repeat(40);
@@ -43,12 +44,19 @@ export const startTestServer = ({
 
 type TestApp = ReturnType<typeof startTestServer>["app"];
 
-export const postScan = (app: TestApp, clientId = "alice") =>
+export const clientScanId = (clientId: string): string =>
+  clientId === "alice" ? SERVER_SCAN_ID : scanIdFromSeed(clientId);
+
+export const postScan = (
+  app: TestApp,
+  clientId = "alice",
+  scanId = clientScanId(clientId),
+) =>
   app.inject({
     method: "POST",
     url: "/scans",
     headers: { ...AUTH_HEADERS, "x-client-id": clientId },
-    payload: { url: PUBLIC_URL, depth: 1 },
+    payload: { scanId, url: PUBLIC_URL, depth: 1 },
   });
 
 export const scanRequest = (
@@ -60,7 +68,6 @@ export const scanRequest = (
 export const useServerTestClock = () => {
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "Date"] });
-    vi.spyOn(crypto, "randomUUID").mockReturnValue(SERVER_SCAN_ID);
   });
   afterEach(() => {
     vi.useRealTimers();

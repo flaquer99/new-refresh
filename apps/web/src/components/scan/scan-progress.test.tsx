@@ -62,7 +62,8 @@ describe("ScanProgress", () => {
 	it("disables the button and shows that cancellation is in progress", async () => {
 		// GIVEN
 		const user = userEvent.setup();
-		render(<ScanProgress onCancel={vi.fn()} progress={PROGRESS} />);
+		const onCancel = vi.fn().mockResolvedValue(true);
+		render(<ScanProgress onCancel={onCancel} progress={PROGRESS} />);
 
 		// WHEN
 		await user.click(screen.getByRole("button", { name: "Cancel scan" }));

@@ -1,13 +1,16 @@
 import type { ScanRequest } from "@refresh/scan-contracts/scan-request";
+import type { ResultNotifier } from "../callback/result-notifier.js";
 import { logScanFailure, type ScanRegistryLogger } from "./scan-failure-log.js";
 import type { ScanLimits } from "./scan-limits.js";
 import { completeRecord, failRecord, type ScanRecord } from "./scan-record.js";
+import { toResult } from "./scan-result-of.js";
 import type { ScanRunner } from "./scan-runner.js";
 import type { ScanTimers } from "./scan-timers.js";
 
 export type ScanRegistryOptions = {
   runner: ScanRunner;
   logger?: ScanRegistryLogger;
+  notifier?: ResultNotifier;
 };
 
 export type TrackedScan = { record: ScanRecord; timers: ScanTimers };
@@ -15,13 +18,14 @@ export type TrackedScan = { record: ScanRecord; timers: ScanTimers };
 export type RegistryState = ScanRegistryOptions & {
   limits: ScanLimits;
   scans: Map<string, TrackedScan>;
+  deliveries: Set<Promise<void>>;
 };
 
-export const runTracked = async (
+const runToEnd = async (
   state: RegistryState,
-  { record, timers }: TrackedScan,
+  record: ScanRecord,
   request: ScanRequest,
-): Promise<void> => {
+): Promise<boolean> => {
   try {
     const report = await state.runner({
       scanId: record.scanId,
@@ -31,20 +35,49 @@ export const runTracked = async (
         record.progress = progress;
       },
     });
-    completeRecord(record, report);
+    return completeRecord(record, report);
   } catch (error) {
-    failRecord(record, error);
-    logScanFailure(state.logger, record, error);
-  } finally {
-    state.limits.release(record.clientId);
-    timers.finish(() => state.scans.delete(record.scanId));
+    const failed = failRecord(record, error);
+    if (failed) {
+      logScanFailure(state.logger, record, error);
+    }
+    return failed;
   }
 };
 
-export const cancelRunning = (state: RegistryState) => {
-  for (const { record } of state.scans.values()) {
-    if (record.status === "running") {
-      record.controller.abort();
-    }
+const reportResult = async (
+  state: RegistryState,
+  { record, timers }: TrackedScan,
+): Promise<void> => {
+  const outcome = state.notifier
+    ? await state.notifier.notify(toResult(record, new Date()))
+    : "exhausted";
+  if (outcome === "delivered") {
+    state.scans.delete(record.scanId);
+    return;
+  }
+  timers.finish(() => state.scans.delete(record.scanId));
+};
+
+export const trackDelivery = (
+  state: RegistryState,
+  tracked: TrackedScan,
+): Promise<void> => {
+  const delivery = reportResult(state, tracked).finally(() =>
+    state.deliveries.delete(delivery),
+  );
+  state.deliveries.add(delivery);
+  return delivery;
+};
+
+export const runTracked = async (
+  state: RegistryState,
+  tracked: TrackedScan,
+  request: ScanRequest,
+): Promise<void> => {
+  const settled = await runToEnd(state, tracked.record, request);
+  state.limits.release(tracked.record.clientId);
+  if (settled) {
+    await trackDelivery(state, tracked);
   }
 };

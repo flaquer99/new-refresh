@@ -2,12 +2,21 @@ import {
 	INVALID_DEPTH_MESSAGE,
 	INVALID_URL_MESSAGE,
 } from "@refresh/scan-contracts/scan-request";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useFakeScanStore } from "@/testing/fake-scan-store";
 import { SCAN_ID, startScanRequest } from "@/testing/scan-route-requests";
 import { stubWorker } from "@/testing/stub-worker";
 import { POST } from "./route";
 
+vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
+
 describe("POST /api/scans validation", () => {
+	useFakeScanStore();
+
+	beforeEach(() => {
+		vi.spyOn(crypto, "randomUUID").mockReturnValue(SCAN_ID);
+	});
+
 	it("rejects an invalid URL with 400 INVALID_REQUEST", async () => {
 		// GIVEN
 		stubWorker(201, { scanId: SCAN_ID });
@@ -80,6 +89,7 @@ describe("POST /api/scans validation", () => {
 
 		// THEN
 		expect(calls[0]?.body).toEqual({
+			scanId: SCAN_ID,
 			url: "https://www.example.org/",
 			depth: 0,
 		});

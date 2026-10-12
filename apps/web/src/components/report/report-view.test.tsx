@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { START_URL } from "@/testing/finding-fixtures";
 import { buildReport } from "@/testing/report-fixtures";
 import { ReportView } from "./report-view";
@@ -11,7 +10,7 @@ describe("ReportView", () => {
 		const report = buildReport({ violations: [] });
 
 		// WHEN
-		render(<ReportView onNewScan={vi.fn()} report={report} />);
+		render(<ReportView report={report} />);
 
 		// THEN
 		expect(screen.getByRole("note").textContent).toContain(
@@ -21,7 +20,7 @@ describe("ReportView", () => {
 
 	it("presents the sections in reading order under a focused report heading", () => {
 		// GIVEN / WHEN
-		render(<ReportView onNewScan={vi.fn()} report={buildReport()} />);
+		render(<ReportView report={buildReport()} />);
 
 		// THEN
 		const headings = screen.getAllByRole("heading", { level: 2 });
@@ -36,17 +35,21 @@ describe("ReportView", () => {
 		expect(document.activeElement).toBe(headings[0]);
 	});
 
-	it("starts a new scan after confirmation", async () => {
-		// GIVEN
-		const onNewScan = vi.fn();
-		const user = userEvent.setup();
-		render(<ReportView onNewScan={onNewScan} report={buildReport()} />);
-
-		// WHEN
-		await user.click(screen.getByRole("button", { name: "New scan" }));
-		await user.click(screen.getByRole("button", { name: "Start a new scan" }));
+	it("offers a new scan as a plain link to the form", () => {
+		// GIVEN / WHEN
+		render(<ReportView report={buildReport()} />);
 
 		// THEN
-		expect(onNewScan).toHaveBeenCalledTimes(1);
+		expect(
+			screen.getByRole("link", { name: "New scan" }).getAttribute("href"),
+		).toBe("/");
+	});
+
+	it("does not ask for confirmation before a new scan", () => {
+		// GIVEN / WHEN
+		render(<ReportView report={buildReport()} />);
+
+		// THEN
+		expect(screen.queryByRole("dialog", { hidden: true })).toBeNull();
 	});
 });

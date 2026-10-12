@@ -1,19 +1,29 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useFakeScanStore } from "@/testing/fake-scan-store";
 import {
 	SCAN_ID,
 	startScanRequest,
 	VALID_SCAN_BODY,
 } from "@/testing/scan-route-requests";
+import { spyOnServerLog } from "@/testing/server-log-spy";
 import {
 	STUB_WORKER_TOKEN,
 	STUB_WORKER_URL,
-	stubUnreachableWorker,
 	stubWorker,
 } from "@/testing/stub-worker";
 import { POST } from "./route";
 
+vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
+
 describe("POST /api/scans", () => {
-	it("forwards a valid scan request to the worker with token and client id", async () => {
+	useFakeScanStore();
+
+	beforeEach(() => {
+		vi.spyOn(crypto, "randomUUID").mockReturnValue(SCAN_ID);
+		spyOnServerLog();
+	});
+
+	it("forwards the scan with its id to the worker with token and client id", async () => {
 		// GIVEN
 		const calls = stubWorker(201, { scanId: SCAN_ID });
 
@@ -34,12 +44,12 @@ describe("POST /api/scans", () => {
 					"content-type": "application/json",
 					"x-client-id": "203.0.113.7",
 				},
-				body: VALID_SCAN_BODY,
+				body: { scanId: SCAN_ID, ...VALID_SCAN_BODY },
 			},
 		]);
 	});
 
-	it("returns the worker's 201 response with the scan id", async () => {
+	it("answers 201 with the scan id", async () => {
 		// GIVEN
 		stubWorker(201, { scanId: SCAN_ID });
 
@@ -50,45 +60,6 @@ describe("POST /api/scans", () => {
 		expect({ status: response.status, body: await response.json() }).toEqual({
 			status: 201,
 			body: { scanId: SCAN_ID },
-		});
-	});
-
-	it.each([
-		[409, "SCAN_ALREADY_RUNNING"],
-		[422, "URL_NOT_ALLOWED"],
-		[503, "CAPACITY_REACHED"],
-	] as const)(
-		"passes the worker's %d %s error through",
-		async (status, code) => {
-			// GIVEN
-			const workerBody = { error: { code, message: "From the worker." } };
-			stubWorker(status, workerBody);
-
-			// WHEN
-			const response = await POST(startScanRequest(VALID_SCAN_BODY));
-
-			// THEN
-			expect({ status: response.status, body: await response.json() }).toEqual({
-				status,
-				body: workerBody,
-			});
-		},
-	);
-
-	it("answers 502 WORKER_UNAVAILABLE when the worker is down", async () => {
-		// GIVEN
-		stubUnreachableWorker();
-
-		// WHEN
-		const response = await POST(startScanRequest(VALID_SCAN_BODY));
-
-		// THEN
-		expect({
-			status: response.status,
-			code: (await response.json()).error.code,
-		}).toEqual({
-			status: 502,
-			code: "WORKER_UNAVAILABLE",
 		});
 	});
 });

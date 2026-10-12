@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { FakeBrowser } from "../testing/fake-browser.js";
+import { scanIdFor } from "../testing/scan-ids.js";
 import { BOOT_TOKEN, bootWorker } from "../testing/worker-harness.js";
 import type { RunningWorker } from "./start-worker.js";
 
@@ -55,7 +56,11 @@ describe("startWorker", () => {
       method: "POST",
       url: "/scans",
       headers: { authorization: `Bearer ${BOOT_TOKEN}` },
-      payload: { url: "http://127.0.0.1:4100/", depth: 0 },
+      payload: {
+        scanId: scanIdFor(1),
+        url: "http://127.0.0.1:4100/",
+        depth: 0,
+      },
     });
 
     // THEN

@@ -8,7 +8,6 @@ import {
 describe("ScanRegistry lifecycle", () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.spyOn(crypto, "randomUUID").mockReturnValue(REGISTRY_SCAN_ID);
   });
 
   afterEach(() => {

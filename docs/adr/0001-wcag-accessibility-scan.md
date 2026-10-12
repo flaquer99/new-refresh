@@ -1,9 +1,11 @@
 ---
-status: accepted
+status: superseded in part by ADR-0002
 date: 2026-10-09
 ---
 
 # WCAG 2.2 accessibility scan: separate in-memory scan worker behind a web proxy
+
+> Superseded in part by [ADR-0002](./0002-persist-scans-in-web-owned-postgres.md): scans and reports are now stored, scan history is in scope, the worker reports results to web by callback, and the 60 s abandon rule is gone. The egress guard, axe/catalog, and contracts decisions still stand.
 
 `refresh` lets anyone submit a URL, crawls up to 50 same-origin pages (depth ≤ 3), checks each one at desktop and mobile width against WCAG 2.2 Level A and AA, and shows a report of violations and needs-review items (see [CONTEXT.md](../../CONTEXT.md) for the vocabulary). Scans are anonymous and reports are ephemeral: nothing is stored and there are no accounts. AAA criteria, exports, scan history, and authenticated pages are out of scope. We decided to run all crawling and auditing in a dedicated Fastify service (`apps/scan-worker`) that holds scan state in memory, and to have `apps/web` act only as a thin authenticated proxy that the browser polls. Because the scanner fetches URLs chosen by anonymous users, every outbound request it makes goes through an in-process egress guard.
 

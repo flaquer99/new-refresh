@@ -9,7 +9,6 @@ import {
 
 const HTTP_CREATED = 201;
 const HTTP_BAD_REQUEST = 400;
-const HTTP_UNPROCESSABLE = 422;
 
 describe("POST /scans", () => {
   useServerTestClock();
@@ -49,7 +48,11 @@ describe("POST /scans", () => {
       method: "POST",
       url: "/scans",
       headers: AUTH_HEADERS,
-      payload: { url: "ftp://www.example.org/", depth: 0 },
+      payload: {
+        scanId: SERVER_SCAN_ID,
+        url: "ftp://www.example.org/",
+        depth: 0,
+      },
     });
 
     // THEN
@@ -78,23 +81,5 @@ describe("POST /scans", () => {
     // THEN
     expect(response.statusCode).toBe(HTTP_BAD_REQUEST);
     expect(response.json().error.code).toBe("INVALID_REQUEST");
-  });
-
-  it("refuses a target on a private address before reserving a slot", async () => {
-    // GIVEN
-    const { app, controlled } = startTestServer();
-
-    // WHEN
-    const response = await app.inject({
-      method: "POST",
-      url: "/scans",
-      headers: AUTH_HEADERS,
-      payload: { url: "http://127.0.0.1/", depth: 0 },
-    });
-
-    // THEN
-    expect(response.statusCode).toBe(HTTP_UNPROCESSABLE);
-    expect(response.json().error.code).toBe("URL_NOT_ALLOWED");
-    expect(controlled.scans).toHaveLength(0);
   });
 });

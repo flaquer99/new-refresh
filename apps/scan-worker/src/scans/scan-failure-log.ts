@@ -11,8 +11,24 @@ export type ScanFailedLog = {
   err: unknown;
 };
 
+export type ScanInterruptedLog = {
+  event: "scan.interrupted";
+  scanId: string;
+};
+
 export type ScanRegistryLogger = {
   error: (details: ScanFailedLog, message: string) => void;
+  warn: (details: ScanInterruptedLog, message: string) => void;
+};
+
+export const logScanInterrupted = (
+  logger: ScanRegistryLogger | undefined,
+  record: ScanRecord,
+) => {
+  logger?.warn(
+    { event: "scan.interrupted", scanId: record.scanId },
+    "scan.interrupted",
+  );
 };
 
 export const logScanFailure = (

@@ -1,4 +1,4 @@
-import { ScanRequestSchema } from "@refresh/scan-contracts/scan-request";
+import { WorkerScanRequestSchema } from "@refresh/scan-contracts/scan-request";
 import type { ScanStatus } from "@refresh/scan-contracts/scan-status";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { ApiError } from "../api-error.js";
@@ -13,7 +13,7 @@ const SCAN_NOT_FOUND_MESSAGE = "This scan no longer exists. Start a new scan.";
 type ScanParams = { Params: { id: string } };
 
 const parseScanRequest = (body: unknown) => {
-  const parsed = ScanRequestSchema.safeParse(body);
+  const parsed = WorkerScanRequestSchema.safeParse(body);
   if (!parsed.success) {
     const [issue] = parsed.error.issues;
     throw new ApiError("INVALID_REQUEST", issue?.message ?? "Invalid request.");
@@ -22,16 +22,16 @@ const parseScanRequest = (body: unknown) => {
 };
 
 const createScan = async (deps: ServerDeps, request: FastifyRequest) => {
-  const scanRequest = parseScanRequest(request.body);
-  await deps.validateTarget(scanRequest.url);
+  const { scanId, url, depth } = parseScanRequest(request.body);
+  await deps.validateTarget(url);
   const clientId = readClientId(request);
-  const { scanId } = deps.registry.create({ request: scanRequest, clientId });
+  deps.registry.create({ scanId, request: { url, depth }, clientId });
   request.log.info(
     {
       event: "scan.started",
       scanId,
-      origin: new URL(scanRequest.url).origin,
-      depth: scanRequest.depth,
+      origin: new URL(url).origin,
+      depth,
       clientIdHash: clientIdHash(clientId),
     },
     "scan.started",

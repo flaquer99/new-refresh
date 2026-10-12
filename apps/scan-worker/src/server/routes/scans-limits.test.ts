@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { scanIdFor } from "../../testing/scan-ids.js";
 import {
   postScan,
   startTestServer,
@@ -6,6 +7,7 @@ import {
 } from "../../testing/server-harness.js";
 
 const HTTP_CONFLICT = 409;
+const SECOND_SCAN_ID = scanIdFor(2);
 const HTTP_SERVICE_UNAVAILABLE = 503;
 
 describe("POST /scans limits", () => {
@@ -17,7 +19,7 @@ describe("POST /scans limits", () => {
     await postScan(app, "alice");
 
     // WHEN
-    const response = await postScan(app, "alice");
+    const response = await postScan(app, "alice", SECOND_SCAN_ID);
 
     // THEN
     expect(response.statusCode).toBe(HTTP_CONFLICT);

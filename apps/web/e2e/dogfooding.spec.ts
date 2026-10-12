@@ -40,7 +40,7 @@ test.describe("E2E-11 — the app passes its own scan", () => {
 		expect(violations).toEqual([]);
 	});
 
-	test("has no WCAG A/AA violations in the error view", async ({ app }) => {
+	test("has no WCAG A/AA violations in the start error", async ({ app }) => {
 		// GIVEN
 		await app.submit({ url: "http://localhost:8080/" });
 		await expect(app.alert()).toBeVisible();

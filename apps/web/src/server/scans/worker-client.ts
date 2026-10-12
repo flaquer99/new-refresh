@@ -56,6 +56,22 @@ const callWorker = async (call: WorkerCall): Promise<Response> => {
 	return await relay(response);
 };
 
+const timedOutResponses = new WeakSet<Response>();
+
+const unavailable = (timedOut: boolean): Response => {
+	const response = errorResponse(
+		"WORKER_UNAVAILABLE",
+		WORKER_UNAVAILABLE_MESSAGE,
+	);
+	if (timedOut) {
+		timedOutResponses.add(response);
+	}
+	return response;
+};
+
+export const isWorkerTimeout = (response: Response): boolean =>
+	timedOutResponses.has(response);
+
 export const forwardToWorker = async (
 	request: WorkerRequest,
 ): Promise<Response> => {
@@ -68,7 +84,7 @@ export const forwardToWorker = async (
 	try {
 		return await callWorker({ request, config, signal: controller.signal });
 	} catch {
-		return errorResponse("WORKER_UNAVAILABLE", WORKER_UNAVAILABLE_MESSAGE);
+		return unavailable(controller.signal.aborted);
 	} finally {
 		clearTimeout(timer);
 	}

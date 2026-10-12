@@ -1,23 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createControlledRunner } from "../testing/controlled-runner.js";
-import { REGISTRY_SCAN_ID } from "../testing/registry-harness.js";
+import {
+  REGISTRY_SCAN_ID,
+  startLoggedRegistryScan as startLoggedScan,
+} from "../testing/registry-harness.js";
 import { ScanFailedError } from "./scan-failed-error.js";
-import { createScanRegistry } from "./scan-registry.js";
-
-const REQUEST = { url: "https://a.test/", depth: 0 };
-
-const startLoggedScan = () => {
-  const logger = { error: vi.fn() };
-  const { runner, latest } = createControlledRunner();
-  const registry = createScanRegistry({ runner, logger });
-  registry.create({ request: REQUEST, clientId: "alice" });
-  return { logger, scan: latest() };
-};
 
 describe("ScanRegistry failure logging", () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.spyOn(crypto, "randomUUID").mockReturnValue(REGISTRY_SCAN_ID);
   });
 
   afterEach(() => {

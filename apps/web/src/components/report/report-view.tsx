@@ -1,7 +1,10 @@
+"use client";
+
 import type { ScanReport } from "@refresh/scan-contracts/report";
+import Link from "next/link";
 import { useFocusOnMount } from "@/hooks/use-focus-on-mount";
+import { NEW_SCAN_PATH } from "@/lib/scans/scan-links";
 import { NeedsReviewSection } from "./needs-review-section";
-import { NewScanDialog } from "./new-scan-dialog";
 import { PageCoverage } from "./page-coverage";
 import { ReportDisclaimer } from "./report-disclaimer";
 import { ReportSummary } from "./report-summary";
@@ -9,10 +12,9 @@ import { ViolationsSection } from "./violations-section";
 
 type ReportViewProps = {
 	report: ScanReport;
-	onNewScan: () => void;
 };
 
-export function ReportView({ report, onNewScan }: ReportViewProps) {
+export function ReportView({ report }: ReportViewProps) {
 	const headingRef = useFocusOnMount<HTMLHeadingElement>();
 	return (
 		<div className="flex flex-col gap-8">
@@ -24,7 +26,12 @@ export function ReportView({ report, onNewScan }: ReportViewProps) {
 				>
 					Report for {report.startUrl}
 				</h2>
-				<NewScanDialog onConfirm={onNewScan} />
+				<Link
+					className="rounded-md border border-border px-4 py-2 font-medium"
+					href={NEW_SCAN_PATH}
+				>
+					New scan
+				</Link>
 			</div>
 			<ReportSummary report={report} />
 			<ReportDisclaimer />

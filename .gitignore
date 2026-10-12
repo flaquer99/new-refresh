@@ -18,6 +18,9 @@ coverage
 .env*
 !.env.example
 
+# prisma generated client
+packages/db/src/generated
+
 # crawler output
 apps/scan-worker/output
 

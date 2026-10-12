@@ -1,72 +1,70 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  type FixtureServer,
-  serveFixtures,
-} from "@refresh/a11y-fixtures/serve-fixtures";
-import type { ScanStatus } from "@refresh/scan-contracts/scan-status";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { createRecordingFastifyLogger } from "../testing/fastify-logger.js";
-import { type RunningWorker, startWorker } from "./start-worker.js";
+  bootIntegrationWorker,
+  type IntegrationWorker,
+} from "../testing/integration-boot.js";
+import {
+  CALLBACK_TOKEN,
+  callbacksFor,
+  postWorkerScan,
+} from "../testing/integration-worker.js";
+import { scanIdFor } from "../testing/scan-ids.js";
 
-const EPHEMERAL_PORT = 0;
-const TOKEN = "i".repeat(32);
-const AUTH = { authorization: `Bearer ${TOKEN}`, "x-client-id": "it" };
 const SCAN_TIMEOUT_MS = 25_000;
 const POLL_INTERVAL_MS = 200;
 
-const pollUntilTerminal = (worker: RunningWorker, scanId: string) =>
-  vi.waitFor(
-    async () => {
-      const response = await worker.app.inject({
-        method: "GET",
-        url: `/scans/${scanId}`,
-        headers: AUTH,
-      });
-      const status: ScanStatus = response.json();
-      expect(status.status).not.toBe("running");
-      return status;
-    },
-    { timeout: SCAN_TIMEOUT_MS, interval: POLL_INTERVAL_MS },
-  );
-
 describe("worker with a real browser", () => {
-  let fixtures: FixtureServer;
-  let worker: RunningWorker;
+  let booted: IntegrationWorker | undefined;
 
-  beforeAll(async () => {
-    fixtures = await serveFixtures({ port: EPHEMERAL_PORT });
-    worker = await startWorker({
-      config: {
-        host: "127.0.0.1",
-        port: EPHEMERAL_PORT,
-        token: TOKEN,
-        egressAllowlist: new Set([new URL(fixtures.origin).host]),
-        logLevel: "info",
-      },
-      loggerInstance: createRecordingFastifyLogger(),
-    });
+  afterEach(async () => {
+    await booted?.close();
+    booted = undefined;
   });
 
-  afterAll(async () => {
-    await worker.stop();
-    await fixtures.close();
-  });
-
-  it("scans an allowlisted fixture page to a completed report", async () => {
+  it("calls web back once with the completed result of a fixture scan", async () => {
     // GIVEN
-    const created = await worker.app.inject({
-      method: "POST",
-      url: "/scans",
-      headers: AUTH,
-      payload: { url: `${fixtures.origin}/clean/`, depth: 0 },
+    booted = await bootIntegrationWorker();
+    const { worker, fixtures, callbacks } = booted;
+    const scanId = scanIdFor(1);
+    await postWorkerScan(worker, { scanId, url: `${fixtures.origin}/clean/` });
+
+    // WHEN
+    await vi.waitFor(
+      () => expect(callbacksFor(callbacks, scanId)).toHaveLength(1),
+      { timeout: SCAN_TIMEOUT_MS, interval: POLL_INTERVAL_MS },
+    );
+    await booted.stop();
+
+    // THEN
+    expect(callbacksFor(callbacks, scanId)).toMatchObject([
+      {
+        path: `/api/internal/scans/${scanId}/result`,
+        authorization: `Bearer ${CALLBACK_TOKEN}`,
+        result: {
+          status: "completed",
+          report: { pages: [{ status: "scanned" }] },
+        },
+      },
+    ]);
+  });
+
+  it("calls web back with the scan interrupted before it stops", async () => {
+    // GIVEN
+    booted = await bootIntegrationWorker();
+    const { worker, fixtures, callbacks } = booted;
+    const scanId = scanIdFor(2);
+    await postWorkerScan(worker, {
+      scanId,
+      url: `${fixtures.origin}/large/`,
+      depth: 3,
     });
 
     // WHEN
-    const status = await pollUntilTerminal(worker, created.json().scanId);
+    await booted.stop();
 
     // THEN
-    expect(status).toMatchObject({
-      status: "completed",
-      report: { pages: [{ status: "scanned" }] },
-    });
+    expect(
+      callbacksFor(callbacks, scanId).map(({ result }) => result.error?.code),
+    ).toEqual(["SCAN_INTERRUPTED"]);
   });
 });

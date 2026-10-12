@@ -10,12 +10,12 @@ export type RedirectServer = {
   close: () => Promise<void>;
 };
 
-export const startRedirectServer = (location: string) =>
+export const startRedirectServer = (location: string, status = HTTP_FOUND) =>
   new Promise<RedirectServer>((resolve) => {
     let hitCount = 0;
     const server = createServer((_req, res) => {
       hitCount += 1;
-      res.writeHead(HTTP_FOUND, { location });
+      res.writeHead(status, { location });
       res.end();
     });
     server.listen(EPHEMERAL_PORT, LOOPBACK_HOST, () => {

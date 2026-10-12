@@ -5,7 +5,12 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "src/generated/**"
+      ]
     },
     "dev": {
       "dependsOn": ["^build"],
@@ -17,6 +22,9 @@
         "SCAN_WORKER_HOST",
         "SCAN_WORKER_PORT",
         "SCAN_EGRESS_ALLOWLIST",
+        "SCAN_CALLBACK_URL",
+        "SCAN_CALLBACK_TOKEN",
+        "DATABASE_URL",
         "LOG_LEVEL",
         "NODE_ENV"
       ]
@@ -31,6 +39,9 @@
         "SCAN_WORKER_HOST",
         "SCAN_WORKER_PORT",
         "SCAN_EGRESS_ALLOWLIST",
+        "SCAN_CALLBACK_URL",
+        "SCAN_CALLBACK_TOKEN",
+        "DATABASE_URL",
         "LOG_LEVEL",
         "NODE_ENV"
       ]
@@ -53,6 +64,11 @@
         "SCAN_WORKER_HOST",
         "SCAN_WORKER_PORT",
         "SCAN_EGRESS_ALLOWLIST",
+        "SCAN_CALLBACK_URL",
+        "SCAN_CALLBACK_TOKEN",
+        "DATABASE_URL",
+        "DOCKER_HOST",
+        "TESTCONTAINERS_*",
         "LOG_LEVEL",
         "NODE_ENV"
       ]
@@ -66,6 +82,9 @@
         "E2E_FIXTURES_PORT",
         "E2E_CLOSED_PORT",
         "E2E_SCAN_WORKER_TOKEN",
+        "E2E_SCAN_CALLBACK_TOKEN",
+        "DOCKER_HOST",
+        "TESTCONTAINERS_*",
         "CI"
       ]
     }

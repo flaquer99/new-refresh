@@ -5,10 +5,10 @@ import { startEgressGuard } from "../network/egress-guard.js";
 import { resolveHost } from "../network/resolve-host.js";
 import { createApp, mountRoutes } from "../server/build-server.js";
 import { loggerOptions } from "../server/logger-options.js";
+import { stopServices } from "./stop-services.js";
 import {
   serverDeps,
   startServices,
-  stopServices,
   type WorkerRuntime,
   type WorkerServices,
 } from "./worker-services.js";

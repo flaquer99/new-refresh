@@ -39,3 +39,9 @@ export const CreateScanResponseSchema = z.object({
 });
 
 export type CreateScanResponse = z.infer<typeof CreateScanResponseSchema>;
+
+export const WorkerScanRequestSchema = ScanRequestSchema.extend({
+  scanId: z.uuid(),
+});
+
+export type WorkerScanRequest = z.infer<typeof WorkerScanRequestSchema>;

@@ -1,0 +1,67 @@
+import { act, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { deleteScanAction } from "@/app/scans/actions";
+import {
+	openDeleteDialog as openDialog,
+	DELETE_START_URL as START_URL,
+	DELETE_TRIGGER_NAME as TRIGGER_NAME,
+} from "@/testing/delete-button";
+
+vi.mock("@/app/scans/actions", () => ({ deleteScanAction: vi.fn() }));
+
+describe("DeleteScanButton", () => {
+	it("opens a confirmation naming the start url", async () => {
+		// WHEN
+		await openDialog();
+
+		// THEN
+		expect(screen.getByRole("dialog").textContent).toContain(START_URL);
+	});
+
+	it("puts focus on Cancel when the confirmation opens", async () => {
+		// WHEN
+		await openDialog();
+
+		// THEN
+		expect(document.activeElement?.textContent).toBe("Cancel");
+	});
+
+	it("returns focus to Delete when cancelled", async () => {
+		// GIVEN
+		const user = await openDialog();
+
+		// WHEN
+		await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+		// THEN
+		expect(document.activeElement?.getAttribute("aria-label")).toBe(
+			TRIGGER_NAME,
+		);
+	});
+
+	it("deletes nothing when cancelled", async () => {
+		// GIVEN
+		const user = await openDialog();
+
+		// WHEN
+		await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+		// THEN
+		expect(deleteScanAction).not.toHaveBeenCalled();
+	});
+
+	it("returns focus to Delete when the browser closes the dialog, as on Escape", async () => {
+		// GIVEN
+		await openDialog();
+
+		// WHEN
+		act(() => {
+			screen.getByRole<HTMLDialogElement>("dialog").close();
+		});
+
+		// THEN
+		expect(document.activeElement?.getAttribute("aria-label")).toBe(
+			TRIGGER_NAME,
+		);
+	});
+});

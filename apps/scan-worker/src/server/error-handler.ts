@@ -1,6 +1,7 @@
 import type { HttpScanErrorCode } from "@refresh/scan-contracts/errors";
 import type { FastifyError, FastifyReply, FastifyRequest } from "fastify";
 import { TargetNotAllowedError } from "../network/target-not-allowed-error.js";
+import { ScanIdTakenError } from "../scans/scan-id-taken-error.js";
 import { ScanLimitError } from "../scans/scan-limit-errors.js";
 import { ApiError, sendError } from "./api-error.js";
 import { clientIdHash, readClientId } from "./client-id.js";
@@ -29,7 +30,11 @@ const logLimit = (request: FastifyRequest, error: ScanLimitError) => {
 };
 
 const knownEnvelope = (error: FastifyError): Envelope | null => {
-  if (error instanceof ApiError || error instanceof ScanLimitError) {
+  if (
+    error instanceof ApiError ||
+    error instanceof ScanLimitError ||
+    error instanceof ScanIdTakenError
+  ) {
     return { code: error.code, message: error.message };
   }
   if (error instanceof TargetNotAllowedError) {

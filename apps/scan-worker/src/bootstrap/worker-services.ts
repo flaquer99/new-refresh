@@ -5,6 +5,7 @@ import {
   type BrowserSupervisor,
   superviseBrowser,
 } from "../browser/browser-supervisor.js";
+import { createResultNotifier } from "../callback/result-notifier.js";
 import type { WorkerConfig } from "../config.js";
 import type { EgressGuard, StartEgressGuard } from "../network/egress-guard.js";
 import {
@@ -33,6 +34,7 @@ export type WorkerServices = {
   browser: BrowserSupervisor<Browser>;
   fetchClient: GuardedFetchClient;
   registry: ScanRegistry;
+  deliveries: AbortController;
 };
 
 export type StartServicesInput = {
@@ -67,8 +69,15 @@ export const startServices = async ({
     fetch: fetchClient.fetch,
     logger: app.log,
   });
-  const registry = createScanRegistry({ runner, logger: app.log });
-  return { guard, browser, fetchClient, registry };
+  const deliveries = new AbortController();
+  const notifier = createResultNotifier({
+    url: config.callbackUrl,
+    token: config.callbackToken,
+    logger: app.log,
+    signal: deliveries.signal,
+  });
+  const registry = createScanRegistry({ runner, logger: app.log, notifier });
+  return { guard, browser, fetchClient, registry, deliveries };
 };
 
 export const serverDeps = (
@@ -85,10 +94,3 @@ export const serverDeps = (
       allowlist: config.egressAllowlist,
     }),
 });
-
-export const stopServices = async (services: WorkerServices) => {
-  services.registry.cancelAll();
-  await services.browser.close();
-  await services.fetchClient.close();
-  await services.guard.close();
-};
