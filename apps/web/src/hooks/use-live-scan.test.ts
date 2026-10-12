@@ -2,7 +2,11 @@ import { act } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { stubFetchQueue } from "@/testing/fetch-queue";
 import { renderLiveScan } from "@/testing/live-scan-hook";
-import { advancePoll, installFakeTimersPerTest } from "@/testing/polling";
+import {
+	advancePoll,
+	advanceTime,
+	installFakeTimersPerTest,
+} from "@/testing/polling";
 import { buildReport, buildStatus } from "@/testing/report-fixtures";
 import { mockRouter } from "@/testing/router";
 
@@ -17,6 +21,19 @@ const COMPLETED = {
 installFakeTimersPerTest();
 
 describe("useLiveScan", () => {
+	it("shows the current progress right after opening, without waiting for the poll interval", async () => {
+		// GIVEN
+		mockRouter();
+		stubFetchQueue([RUNNING]);
+		const { result } = renderLiveScan();
+
+		// WHEN
+		await advanceTime(0);
+
+		// THEN
+		expect(result.current.progress).toEqual(PROGRESS);
+	});
+
 	it("shows the progress reported by the latest poll", async () => {
 		// GIVEN
 		mockRouter();

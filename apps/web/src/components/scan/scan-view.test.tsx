@@ -18,8 +18,8 @@ describe("ScanView", () => {
 
 		// THEN
 		expect(
-			screen.getByRole("heading", { name: "Scan in progress" }),
-		).not.toBeNull();
+			screen.queryAllByRole("heading", { name: "Scan in progress" }),
+		).toHaveLength(1);
 	});
 
 	it("shows the stored report of a finished scan", () => {
@@ -28,10 +28,10 @@ describe("ScanView", () => {
 
 		// THEN
 		expect(
-			screen.getByRole("heading", {
+			screen.queryAllByRole("heading", {
 				name: "Report for https://www.example.org/",
 			}),
-		).not.toBeNull();
+		).toHaveLength(1);
 	});
 
 	it("shows the failure of a scan without a report", () => {
@@ -47,7 +47,7 @@ describe("ScanView", () => {
 		);
 
 		// THEN
-		expect(screen.getByText("Unreachable.")).not.toBeNull();
+		expect(screen.queryAllByText("Unreachable.")).toHaveLength(1);
 	});
 
 	it("explains a finished scan that has neither report nor error", () => {
@@ -60,7 +60,7 @@ describe("ScanView", () => {
 
 		// THEN
 		expect(
-			screen.getByText("The scan ended without a result. Run it again."),
-		).not.toBeNull();
+			screen.queryAllByText("The scan ended without a result. Run it again."),
+		).toHaveLength(1);
 	});
 });

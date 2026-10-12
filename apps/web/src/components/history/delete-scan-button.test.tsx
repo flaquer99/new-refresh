@@ -1,47 +1,32 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { act, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { deleteScanAction } from "@/app/scans/actions";
-import { DeleteScanButton } from "./delete-scan-button";
-import { HistoryAnnouncer } from "./history-announcer";
+import {
+	openDeleteDialog as openDialog,
+	DELETE_START_URL as START_URL,
+	DELETE_TRIGGER_NAME as TRIGGER_NAME,
+} from "@/testing/delete-button";
 
 vi.mock("@/app/scans/actions", () => ({ deleteScanAction: vi.fn() }));
 
-const SCAN_ID = "8f0c6b8e-3a8e-4d0b-9a57-2f5a1d6f4c11";
-const START_URL = "https://www.example.org/";
-const TRIGGER_NAME = `Delete scan of ${START_URL}`;
-
-const renderButton = () => {
-	render(
-		<HistoryAnnouncer focusTargetId="history-heading">
-			<h1 id="history-heading" tabIndex={-1}>
-				Scan history
-			</h1>
-			<DeleteScanButton scanId={SCAN_ID} startUrl={START_URL} />
-		</HistoryAnnouncer>,
-	);
-	return userEvent.setup();
-};
-
-const openDialog = async () => {
-	const user = renderButton();
-	await user.click(screen.getByRole("button", { name: TRIGGER_NAME }));
-	return user;
-};
-
 describe("DeleteScanButton", () => {
-	it("opens a confirmation naming the start url with focus on Cancel", async () => {
+	it("opens a confirmation naming the start url", async () => {
 		// WHEN
 		await openDialog();
 
 		// THEN
-		expect([
-			screen.getByRole("dialog").textContent?.includes(START_URL),
-			document.activeElement?.textContent,
-		]).toEqual([true, "Cancel"]);
+		expect(screen.getByRole("dialog").textContent).toContain(START_URL);
 	});
 
-	it("returns focus to Delete and deletes nothing when cancelled", async () => {
+	it("puts focus on Cancel when the confirmation opens", async () => {
+		// WHEN
+		await openDialog();
+
+		// THEN
+		expect(document.activeElement?.textContent).toBe("Cancel");
+	});
+
+	it("returns focus to Delete when cancelled", async () => {
 		// GIVEN
 		const user = await openDialog();
 
@@ -49,41 +34,34 @@ describe("DeleteScanButton", () => {
 		await user.click(screen.getByRole("button", { name: "Cancel" }));
 
 		// THEN
-		expect([
-			document.activeElement?.getAttribute("aria-label"),
-			vi.mocked(deleteScanAction).mock.calls.length,
-		]).toEqual([TRIGGER_NAME, 0]);
+		expect(document.activeElement?.getAttribute("aria-label")).toBe(
+			TRIGGER_NAME,
+		);
 	});
 
-	it("announces the deletion and moves focus to the history heading", async () => {
+	it("deletes nothing when cancelled", async () => {
 		// GIVEN
-		vi.mocked(deleteScanAction).mockResolvedValue({ ok: true });
 		const user = await openDialog();
 
 		// WHEN
-		await user.click(screen.getByRole("button", { name: "Delete scan" }));
+		await user.click(screen.getByRole("button", { name: "Cancel" }));
 
 		// THEN
-		expect([
-			screen.getByRole("status").textContent,
-			document.activeElement?.id,
-		]).toEqual([`Scan of ${START_URL} deleted.`, "history-heading"]);
+		expect(deleteScanAction).not.toHaveBeenCalled();
 	});
 
-	it("shows why the deletion was refused", async () => {
+	it("returns focus to Delete when the browser closes the dialog, as on Escape", async () => {
 		// GIVEN
-		const message =
-			"This scan is still running. Cancel it and wait for it to finish before deleting it.";
-		vi.mocked(deleteScanAction).mockResolvedValue({
-			ok: false,
-			error: { code: "SCAN_STILL_RUNNING", message },
+		await openDialog();
+
+		// WHEN
+		act(() => {
+			screen.getByRole<HTMLDialogElement>("dialog").close();
 		});
-		const user = await openDialog();
-
-		// WHEN
-		await user.click(screen.getByRole("button", { name: "Delete scan" }));
 
 		// THEN
-		expect((await screen.findByRole("alert")).textContent).toBe(message);
+		expect(document.activeElement?.getAttribute("aria-label")).toBe(
+			TRIGGER_NAME,
+		);
 	});
 });

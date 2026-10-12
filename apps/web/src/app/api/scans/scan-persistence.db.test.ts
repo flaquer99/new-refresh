@@ -86,7 +86,7 @@ describe("scan persistence with a real database", () => {
 		// GIVEN
 		await startStoredScan();
 		await deliverResult();
-		await deleteScanAction(SCAN_ID, null);
+		await deleteScanAction(SCAN_ID);
 
 		// WHEN
 		const scan = await readScan();

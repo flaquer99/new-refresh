@@ -13,7 +13,7 @@ export function RelativeTime({ iso, now }: RelativeTimeProps) {
 	return (
 		<time dateTime={iso} title={exact}>
 			{formatRelativeTime(iso, now)}
-			<span className="sr-only"> ({exact})</span>
+			<span className="text-muted-foreground text-xs"> ({exact})</span>
 		</time>
 	);
 }

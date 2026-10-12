@@ -15,7 +15,7 @@ describe("ScanFailure", () => {
 		render(<ScanFailure depth={1} error={INTERRUPTED} startUrl={START_URL} />);
 
 		// THEN
-		expect(screen.getByText(SCAN_INTERRUPTED_MESSAGE)).not.toBeNull();
+		expect(screen.queryAllByText(SCAN_INTERRUPTED_MESSAGE)).toHaveLength(1);
 	});
 
 	it("links Run again to the form prefilled with the same url and depth", () => {

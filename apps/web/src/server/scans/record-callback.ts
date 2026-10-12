@@ -4,7 +4,7 @@ import { getScanStore } from "../db/scan-store";
 import { logServerEvent } from "../log/server-log";
 import { errorResponse } from "./error-response";
 import { readJson } from "./read-json";
-import { SCAN_NOT_FOUND_MESSAGE } from "./read-scan-status";
+import { SCAN_NOT_FOUND_MESSAGE } from "./scan-not-found";
 
 const INVALID_RESULT_MESSAGE = "The scan result is not valid.";
 

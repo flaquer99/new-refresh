@@ -1,6 +1,6 @@
-import type { StoredScan } from "@refresh/db/scan-store-types";
 import type { ScanError } from "@refresh/scan-contracts/errors";
 import { ReportView } from "@/components/report/report-view";
+import type { StoredScan } from "@/server/scans/scan-read-models";
 import { LiveScan } from "./live-scan";
 import { ScanFailure } from "./scan-failure";
 

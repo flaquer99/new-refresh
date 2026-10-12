@@ -1,14 +1,17 @@
 import { useState } from "react";
 
 type CancelScanButtonProps = {
-	onCancel: () => void;
+	onCancel: () => Promise<boolean>;
 };
 
 export function CancelScanButton({ onCancel }: CancelScanButtonProps) {
 	const [isCancelling, setIsCancelling] = useState(false);
-	const cancel = () => {
+	const cancel = async () => {
 		setIsCancelling(true);
-		onCancel();
+		const settled = await onCancel();
+		if (!settled) {
+			setIsCancelling(false);
+		}
 	};
 	return (
 		<button

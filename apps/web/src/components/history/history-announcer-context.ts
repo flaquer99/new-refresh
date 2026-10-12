@@ -2,9 +2,14 @@
 
 import { createContext } from "react";
 
-export type Announce = (message: string) => void;
+export type Deletion = {
+	scanId: string;
+	message: string;
+};
 
-const ignoreAnnouncement: Announce = () => undefined;
+export type AnnounceDeletion = (deletion: Deletion) => void;
+
+const ignoreAnnouncement: AnnounceDeletion = () => undefined;
 
 export const HistoryAnnouncerContext =
-	createContext<Announce>(ignoreAnnouncement);
+	createContext<AnnounceDeletion>(ignoreAnnouncement);

@@ -17,7 +17,7 @@ describe("deleteScanAction", () => {
 
 	it("deletes a finished scan", async () => {
 		// WHEN
-		const result = await deleteScanAction(SCAN_ID, null);
+		const result = await deleteScanAction(SCAN_ID);
 
 		// THEN
 		expect([result, store().deleteFinished.mock.calls]).toEqual([
@@ -28,7 +28,7 @@ describe("deleteScanAction", () => {
 
 	it("refreshes the history after a deletion", async () => {
 		// WHEN
-		await deleteScanAction(SCAN_ID, null);
+		await deleteScanAction(SCAN_ID);
 
 		// THEN
 		expect(refresh).toHaveBeenCalledTimes(1);
@@ -39,7 +39,7 @@ describe("deleteScanAction", () => {
 		store().deleteFinished.mockResolvedValue("running");
 
 		// WHEN
-		const result = await deleteScanAction(SCAN_ID, null);
+		const result = await deleteScanAction(SCAN_ID);
 
 		// THEN
 		expect(result).toEqual({
@@ -57,7 +57,7 @@ describe("deleteScanAction", () => {
 		store().deleteFinished.mockResolvedValue("running");
 
 		// WHEN
-		await deleteScanAction(SCAN_ID, null);
+		await deleteScanAction(SCAN_ID);
 
 		// THEN
 		expect(refresh).not.toHaveBeenCalled();
@@ -68,7 +68,7 @@ describe("deleteScanAction", () => {
 		store().deleteFinished.mockResolvedValue("not-found");
 
 		// WHEN
-		const result = await deleteScanAction(SCAN_ID, null);
+		const result = await deleteScanAction(SCAN_ID);
 
 		// THEN
 		expect(result).toMatchObject({
@@ -82,7 +82,7 @@ describe("deleteScanAction", () => {
 		store().deleteFinished.mockRejectedValue(new Error("Connection refused"));
 
 		// WHEN
-		const result = await deleteScanAction(SCAN_ID, null);
+		const result = await deleteScanAction(SCAN_ID);
 
 		// THEN
 		expect(result).toMatchObject({

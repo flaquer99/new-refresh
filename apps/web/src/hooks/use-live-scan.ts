@@ -1,41 +1,32 @@
-import type { ScanError } from "@refresh/scan-contracts/errors";
-import type {
-	ScanProgress,
-	ScanStatus,
-} from "@refresh/scan-contracts/scan-status";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import type { ScanStatus } from "@refresh/scan-contracts/scan-status";
 import type { ApiResult } from "@/lib/scans/request-json";
 import { cancelScan } from "@/lib/scans/scan-api";
+import { isTransientError } from "@/lib/scans/schedule-polling";
 import { useScanPolling } from "./use-scan-polling";
+import { useScanStatus } from "./use-scan-status";
 
-export const INITIAL_PROGRESS: ScanProgress = {
-	pagesScanned: 0,
-	pagesDiscovered: 0,
-	currentUrl: null,
-};
+const finishedBeforeCancel = (result: ApiResult<ScanStatus>): boolean =>
+	!result.ok && result.error.code === "SCAN_NOT_FOUND";
 
 export function useLiveScan(scanId: string) {
-	const router = useRouter();
-	const [progress, setProgress] = useState<ScanProgress>(INITIAL_PROGRESS);
-	const [pollError, setPollError] = useState<ScanError | null>(null);
-	const apply = (result: ApiResult<ScanStatus>) => {
-		if (!result.ok) {
-			setPollError(result.error);
-			return;
+	const { progress, pollError, apply, clearError, refresh } = useScanStatus();
+	const pollingStopped = pollError !== null && !isTransientError(pollError);
+	const { pollNow } = useScanPolling({
+		scanId: pollingStopped ? null : scanId,
+		onResult: apply,
+	});
+	const cancel = async (): Promise<boolean> => {
+		const result = await cancelScan(scanId);
+		if (finishedBeforeCancel(result)) {
+			refresh();
+			return true;
 		}
-		if (result.data.status === "running") {
-			setProgress(result.data.progress);
-			return;
-		}
-		router.refresh();
-	};
-	useScanPolling({ scanId: pollError ? null : scanId, onResult: apply });
-	const cancel = async () => {
-		apply(await cancelScan(scanId));
+		apply(result);
+		return result.ok;
 	};
 	const retry = () => {
-		setPollError(null);
+		clearError();
+		pollNow();
 	};
 	return { progress, pollError, cancel, retry };
 }

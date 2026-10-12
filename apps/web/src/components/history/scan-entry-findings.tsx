@@ -1,4 +1,4 @@
-import type { ScanHistoryEntry } from "@refresh/db/scan-store-types";
+import type { ScanHistoryEntry } from "@/server/scans/scan-read-models";
 import { SeverityCounts } from "./severity-counts";
 
 const IN_PROGRESS_LABEL = "Not available until the scan finishes";

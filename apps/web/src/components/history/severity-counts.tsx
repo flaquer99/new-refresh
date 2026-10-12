@@ -1,6 +1,6 @@
-import type { ViolationsBySeverity } from "@refresh/db/scan-store-types";
 import { SEVERITIES } from "@refresh/scan-contracts/findings";
 import { SEVERITY_LABELS, SEVERITY_SYMBOLS } from "@/lib/report/severity";
+import type { ViolationsBySeverity } from "@/server/scans/scan-read-models";
 
 type SeverityCountsProps = {
 	counts: ViolationsBySeverity;

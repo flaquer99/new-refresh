@@ -1,6 +1,6 @@
-import type { ScanHistoryEntry as Entry } from "@refresh/db/scan-store-types";
 import Link from "next/link";
 import { scanLinkPath } from "@/lib/scans/scan-links";
+import type { ScanHistoryEntry as Entry } from "@/server/scans/scan-read-models";
 import { DeleteScanButton } from "./delete-scan-button";
 import { ScanEntryDetails } from "./scan-entry-details";
 

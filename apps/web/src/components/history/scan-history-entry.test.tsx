@@ -55,7 +55,9 @@ describe("ScanHistoryEntry", () => {
 		renderEntry({ outcome: "page-limit-reached" });
 
 		// THEN
-		expect(screen.getByText("Limited — page limit reached")).not.toBeNull();
+		expect(screen.queryAllByText("Limited — page limit reached")).toHaveLength(
+			1,
+		);
 	});
 
 	it("shows the failure reason instead of counts for a failed scan", () => {
@@ -70,7 +72,9 @@ describe("ScanHistoryEntry", () => {
 		});
 
 		// THEN
-		expect(screen.getByText("We couldn't reach the site.")).not.toBeNull();
+		expect(screen.queryAllByText("We couldn't reach the site.")).toHaveLength(
+			1,
+		);
 	});
 
 	it("offers a Delete action named after the start url", () => {
@@ -78,7 +82,9 @@ describe("ScanHistoryEntry", () => {
 		renderEntry();
 
 		// THEN
-		expect(screen.getByRole("button", { name: DELETE_NAME })).not.toBeNull();
+		expect(screen.queryAllByRole("button", { name: DELETE_NAME })).toHaveLength(
+			1,
+		);
 	});
 
 	it("offers no Delete action for a running scan", () => {

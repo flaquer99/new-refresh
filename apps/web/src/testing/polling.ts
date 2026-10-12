@@ -11,6 +11,13 @@ export const WORKER_DOWN_ERROR = {
 
 export const WORKER_DOWN = { body: { error: WORKER_DOWN_ERROR }, status: 502 };
 
+export const SCAN_GONE = {
+	body: {
+		error: { code: "SCAN_NOT_FOUND", message: "This scan doesn't exist." },
+	},
+	status: 404,
+};
+
 export const installFakeTimersPerTest = (): void => {
 	beforeEach(() => {
 		vi.useFakeTimers();

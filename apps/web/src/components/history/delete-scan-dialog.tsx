@@ -1,9 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
-import { useDeleteScan } from "@/hooks/use-delete-scan";
-import { DeleteScanDialogActions } from "./delete-scan-dialog-actions";
-import { DeleteScanDialogText } from "./delete-scan-dialog-text";
+import { DeleteScanDialogContent } from "./delete-scan-dialog-content";
 
 type DeleteScanDialogProps = {
 	scanId: string;
@@ -22,11 +20,6 @@ export function DeleteScanDialog({
 	onClose,
 	onDeleted,
 }: DeleteScanDialogProps) {
-	const { state, formAction, isPending } = useDeleteScan({
-		scanId,
-		startUrl,
-		onDeleted,
-	});
 	const titleId = `delete-${scanId}-title`;
 	const descriptionId = `delete-${scanId}-description`;
 	return (
@@ -37,20 +30,13 @@ export function DeleteScanDialog({
 			onClose={onClose}
 			ref={dialogRef}
 		>
-			<DeleteScanDialogText
+			<DeleteScanDialogContent
 				descriptionId={descriptionId}
+				onCancel={onCancel}
+				onDeleted={onDeleted}
+				scanId={scanId}
 				startUrl={startUrl}
 				titleId={titleId}
-			/>
-			{state && !state.ok ? (
-				<p className="mt-2 text-destructive" role="alert">
-					{state.error.message}
-				</p>
-			) : null}
-			<DeleteScanDialogActions
-				formAction={formAction}
-				isPending={isPending}
-				onCancel={onCancel}
 			/>
 		</dialog>
 	);

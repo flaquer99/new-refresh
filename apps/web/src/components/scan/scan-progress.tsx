@@ -7,7 +7,7 @@ const HEADING_ID = "scan-progress-heading";
 
 type ScanProgressProps = {
 	progress: Progress;
-	onCancel: () => void;
+	onCancel: () => Promise<boolean>;
 };
 
 export function ScanProgress({ progress, onCancel }: ScanProgressProps) {

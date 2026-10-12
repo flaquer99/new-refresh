@@ -1,4 +1,5 @@
 import { fixtureUrl } from "./support/ports";
+import { SCAN_TIMEOUT_MS } from "./support/scan-app";
 import { waitForScanLink } from "./support/scan-link-page";
 import { expect, test } from "./support/test";
 
@@ -15,7 +16,7 @@ test.describe("E2E-01 — a user scans a single page and reads the report", () =
 		const scanId = await waitForScanLink(app.page);
 
 		// THEN
-		await expect(app.reportHeading()).toBeVisible({ timeout: 60_000 });
+		await expect(app.reportHeading()).toBeVisible({ timeout: SCAN_TIMEOUT_MS });
 		expect(app.page.url()).toContain(`/scans/${scanId}`);
 	});
 

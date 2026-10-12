@@ -1,4 +1,5 @@
-import type { Locator, Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
+import { SCAN_TIMEOUT_MS } from "./scan-app";
 
 const OLDEST_POSSIBLE_CURSOR = Buffer.from(
 	"2000-01-01T00:00:00.000Z|00000000-0000-4000-8000-000000000000",
@@ -33,6 +34,18 @@ export class ScanHistoryPage {
 		return this.entries().filter({
 			has: this.page.locator(`a[href="/scans/${scanId}"]`),
 		});
+	}
+
+	async waitForStatus(scanId: string, status: string): Promise<void> {
+		await expect
+			.poll(
+				async () => {
+					await this.open();
+					return await this.entry(scanId).innerText();
+				},
+				{ timeout: SCAN_TIMEOUT_MS },
+			)
+			.toContain(status);
 	}
 
 	olderScans(): Locator {

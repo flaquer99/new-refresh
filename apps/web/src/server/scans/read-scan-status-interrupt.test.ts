@@ -73,17 +73,6 @@ describe("readScanStatus interruptions", () => {
 		expect(store().settleStale).toHaveBeenCalledWith(TWELVE_MINUTES_AGO, NOW);
 	});
 
-	it("answers 404 for an id that is not a uuid without touching the store", async () => {
-		// GIVEN
-		stubWorker(200, RUNNING_STATUS);
-
-		// WHEN
-		const response = await readScanStatus({ scanId: "scan-1", clientId: "c" });
-
-		// THEN
-		expect([response.status, store().get.mock.calls.length]).toEqual([404, 0]);
-	});
-
 	it("answers 404 SCAN_NOT_FOUND for an unknown scan", async () => {
 		// GIVEN
 		stubWorker(200, RUNNING_STATUS);

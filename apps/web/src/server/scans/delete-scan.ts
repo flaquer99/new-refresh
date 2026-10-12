@@ -5,7 +5,7 @@ import {
 	type ScanError,
 } from "@refresh/scan-contracts/errors";
 import { getScanStore } from "../db/scan-store";
-import { SCAN_NOT_FOUND_MESSAGE } from "./read-scan-status";
+import { SCAN_NOT_FOUND_MESSAGE } from "./scan-not-found";
 import { logStoreFailure, STORE_UNAVAILABLE_MESSAGE } from "./store-errors";
 
 export type DeleteScanState = { ok: true } | { ok: false; error: ScanError };

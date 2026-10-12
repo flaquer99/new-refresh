@@ -1,5 +1,6 @@
 import { StartScanForm } from "@/components/scan/start-scan-form";
-import { readPrefill } from "@/lib/scans/prefill";
+import { readPrefill, runAgainHref } from "@/lib/scans/prefill";
+import { NEW_SCAN_PATH } from "@/lib/scans/scan-links";
 
 export default async function Home({ searchParams }: PageProps<"/">) {
 	const prefill = readPrefill(await searchParams);
@@ -12,7 +13,10 @@ export default async function Home({ searchParams }: PageProps<"/">) {
 					and get plain-language guidance for every issue found.
 				</p>
 			</div>
-			<StartScanForm initialRequest={prefill} />
+			<StartScanForm
+				initialRequest={prefill}
+				key={prefill ? runAgainHref(prefill) : NEW_SCAN_PATH}
+			/>
 		</main>
 	);
 }

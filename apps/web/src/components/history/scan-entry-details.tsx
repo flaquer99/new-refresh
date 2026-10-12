@@ -1,4 +1,4 @@
-import type { ScanHistoryEntry } from "@refresh/db/scan-store-types";
+import type { ScanHistoryEntry } from "@/server/scans/scan-read-models";
 import { HistoryStatus } from "./history-status";
 import { RelativeTime } from "./relative-time";
 import { ScanEntryFindings } from "./scan-entry-findings";

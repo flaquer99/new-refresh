@@ -1,7 +1,11 @@
 "use client";
 
 import { type ReactNode, useState } from "react";
-import { HistoryAnnouncerContext } from "./history-announcer-context";
+import { focusAfterDeletion } from "@/lib/history/focus-after-deletion";
+import {
+	type Deletion,
+	HistoryAnnouncerContext,
+} from "./history-announcer-context";
 
 type HistoryAnnouncerProps = {
 	focusTargetId: string;
@@ -13,9 +17,9 @@ export function HistoryAnnouncer({
 	children,
 }: HistoryAnnouncerProps) {
 	const [message, setMessage] = useState("");
-	const announce = (text: string) => {
+	const announce = ({ scanId, message: text }: Deletion) => {
 		setMessage(text);
-		document.getElementById(focusTargetId)?.focus();
+		focusAfterDeletion({ scanId, fallbackId: focusTargetId });
 	};
 	return (
 		<HistoryAnnouncerContext value={announce}>

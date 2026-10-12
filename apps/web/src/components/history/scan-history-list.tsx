@@ -1,4 +1,4 @@
-import type { ScanHistoryEntry as Entry } from "@refresh/db/scan-store-types";
+import type { ScanHistoryEntry as Entry } from "@/server/scans/scan-read-models";
 import { ScanHistoryEntry } from "./scan-history-entry";
 
 type ScanHistoryListProps = {

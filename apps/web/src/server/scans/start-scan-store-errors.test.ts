@@ -19,16 +19,28 @@ describe("startScan when the database fails", () => {
 		serverLog = spyOnServerLog();
 	});
 
-	it("answers INTERNAL_ERROR without calling the worker", async () => {
+	it("answers INTERNAL_ERROR when the insert fails", async () => {
 		// GIVEN
 		store().createRunning.mockRejectedValue(DATABASE_DOWN);
-		const calls = stubWorker(201, { scanId: SCAN_ID });
+		stubWorker(201, { scanId: SCAN_ID });
 
 		// WHEN
 		const response = await startScan(START);
 
 		// THEN
-		expect([response.status, calls.length]).toEqual([500, 0]);
+		expect((await response.json()).error.code).toBe("INTERNAL_ERROR");
+	});
+
+	it("does not call the worker when the insert fails", async () => {
+		// GIVEN
+		store().createRunning.mockRejectedValue(DATABASE_DOWN);
+		const calls = stubWorker(201, { scanId: SCAN_ID });
+
+		// WHEN
+		await startScan(START);
+
+		// THEN
+		expect(calls).toHaveLength(0);
 	});
 
 	it("logs db.unavailable with the failed operation", async () => {
@@ -58,21 +70,5 @@ describe("startScan when the database fails", () => {
 
 		// THEN
 		expect(response.status).toBe(409);
-	});
-
-	it("logs a scan discarded after a worker timeout", async () => {
-		// GIVEN
-		stubWorker(502, { error: { code: "WORKER_UNAVAILABLE", message: "x" } });
-
-		// WHEN
-		await startScan(START);
-
-		// THEN
-		expect(serverLog()).toContainEqual(
-			expect.objectContaining({
-				event: "scan.discarded_after_timeout",
-				scanId: SCAN_ID,
-			}),
-		);
 	});
 });

@@ -11,14 +11,17 @@ type DeleteTarget = {
 
 export function useDeleteScan({ scanId, startUrl, onDeleted }: DeleteTarget) {
 	const announce = use(HistoryAnnouncerContext);
-	const run = async (previous: DeleteScanState | null) => {
-		const result = await deleteScanAction(scanId, previous);
+	const run = async () => {
+		const result = await deleteScanAction(scanId);
 		if (result.ok) {
 			onDeleted();
-			announce(`Scan of ${startUrl} deleted.`);
+			announce({ scanId, message: `Scan of ${startUrl} deleted.` });
 		}
 		return result;
 	};
-	const [state, formAction, isPending] = useActionState(run, null);
+	const [state, formAction, isPending] = useActionState<DeleteScanState | null>(
+		run,
+		null,
+	);
 	return { state, formAction, isPending };
 }

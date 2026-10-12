@@ -1,5 +1,6 @@
 import { fixtureUrl } from "./support/ports";
 import { SCAN_TIMEOUT_MS, ScanApp } from "./support/scan-app";
+import { ScanHistoryPage } from "./support/scan-history-page";
 import { waitForScanLink } from "./support/scan-link-page";
 import { expect, test } from "./support/test";
 
@@ -15,15 +16,14 @@ test.describe("E2E-04 — a scan finishes while nobody watches it", () => {
 		await app.submit({ url: COVERAGE_URL, depth: 2 });
 		const scanId = await waitForScanLink(app.page);
 		await app.page.close();
+		const history = new ScanHistoryPage(await context.newPage());
+		await history.waitForStatus(scanId, "Completed");
 
 		// WHEN
-		const later = new ScanApp(await context.newPage());
+		const later = new ScanApp(history.page);
 		await later.page.goto(`/scans/${scanId}`);
 
 		// THEN
-		await expect(later.reportHeading()).toBeVisible({
-			timeout: SCAN_TIMEOUT_MS,
-		});
 		await expect(later.report.summaryValue("Result")).toHaveText("Complete");
 	});
 

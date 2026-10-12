@@ -46,7 +46,7 @@ test.describe("E2E-13 — the history works with the keyboard only", () => {
 		await expect(history.deleteButton(url)).toBeFocused();
 	});
 
-	test("deletes a scan with the keyboard and focuses the heading", async ({
+	test("deletes a scan with the keyboard and focuses a neighbouring entry or the heading", async ({
 		app,
 	}, testInfo) => {
 		// GIVEN
@@ -67,6 +67,14 @@ test.describe("E2E-13 — the history works with the keyboard only", () => {
 
 		// THEN
 		await expect(history.entry(scanId)).toHaveCount(0);
-		await expect(app.page.getByRole("heading", { level: 1 })).toBeFocused();
+		await expect
+			.poll(() =>
+				app.page.evaluate(() =>
+					Boolean(
+						document.activeElement?.matches("main h1, main article h2 a"),
+					),
+				),
+			)
+			.toBe(true);
 	});
 });

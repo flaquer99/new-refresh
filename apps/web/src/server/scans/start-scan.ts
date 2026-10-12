@@ -4,10 +4,9 @@ import { getScanStore } from "../db/scan-store";
 import { logServerEvent } from "../log/server-log";
 import { errorResponse } from "./error-response";
 import { logStoreFailure, STORE_UNAVAILABLE_MESSAGE } from "./store-errors";
-import { forwardToWorker } from "./worker-client";
+import { forwardToWorker, isWorkerTimeout } from "./worker-client";
 
 const HTTP_CREATED = 201;
-const HTTP_BAD_GATEWAY = 502;
 
 export type StartScanInput = { request: ScanRequest; clientId: string };
 
@@ -28,8 +27,8 @@ const insertRunning = async (
 	}
 };
 
-const discardRejected = async (scanId: string, status: number) => {
-	if (status === HTTP_BAD_GATEWAY) {
+const discardRejected = async (scanId: string, response: Response) => {
+	if (isWorkerTimeout(response)) {
 		logServerEvent("warn", { event: "scan.discarded_after_timeout", scanId });
 	}
 	try {
@@ -54,7 +53,7 @@ export const startScan = async ({
 		body: { scanId, ...request },
 	});
 	if (response.status !== HTTP_CREATED) {
-		await discardRejected(scanId, response.status);
+		await discardRejected(scanId, response);
 		return response;
 	}
 	return Response.json({ scanId }, { status: HTTP_CREATED });

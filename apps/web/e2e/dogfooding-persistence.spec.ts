@@ -25,7 +25,7 @@ test.describe("E2E-12 — the persistence pages pass an accessibility check", ()
 	}) => {
 		// GIVEN
 		await new ScanHistoryPage(page).openPastTheEnd();
-		await expect(page.getByText(/No scans yet/)).toBeVisible();
+		await expect(page.getByText(/No older scans/)).toBeVisible();
 
 		// WHEN
 		const violations = await findWcagViolations(page);

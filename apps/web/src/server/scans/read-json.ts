@@ -1,6 +1,6 @@
-export const readJson = async (request: Request): Promise<unknown> => {
+export const readJson = async (body: Body): Promise<unknown> => {
 	try {
-		return await request.json();
+		return await body.json();
 	} catch {
 		return null;
 	}

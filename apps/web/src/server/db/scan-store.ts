@@ -15,8 +15,12 @@ const openScanStore = (): ScanStore => {
 	}
 	return createScanStore({
 		databaseUrl,
-		onUnreadableReport: (scanId) =>
-			logServerEvent("error", { event: "scan.report_unreadable", scanId }),
+		onUnreadableReport: ({ scanId, reportVersion }) =>
+			logServerEvent("error", {
+				event: "scan.report_unreadable",
+				scanId,
+				reportVersion,
+			}),
 	});
 };
 
