@@ -6,7 +6,11 @@ import { ScanReportSchema } from "@refresh/scan-contracts/report";
 import type { Scan } from "./generated/prisma/client.js";
 import { fromOutcomeColumn } from "./outcome-mapping.js";
 import { REPORT_VERSION } from "./result-columns.js";
-import type { ScanHistoryEntry, StoredScan } from "./scan-store-types.js";
+import type {
+  ScanHistoryEntry,
+  StoredScan,
+  UnreadableReportHandler,
+} from "./scan-store-types.js";
 
 export const UNREADABLE_REPORT_ERROR: ScanError = {
   code: "INTERNAL_ERROR",
@@ -36,7 +40,7 @@ const readReport = (row: Scan) => {
 
 export const toStoredScan = (
   row: Scan,
-  onUnreadableReport?: (scanId: string) => void,
+  onUnreadableReport?: UnreadableReportHandler,
 ): StoredScan => {
   const base = {
     scanId: row.id,
@@ -51,7 +55,7 @@ export const toStoredScan = (
   }
   const report = readReport(row);
   if (report === null) {
-    onUnreadableReport?.(row.id);
+    onUnreadableReport?.({ scanId: row.id, reportVersion: row.reportVersion });
     return { ...base, report: null, error: UNREADABLE_REPORT_ERROR };
   }
   return { ...base, report, error: storedError(row) };

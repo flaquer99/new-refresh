@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const SEPARATOR = "|";
+const CURSOR_PARTS = 2;
 
 const CursorSchema = z.object({
   startedAt: z.iso.datetime(),
@@ -15,9 +16,13 @@ export const encodeCursor = ({ startedAt, id }: HistoryCursor): string =>
   );
 
 export const decodeCursor = (value: string): HistoryCursor | null => {
-  const [startedAt, id] = Buffer.from(value, "base64url")
+  const parts = Buffer.from(value, "base64url")
     .toString("utf8")
     .split(SEPARATOR);
+  if (parts.length !== CURSOR_PARTS) {
+    return null;
+  }
+  const [startedAt, id] = parts;
   const parsed = CursorSchema.safeParse({ startedAt, id });
   if (!parsed.success) {
     return null;

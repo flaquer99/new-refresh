@@ -31,6 +31,20 @@ describe("ScanStore markInterrupted", () => {
     expect(marked).toBe(true);
   });
 
+  it("reports that a completed scan was not marked", async () => {
+    // GIVEN
+    await db.store().createRunning(RUNNING_INPUT);
+    await db.store().recordResult(buildCompletedResult());
+
+    // WHEN
+    const marked = await db
+      .store()
+      .markInterrupted(SAMPLE_SCAN_ID, FINISHED_AT);
+
+    // THEN
+    expect(marked).toBe(false);
+  });
+
   it("does not overwrite a completed scan", async () => {
     // GIVEN
     await db.store().createRunning(RUNNING_INPUT);

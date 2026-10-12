@@ -29,6 +29,9 @@ describe("history cursor", () => {
     "",
     "not-a-cursor",
     Buffer.from("yesterday|abc").toString("base64url"),
+    Buffer.from(
+      `${SAMPLE_STARTED_AT.toISOString()}|${SAMPLE_SCAN_ID}|junk`,
+    ).toString("base64url"),
   ])("decodes the malformed cursor %j to null", (value) => {
     // WHEN
     const decoded = decodeCursor(value);

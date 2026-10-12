@@ -63,7 +63,14 @@ export type ScanStore = {
   close: () => Promise<void>;
 };
 
+export type UnreadableReport = {
+  scanId: string;
+  reportVersion: number | null;
+};
+
+export type UnreadableReportHandler = (report: UnreadableReport) => void;
+
 export type ScanStoreOptions = {
   databaseUrl: string;
-  onUnreadableReport?: (scanId: string) => void;
+  onUnreadableReport?: UnreadableReportHandler;
 };

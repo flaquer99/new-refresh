@@ -9,6 +9,7 @@ import type {
   ScanStore,
   ScanStoreOptions,
   StoredScan,
+  UnreadableReportHandler,
 } from "./scan-store-types.js";
 import {
   deleteFinished,
@@ -40,7 +41,7 @@ const createRunning = async (
 const getScan = async (
   prisma: PrismaClient,
   scanId: string,
-  onUnreadableReport?: (scanId: string) => void,
+  onUnreadableReport?: UnreadableReportHandler,
 ): Promise<StoredScan | null> => {
   if (!isScanId(scanId)) {
     return null;

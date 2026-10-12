@@ -38,7 +38,10 @@ describe("toStoredScan", () => {
     toStoredScan(row, onUnreadableReport);
 
     // THEN
-    expect(onUnreadableReport).toHaveBeenCalledWith(SAMPLE_SCAN_ID);
+    expect(onUnreadableReport).toHaveBeenCalledWith({
+      scanId: SAMPLE_SCAN_ID,
+      reportVersion: 2,
+    });
   });
 
   it("falls back to INTERNAL_ERROR for an unknown stored error code", () => {

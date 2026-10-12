@@ -20,6 +20,7 @@ const olderThan = (cursor: HistoryCursor | null): Prisma.ScanWhereInput => {
     return {};
   }
   return {
+    startedAt: { lte: cursor.startedAt },
     OR: [
       { startedAt: { lt: cursor.startedAt } },
       { startedAt: cursor.startedAt, id: { lt: cursor.id } },
