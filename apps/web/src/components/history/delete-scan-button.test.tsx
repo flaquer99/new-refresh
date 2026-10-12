@@ -1,4 +1,4 @@
-import { act, screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { deleteScanAction } from "@/app/scans/actions";
 import {
@@ -10,12 +10,22 @@ import {
 vi.mock("@/app/scans/actions", () => ({ deleteScanAction: vi.fn() }));
 
 describe("DeleteScanButton", () => {
-	it("opens a confirmation naming the start url", async () => {
+	it("opens an alertdialog named Delete this scan?", async () => {
 		// WHEN
 		await openDialog();
 
 		// THEN
-		expect(screen.getByRole("dialog").textContent).toContain(START_URL);
+		expect(
+			screen.getAllByRole("alertdialog", { name: "Delete this scan?" }),
+		).toHaveLength(1);
+	});
+
+	it("describes the dialog with the start url", async () => {
+		// WHEN
+		await openDialog();
+
+		// THEN
+		expect(screen.getByRole("alertdialog").textContent).toContain(START_URL);
 	});
 
 	it("puts focus on Cancel when the confirmation opens", async () => {
@@ -23,7 +33,9 @@ describe("DeleteScanButton", () => {
 		await openDialog();
 
 		// THEN
-		expect(document.activeElement?.textContent).toBe("Cancel");
+		await waitFor(() =>
+			expect(document.activeElement?.textContent).toBe("Cancel"),
+		);
 	});
 
 	it("returns focus to Delete when cancelled", async () => {
@@ -34,8 +46,10 @@ describe("DeleteScanButton", () => {
 		await user.click(screen.getByRole("button", { name: "Cancel" }));
 
 		// THEN
-		expect(document.activeElement?.getAttribute("aria-label")).toBe(
-			TRIGGER_NAME,
+		await waitFor(() =>
+			expect(document.activeElement?.getAttribute("aria-label")).toBe(
+				TRIGGER_NAME,
+			),
 		);
 	});
 
@@ -50,18 +64,29 @@ describe("DeleteScanButton", () => {
 		expect(deleteScanAction).not.toHaveBeenCalled();
 	});
 
-	it("returns focus to Delete when the browser closes the dialog, as on Escape", async () => {
+	it("closes the dialog on Escape", async () => {
 		// GIVEN
-		await openDialog();
+		const user = await openDialog();
 
 		// WHEN
-		act(() => {
-			screen.getByRole<HTMLDialogElement>("dialog").close();
-		});
+		await user.keyboard("{Escape}");
 
 		// THEN
-		expect(document.activeElement?.getAttribute("aria-label")).toBe(
-			TRIGGER_NAME,
+		await waitFor(() => expect(screen.queryByRole("alertdialog")).toBeNull());
+	});
+
+	it("returns focus to Delete on Escape", async () => {
+		// GIVEN
+		const user = await openDialog();
+
+		// WHEN
+		await user.keyboard("{Escape}");
+
+		// THEN
+		await waitFor(() =>
+			expect(document.activeElement?.getAttribute("aria-label")).toBe(
+				TRIGGER_NAME,
+			),
 		);
 	});
 });

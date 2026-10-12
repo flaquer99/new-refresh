@@ -21,6 +21,15 @@ describe("ScanProgress", () => {
 		expect(output.textContent).toContain("https://www.example.org/about");
 	});
 
+	it("gives the progress bar its value as text", () => {
+		// GIVEN / WHEN
+		render(<ScanProgress onCancel={vi.fn()} progress={PROGRESS} />);
+
+		// THEN
+		const bar = screen.getByRole("progressbar", { name: "Pages scanned" });
+		expect(bar.textContent).toContain("3 / 11");
+	});
+
 	it("tells the user the scan is preparing before the first page starts", () => {
 		// GIVEN / WHEN
 		render(

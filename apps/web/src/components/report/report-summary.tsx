@@ -1,5 +1,6 @@
 import { SEVERITIES } from "@refresh/scan-contracts/findings";
 import type { ScanReport } from "@refresh/scan-contracts/report";
+import { HudPanel } from "@/components/hud/hud-panel";
 import { OUTCOME_LABELS } from "@/lib/report/labels";
 import { SEVERITY_LABELS } from "@/lib/report/severity";
 import { type SummaryItem, SummaryList } from "./summary-list";
@@ -24,6 +25,7 @@ const findingItems = ({ summary }: ScanReport): SummaryItem[] => [
 	...SEVERITIES.map((severity) => ({
 		term: SEVERITY_LABELS[severity],
 		value: summary.violationsBySeverity[severity],
+		tone: severity,
 	})),
 	{ term: "Level A", value: summary.violationsByLevel.A },
 	{ term: "Level AA", value: summary.violationsByLevel.AA },
@@ -32,14 +34,14 @@ const findingItems = ({ summary }: ScanReport): SummaryItem[] => [
 
 export function ReportSummary({ report }: ReportSummaryProps) {
 	return (
-		<section aria-labelledby={HEADING_ID} className="flex flex-col gap-4">
-			<h2 className="font-semibold text-xl" id={HEADING_ID}>
+		<HudPanel labelledBy={HEADING_ID}>
+			<h2 className="font-heading font-semibold text-xl" id={HEADING_ID}>
 				Summary
 			</h2>
-			<div className="grid gap-6 sm:grid-cols-2">
+			<div className="grid gap-6">
 				<SummaryList items={scanItems(report)} title="Scan" />
 				<SummaryList items={findingItems(report)} title="Findings" />
 			</div>
-		</section>
+		</HudPanel>
 	);
 }

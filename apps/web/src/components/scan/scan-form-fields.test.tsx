@@ -32,6 +32,16 @@ describe("ScanForm fields", () => {
 		expect(screen.queryByRole("alert")).toBeNull();
 	});
 
+	it("keeps the depth control a native select linked to its hint", () => {
+		// GIVEN / WHEN
+		renderScanForm();
+		const select = screen.getByLabelText(DEPTH_LABEL);
+
+		// THEN
+		expect(select.tagName).toBe("SELECT");
+		expect(select.getAttribute("aria-describedby")).toBe("scan-depth-hint");
+	});
+
 	it("offers depths 0 to 3 with depth 0 selected by default", () => {
 		// GIVEN / WHEN
 		renderScanForm();

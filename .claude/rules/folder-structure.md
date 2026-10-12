@@ -18,9 +18,10 @@ pnpm + Turborepo monorepo. Workspaces: `apps/*` and `packages/*`. Package names 
 ├── apps/
 │   ├── web/                   # @refresh/web — Next.js frontend, scan persistence owner, /api/scans proxy
 │   │   ├── src/app/           # App Router: layout.tsx, page.tsx (form), scans/ (history, [id] scan link, actions.ts), api/scans/ and api/internal/scans/ Route Handlers
-│   │   ├── src/components/    # layout/ (header), scan/ (form, live scan, failure), report/, history/ components
+│   │   ├── src/components/    # ui/ (vendored shadcn primitives), theme/ (provider, theme menu), hud/ (HudPanel, HudStat, MonoValue, CodeBlock, StatusIndicator), layout/ (shell, header), scan/ (form, live scan, failure), report/, history/ components
 │   │   ├── src/hooks/         # one hook per file (use-scan, use-scan-polling, ...)
-│   │   ├── src/lib/           # client-side helpers (scan API wrappers, report filtering/grouping, cn)
+│   │   ├── src/lib/           # client-side helpers (scan API wrappers, report filtering/grouping, cn), theme/ (theme options)
+│   │   ├── components.json    # shadcn config (base-maia style, preset b2aUNZqRPM, Phosphor icons)
 │   │   ├── src/server/        # server-only code: db/ (scan store singleton), scans/ (start, status, callback, delete, worker client), log/
 │   │   ├── src/testing/       # Vitest helpers and fixtures (excluded from coverage)
 │   │   ├── e2e/               # Playwright specs; e2e/support/ holds page objects, helpers, the web servers list, and the Testcontainers database launcher

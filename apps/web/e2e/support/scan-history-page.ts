@@ -59,6 +59,6 @@ export class ScanHistoryPage {
 	}
 
 	dialog(): Locator {
-		return this.page.getByRole("dialog");
+		return this.page.getByRole("alertdialog");
 	}
 }

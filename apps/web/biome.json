@@ -10,7 +10,36 @@
 			"!public",
 			"!coverage",
 			"!test-results",
-			"!playwright-report"
+			"!playwright-report",
+			"!.vitest",
+			"!.impeccable/hook.cache.json"
 		]
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["src/components/ui/**"],
+			"assist": {
+				"actions": {
+					"source": {
+						"organizeImports": "off"
+					}
+				}
+			},
+			"linter": {
+				"rules": {
+					"style": {
+						"useImportType": "off"
+					},
+					"a11y": {
+						"noLabelWithoutControl": "off",
+						"useSemanticElements": "off"
+					},
+					"suspicious": {
+						"noArrayIndexKey": "off",
+						"noDoubleEquals": "off"
+					}
+				}
+			}
+		}
+	]
 }

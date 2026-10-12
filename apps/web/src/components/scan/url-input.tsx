@@ -1,5 +1,6 @@
 import type { Ref } from "react";
-import { cn } from "@/lib/utils";
+import { FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 type UrlInputProps = {
 	id: string;
@@ -10,12 +11,6 @@ type UrlInputProps = {
 	onChange: (value: string) => void;
 	onBlur: () => void;
 };
-
-const inputClassName = (hasError: boolean): string =>
-	cn(
-		"w-full min-w-0 rounded-md border border-border bg-background px-3 py-2",
-		hasError && "border-destructive",
-	);
 
 export function UrlInput({
 	id,
@@ -28,14 +23,11 @@ export function UrlInput({
 }: UrlInputProps) {
 	return (
 		<>
-			<label className="font-medium" htmlFor={id}>
-				Website address
-			</label>
-			<input
+			<FieldLabel htmlFor={id}>Website address</FieldLabel>
+			<Input
 				aria-describedby={describedBy}
 				aria-invalid={hasError}
 				autoComplete="url"
-				className={inputClassName(hasError)}
 				id={id}
 				onBlur={onBlur}
 				onChange={(event) => onChange(event.target.value)}

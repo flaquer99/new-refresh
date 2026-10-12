@@ -3,6 +3,7 @@ import {
 	type PageResult,
 	type PageStatus,
 } from "@refresh/scan-contracts/page-result";
+import { HudPanel } from "@/components/hud/hud-panel";
 import { PageStatusGroup } from "./page-status-group";
 
 const HEADING_ID = "page-coverage-heading";
@@ -25,8 +26,8 @@ const groupsOf = (pages: readonly PageResult[]) =>
 
 export function PageCoverage({ pages }: PageCoverageProps) {
 	return (
-		<section aria-labelledby={HEADING_ID} className="flex flex-col gap-4">
-			<h2 className="font-semibold text-xl" id={HEADING_ID}>
+		<HudPanel labelledBy={HEADING_ID}>
+			<h2 className="font-heading font-semibold text-xl" id={HEADING_ID}>
 				Page coverage
 			</h2>
 			{groupsOf(pages).map((group) => (
@@ -36,6 +37,6 @@ export function PageCoverage({ pages }: PageCoverageProps) {
 					title={STATUS_TITLES[group.status]}
 				/>
 			))}
-		</section>
+		</HudPanel>
 	);
 }

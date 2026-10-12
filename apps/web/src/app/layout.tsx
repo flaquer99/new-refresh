@@ -1,16 +1,27 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist_Mono, Inter, Public_Sans } from "next/font/google";
+import { HudBackdrop } from "@/components/layout/hud-backdrop";
 import { SiteHeader } from "@/components/layout/site-header";
+import { SkipLink } from "@/components/layout/skip-link";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
+const inter = Inter({
+	variable: "--font-inter",
 	subsets: ["latin"],
+	display: "swap",
+});
+
+const publicSans = Public_Sans({
+	variable: "--font-public-sans",
+	subsets: ["latin"],
+	display: "swap",
 });
 
 const geistMono = Geist_Mono({
 	variable: "--font-geist-mono",
 	subsets: ["latin"],
+	display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -22,15 +33,31 @@ export const metadata: Metadata = {
 		"Scan a website for WCAG 2.2 Level A and AA accessibility issues and get guidance on how to fix them.",
 };
 
+const LIGHT_THEME_COLOR = "#f6f8fb";
+const DARK_THEME_COLOR = "#0a0f16";
+
+export const viewport: Viewport = {
+	colorScheme: "light dark",
+	themeColor: [
+		{ media: "(prefers-color-scheme: light)", color: LIGHT_THEME_COLOR },
+		{ media: "(prefers-color-scheme: dark)", color: DARK_THEME_COLOR },
+	],
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
 	return (
 		<html
 			lang="en"
-			className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+			suppressHydrationWarning
+			className={`${inter.variable} ${publicSans.variable} ${geistMono.variable} h-full antialiased`}
 		>
 			<body className="flex min-h-full flex-col font-sans">
-				<SiteHeader />
-				{children}
+				<ThemeProvider>
+					<SkipLink />
+					<HudBackdrop />
+					<SiteHeader />
+					{children}
+				</ThemeProvider>
 			</body>
 		</html>
 	);

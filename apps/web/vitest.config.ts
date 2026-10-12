@@ -6,6 +6,7 @@ import { defineConfig } from "vitest/config";
 const CONTAINER_STARTUP_TIMEOUT_MS = 120_000;
 const DATABASE_TEST_TIMEOUT_MS = 30_000;
 const DATABASE_TESTS = "src/**/*.db.test.ts";
+const VENDORED_UI = "src/components/ui/**";
 
 export default defineConfig({
 	plugins: [react()],
@@ -21,7 +22,10 @@ export default defineConfig({
 		},
 	},
 	test: {
-		coverage: baseTestConfig.coverage,
+		coverage: {
+			...baseTestConfig.coverage,
+			exclude: [...baseTestConfig.coverage.exclude, VENDORED_UI],
+		},
 		unstubEnvs: true,
 		unstubGlobals: true,
 		restoreMocks: true,

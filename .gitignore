@@ -32,5 +32,8 @@ apps/scan-worker/output
 *.pem
 npm-debug.log*
 
+# impeccable live mode session journals
+.impeccable/live/sessions
+
 # SDD feature artifacts (local only)
 tasks/

@@ -24,7 +24,7 @@ export function ScanForm({
 	return (
 		<form
 			aria-labelledby={HEADING_ID}
-			className="flex flex-col gap-5 rounded-lg border border-border p-4 sm:p-6"
+			className="hud-frame relative flex flex-col gap-5 rounded-md bg-card p-4 text-card-foreground sm:p-6"
 			noValidate
 			onSubmit={form.submit}
 		>

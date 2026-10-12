@@ -8,7 +8,7 @@ export function FieldError({ id, message }: FieldErrorProps) {
 		return null;
 	}
 	return (
-		<p className="text-destructive text-sm" id={id} role="alert">
+		<p className="font-medium text-destructive text-sm" id={id} role="alert">
 			{message}
 		</p>
 	);

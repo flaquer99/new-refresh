@@ -3,7 +3,8 @@ import { HistoryStatus } from "./history-status";
 import { RelativeTime } from "./relative-time";
 import { ScanEntryFindings } from "./scan-entry-findings";
 
-const TERM_CLASSES = "font-medium text-muted-foreground";
+const TERM_CLASSES =
+	"font-mono text-muted-foreground text-xs uppercase tracking-widest";
 
 type ScanEntryDetailsProps = {
 	entry: ScanHistoryEntry;
@@ -12,7 +13,7 @@ type ScanEntryDetailsProps = {
 
 export function ScanEntryDetails({ entry, now }: ScanEntryDetailsProps) {
 	return (
-		<dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+		<dl className="grid grid-cols-[auto_1fr] items-baseline gap-x-4 gap-y-2 text-sm">
 			<dt className={TERM_CLASSES}>Status</dt>
 			<dd>
 				<HistoryStatus outcome={entry.outcome} status={entry.status} />
@@ -22,9 +23,9 @@ export function ScanEntryDetails({ entry, now }: ScanEntryDetailsProps) {
 				<RelativeTime iso={entry.startedAt} now={now} />
 			</dd>
 			<dt className={TERM_CLASSES}>Depth</dt>
-			<dd>{entry.depth}</dd>
+			<dd className="font-mono">{entry.depth}</dd>
 			<dt className={TERM_CLASSES}>Pages scanned</dt>
-			<dd>{entry.pagesScanned}</dd>
+			<dd className="font-mono">{entry.pagesScanned}</dd>
 			<dt className={TERM_CLASSES}>{entry.error ? "Reason" : "Violations"}</dt>
 			<dd>
 				<ScanEntryFindings entry={entry} />

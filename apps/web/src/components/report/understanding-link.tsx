@@ -7,7 +7,7 @@ type UnderstandingLinkProps = {
 export function UnderstandingLink({ criterion }: UnderstandingLinkProps) {
 	return (
 		<a
-			className="text-primary text-sm underline underline-offset-2"
+			className="rounded-sm text-link text-sm underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-ring"
 			href={criterion.understandingUrl}
 			rel="noopener noreferrer"
 			target="_blank"

@@ -1,4 +1,5 @@
 import type { Ref } from "react";
+import { Field, FieldDescription } from "@/components/ui/field";
 import { FieldError } from "./field-error";
 import { UrlInput } from "./url-input";
 
@@ -23,7 +24,7 @@ export function UrlField({
 }: UrlFieldProps) {
 	const hasError = error !== null;
 	return (
-		<div className="flex flex-col gap-1">
+		<Field data-invalid={hasError}>
 			<UrlInput
 				describedBy={hasError ? `${HINT_ID} ${ERROR_ID}` : HINT_ID}
 				hasError={hasError}
@@ -33,10 +34,10 @@ export function UrlField({
 				ref={ref}
 				value={value}
 			/>
-			<p className="text-muted-foreground text-sm" id={HINT_ID}>
+			<FieldDescription id={HINT_ID}>
 				For example, https://www.example.org/
-			</p>
+			</FieldDescription>
 			<FieldError id={ERROR_ID} message={error} />
-		</div>
+		</Field>
 	);
 }

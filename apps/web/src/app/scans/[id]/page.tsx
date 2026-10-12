@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { PageMain } from "@/components/layout/page-main";
 import { ScanView } from "@/components/scan/scan-view";
 import { scanTitle } from "@/lib/scans/page-titles";
 import { loadScan } from "@/server/scans/load-scan";
@@ -19,11 +20,11 @@ export default async function ScanLinkPage({ params }: ScanLinkPageProps) {
 		notFound();
 	}
 	return (
-		<main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-8 sm:px-6 sm:py-12">
+		<PageMain>
 			<h1 className="break-all font-semibold text-3xl">
 				Scan of {scan.startUrl}
 			</h1>
 			<ScanView scan={scan} />
-		</main>
+		</PageMain>
 	);
 }

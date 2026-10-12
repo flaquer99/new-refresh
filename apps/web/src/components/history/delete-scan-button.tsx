@@ -1,6 +1,8 @@
 "use client";
 
-import { useModalDialog } from "@/hooks/use-modal-dialog";
+import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { useDeleteDialog } from "@/hooks/use-delete-dialog";
 import { DeleteScanDialog } from "./delete-scan-dialog";
 
 type DeleteScanButtonProps = {
@@ -9,27 +11,26 @@ type DeleteScanButtonProps = {
 };
 
 export function DeleteScanButton({ scanId, startUrl }: DeleteScanButtonProps) {
-	const { dialogRef, triggerRef, open, close, dismiss, restoreFocus } =
-		useModalDialog();
+	const { open, onOpenChange, markDeleted, restoresFocus } = useDeleteDialog();
 	return (
-		<>
-			<button
-				aria-label={`Delete scan of ${startUrl}`}
-				className="rounded-md border border-destructive px-3 py-1 font-medium text-destructive text-sm"
-				onClick={open}
-				ref={triggerRef}
-				type="button"
+		<AlertDialog onOpenChange={onOpenChange} open={open}>
+			<AlertDialogTrigger
+				render={
+					<Button
+						aria-label={`Delete scan of ${startUrl}`}
+						size="sm"
+						variant="outline"
+					/>
+				}
 			>
 				Delete
-			</button>
+			</AlertDialogTrigger>
 			<DeleteScanDialog
-				dialogRef={dialogRef}
-				onCancel={close}
-				onClose={restoreFocus}
-				onDeleted={dismiss}
+				onDeleted={markDeleted}
+				restoresFocus={restoresFocus}
 				scanId={scanId}
 				startUrl={startUrl}
 			/>
-		</>
+		</AlertDialog>
 	);
 }

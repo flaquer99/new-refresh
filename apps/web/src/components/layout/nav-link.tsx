@@ -15,8 +15,8 @@ export function NavLink({ href, label }: NavLinkProps) {
 		<Link
 			aria-current={isCurrent ? "page" : undefined}
 			className={cn(
-				"rounded-md px-2 py-1 font-medium underline-offset-4 hover:underline",
-				isCurrent && "underline",
+				"rounded-md border border-transparent px-2 py-1 font-medium text-muted-foreground text-sm underline-offset-4 hover:text-foreground hover:underline",
+				isCurrent && "border-hud-frame text-foreground underline",
 			)}
 			href={href}
 		>

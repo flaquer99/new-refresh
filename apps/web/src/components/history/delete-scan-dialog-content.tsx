@@ -6,18 +6,12 @@ import { DeleteScanDialogText } from "./delete-scan-dialog-text";
 type DeleteScanDialogContentProps = {
 	scanId: string;
 	startUrl: string;
-	titleId: string;
-	descriptionId: string;
-	onCancel: () => void;
 	onDeleted: () => void;
 };
 
 export function DeleteScanDialogContent({
 	scanId,
 	startUrl,
-	titleId,
-	descriptionId,
-	onCancel,
 	onDeleted,
 }: DeleteScanDialogContentProps) {
 	const { state, formAction, isPending } = useDeleteScan({
@@ -26,18 +20,10 @@ export function DeleteScanDialogContent({
 		onDeleted,
 	});
 	return (
-		<>
-			<DeleteScanDialogText
-				descriptionId={descriptionId}
-				startUrl={startUrl}
-				titleId={titleId}
-			/>
+		<form action={formAction} className="grid gap-6">
+			<DeleteScanDialogText startUrl={startUrl} />
 			<DeleteScanDialogError state={state} />
-			<DeleteScanDialogActions
-				formAction={formAction}
-				isPending={isPending}
-				onCancel={onCancel}
-			/>
-		</>
+			<DeleteScanDialogActions isPending={isPending} />
+		</form>
 	);
 }

@@ -31,6 +31,7 @@ describe("fixture sites", () => {
     "/page-coverage/about.html",
     "/private/secret.html",
     "/report-mix/",
+    "/long-selectors/",
     "/popups/",
     "/popups/opener.html",
   ])("serves the %s scenario page", async (path) => {

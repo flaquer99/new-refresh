@@ -1,4 +1,5 @@
 import type { CriterionRef } from "@refresh/scan-contracts/findings";
+import { MonoValue } from "@/components/hud/mono-value";
 import { UnderstandingLink } from "./understanding-link";
 
 type CriterionLinkProps = {
@@ -9,7 +10,7 @@ export function CriterionLink({ criterion }: CriterionLinkProps) {
 	return (
 		<span className="flex flex-wrap items-baseline gap-x-2">
 			<span className="font-medium">
-				{criterion.id} {criterion.name}
+				<MonoValue>{criterion.id}</MonoValue> {criterion.name}
 			</span>
 			<span className="text-muted-foreground text-sm">
 				Level {criterion.level}

@@ -1,4 +1,5 @@
 import type { Severity } from "@refresh/scan-contracts/findings";
+import { Badge } from "@/components/ui/badge";
 import { SEVERITY_LABELS, SEVERITY_SYMBOLS } from "@/lib/report/severity";
 import { cn } from "@/lib/utils";
 
@@ -15,15 +16,16 @@ type SeverityBadgeProps = {
 
 export function SeverityBadge({ severity }: SeverityBadgeProps) {
 	return (
-		<span
+		<Badge
 			className={cn(
-				"inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-medium text-sm",
+				"h-auto bg-transparent text-sm",
 				SEVERITY_CLASSES[severity],
 			)}
+			variant="outline"
 		>
 			<span aria-hidden="true">{SEVERITY_SYMBOLS[severity]}</span>
 			<span className="sr-only">Severity: </span>
 			{SEVERITY_LABELS[severity]}
-		</span>
+		</Badge>
 	);
 }

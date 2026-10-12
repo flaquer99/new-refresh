@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 type CancelScanButtonProps = {
 	onCancel: () => Promise<boolean>;
@@ -14,13 +15,14 @@ export function CancelScanButton({ onCancel }: CancelScanButtonProps) {
 		}
 	};
 	return (
-		<button
-			className="self-start rounded-md border border-border px-4 py-2 font-medium disabled:opacity-70"
+		<Button
+			className="self-start"
 			disabled={isCancelling}
 			onClick={cancel}
 			type="button"
+			variant="outline"
 		>
 			{isCancelling ? "Cancelling…" : "Cancel scan"}
-		</button>
+		</Button>
 	);
 }

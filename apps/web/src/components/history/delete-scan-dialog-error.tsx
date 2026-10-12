@@ -9,7 +9,7 @@ export function DeleteScanDialogError({ state }: DeleteScanDialogErrorProps) {
 		return null;
 	}
 	return (
-		<p className="mt-2 text-destructive" role="alert">
+		<p className="text-destructive text-sm" role="alert">
 			{state.error.message}
 		</p>
 	);
