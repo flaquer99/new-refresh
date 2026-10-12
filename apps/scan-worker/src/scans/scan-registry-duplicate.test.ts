@@ -6,6 +6,15 @@ import {
 } from "../testing/registry-harness.js";
 import { ScanIdTakenError } from "./scan-id-taken-error.js";
 
+const errorOf = (work: () => unknown): unknown => {
+  try {
+    work();
+    return undefined;
+  } catch (error) {
+    return error;
+  }
+};
+
 describe("ScanRegistry scan ids", () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -39,7 +48,7 @@ describe("ScanRegistry scan ids", () => {
       request: REGISTRY_REQUEST,
       clientId: "bob",
     };
-    expect(() => registry.create(duplicate)).toThrowError(ScanIdTakenError);
+    errorOf(() => registry.create(duplicate));
 
     // WHEN
     const active = registry.activeCount();

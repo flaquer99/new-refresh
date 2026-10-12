@@ -4,7 +4,10 @@ import {
   failingCallbackFetch,
   NOTIFIER_SCAN_ID,
   newNotifier,
+  stubCallbackFetch,
 } from "../testing/notifier-harness.js";
+
+const HTTP_UNAUTHORIZED = 401;
 
 describe("result notifier logging", () => {
   beforeEach(() => {
@@ -37,7 +40,28 @@ describe("result notifier logging", () => {
     );
   });
 
-  it("logs each retry with the failure, never the token or report", async () => {
+  it("logs scan.result_undelivered as rejected on an HTTP 401 answer", async () => {
+    // GIVEN
+    stubCallbackFetch(() =>
+      Promise.resolve(new Response("", { status: HTTP_UNAUTHORIZED })),
+    );
+    const { notifier, logger } = newNotifier();
+
+    // WHEN
+    await notifier.notify(FAILED_RESULT);
+
+    // THEN
+    expect(logger.error).toHaveBeenCalledWith(
+      {
+        event: "scan.result_undelivered",
+        scanId: NOTIFIER_SCAN_ID,
+        outcome: "rejected",
+      },
+      "scan.result_undelivered",
+    );
+  });
+
+  it("logs each retry with the failure", async () => {
     // GIVEN
     failingCallbackFetch();
     const { notifier, logger } = newNotifier();

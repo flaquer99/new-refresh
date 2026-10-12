@@ -3,6 +3,8 @@ import { ATTEMPT_TIMEOUT_MS } from "./retry-delays.js";
 
 const HTTP_OK_MIN = 200;
 const HTTP_OK_MAX = 299;
+const HTTP_REDIRECT_MIN = 300;
+const HTTP_REDIRECT_MAX = 399;
 const HTTP_BAD_REQUEST = 400;
 const HTTP_UNAUTHORIZED = 401;
 const HTTP_NOT_FOUND = 404;
@@ -18,12 +20,20 @@ export type Attempt = {
 
 export type CallbackTarget = { url: string; token: string };
 
+export type PostResultInput = CallbackTarget & { signal: AbortSignal };
+
+const isRedirect = (status: number): boolean =>
+  status >= HTTP_REDIRECT_MIN && status <= HTTP_REDIRECT_MAX;
+
 const classify = (status: number): AttemptOutcome => {
   if (status >= HTTP_OK_MIN && status <= HTTP_OK_MAX) {
     return "delivered";
   }
   if (status === HTTP_NOT_FOUND) {
     return "delivered";
+  }
+  if (isRedirect(status)) {
+    return "rejected";
   }
   if (status === HTTP_BAD_REQUEST || status === HTTP_UNAUTHORIZED) {
     return "rejected";
@@ -35,7 +45,7 @@ export const resultUrl = (baseUrl: string, scanId: string): string =>
   `${baseUrl.replace(TRAILING_SLASH, "")}/${encodeURIComponent(scanId)}/result`;
 
 export const postResult = async (
-  { url, token }: CallbackTarget,
+  { url, token, signal }: PostResultInput,
   result: ScanResult,
 ): Promise<Attempt> => {
   try {
@@ -46,7 +56,11 @@ export const postResult = async (
         "content-type": "application/json",
       },
       body: JSON.stringify(result),
-      signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+      redirect: "manual",
+      signal: AbortSignal.any([
+        AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+        signal,
+      ]),
     });
     await response.body?.cancel();
     return { outcome: classify(response.status), httpStatus: response.status };

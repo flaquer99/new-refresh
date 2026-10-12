@@ -1,82 +1,65 @@
 import type { ScanResult } from "@refresh/scan-contracts/scan-result";
 import {
-  type Attempt,
-  type CallbackTarget,
-  postResult,
-} from "./post-result.js";
-import { RETRY_DELAYS_MS, waitFor } from "./retry-delays.js";
+  type FinalOutcome,
+  logFinal,
+  logRetry,
+  type NotifierLogger,
+} from "./notifier-log.js";
+import { type CallbackTarget, postResult } from "./post-result.js";
+import { RETRY_DELAYS_MS, waitForRetry } from "./retry-delays.js";
 
-export type NotifyOutcome = "delivered" | "rejected" | "exhausted";
+export type NotifyOutcome = FinalOutcome;
 
 export type ResultNotifier = {
   notify: (result: ScanResult) => Promise<NotifyOutcome>;
 };
 
-type LogDetails = Record<string, unknown> & { event: string; scanId: string };
-
-type LogFn = (details: LogDetails, message: string) => void;
-
-export type NotifierLogger = { info: LogFn; warn: LogFn; error: LogFn };
-
 export type ResultNotifierOptions = CallbackTarget & {
   logger: NotifierLogger;
   retryDelaysMs?: readonly number[];
+  signal?: AbortSignal;
 };
 
-const attemptDetails = ({ httpStatus, errorName }: Attempt) => ({
-  ...(httpStatus === undefined ? {} : { httpStatus }),
-  ...(errorName === undefined ? {} : { errorName }),
-});
+type Delivery = {
+  options: ResultNotifierOptions;
+  result: ScanResult;
+  signal: AbortSignal;
+};
 
-const logFinal = (
-  logger: NotifierLogger,
-  result: ScanResult,
+const NEVER_ABORTED = new AbortController().signal;
+
+const finish = (
+  { options, result }: Delivery,
   outcome: NotifyOutcome,
   attempts: number,
-) => {
-  const scanId = result.scanId;
-  if (outcome === "delivered") {
-    const details = {
-      event: "scan.result_delivered",
-      scanId,
-      status: result.status,
-      attempts,
-    };
-    logger.info(details, "scan.result_delivered");
-    return;
-  }
-  logger.error(
-    { event: "scan.result_undelivered", scanId, outcome },
-    "scan.result_undelivered",
-  );
+): NotifyOutcome => {
+  logFinal({ logger: options.logger, result, outcome, attempts });
+  return outcome;
 };
 
-const deliver = async (
-  options: ResultNotifierOptions,
-  result: ScanResult,
-): Promise<NotifyOutcome> => {
+const deliver = async (delivery: Delivery): Promise<NotifyOutcome> => {
+  const { options, result, signal } = delivery;
   const delays = options.retryDelaysMs ?? RETRY_DELAYS_MS;
   for (let attempt = 1; ; attempt += 1) {
-    const sent = await postResult(options, result);
-    const delay = delays[attempt - 1];
-    if (sent.outcome !== "retry" || delay === undefined) {
-      const outcome = sent.outcome === "retry" ? "exhausted" : sent.outcome;
-      logFinal(options.logger, result, outcome, attempt);
-      return outcome;
+    const sent = await postResult({ ...options, signal }, result);
+    if (sent.outcome !== "retry") {
+      return finish(delivery, sent.outcome, attempt);
     }
-    const details = {
-      event: "scan.result_retry",
-      scanId: result.scanId,
-      attempt,
-      ...attemptDetails(sent),
-    };
-    options.logger.warn(details, "scan.result_retry");
-    await waitFor(delay);
+    const delay = delays[attempt - 1];
+    if (delay === undefined || signal.aborted) {
+      return finish(delivery, "exhausted", attempt);
+    }
+    const { logger } = options;
+    logRetry({ logger, scanId: result.scanId, attempt, sent });
+    if (!(await waitForRetry(delay, signal))) {
+      return finish(delivery, "exhausted", attempt);
+    }
   }
 };
 
 export const createResultNotifier = (
   options: ResultNotifierOptions,
 ): ResultNotifier => ({
-  notify: (result) => deliver(options, result),
+  notify: (result) =>
+    deliver({ options, result, signal: options.signal ?? NEVER_ABORTED }),
 });

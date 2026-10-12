@@ -29,6 +29,7 @@ describe("loadConfig safety checks", () => {
       SCAN_WORKER_TOKEN: TOKEN,
       SCAN_CALLBACK_TOKEN: CALLBACK_TOKEN,
       SCAN_EGRESS_ALLOWLIST: "",
+      SCAN_CALLBACK_URL: "https://refresh.test/api/internal/scans",
       NODE_ENV: "production",
     };
 
@@ -37,6 +38,23 @@ describe("loadConfig safety checks", () => {
 
     // THEN
     expect(config.egressAllowlist.size).toBe(0);
+  });
+
+  it("refuses production without an explicit callback url", () => {
+    // GIVEN
+    const env = {
+      SCAN_WORKER_TOKEN: TOKEN,
+      SCAN_CALLBACK_TOKEN: CALLBACK_TOKEN,
+      NODE_ENV: "production",
+    };
+
+    // WHEN
+    const loading = () => loadConfig(env);
+
+    // THEN
+    expect(loading).toThrowError(
+      "SCAN_CALLBACK_URL must be set when NODE_ENV=production",
+    );
   });
 
   it("refuses to start without a token", () => {

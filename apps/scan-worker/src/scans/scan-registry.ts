@@ -1,11 +1,11 @@
 import type { ScanRequest } from "@refresh/scan-contracts/scan-request";
 import type { ScanStatus } from "@refresh/scan-contracts/scan-status";
 import { ScanIdTakenError } from "./scan-id-taken-error.js";
+import { interruptRunning } from "./scan-interrupt.js";
 import { createScanLimits } from "./scan-limits.js";
 import { newScanRecord, toStatus } from "./scan-record.js";
 import { createScanTimers } from "./scan-timers.js";
 import {
-  interruptRunning,
   type RegistryState,
   runTracked,
   type ScanRegistryOptions,
@@ -47,6 +47,7 @@ export const createScanRegistry = (
     ...options,
     limits: createScanLimits(),
     scans: new Map(),
+    deliveries: new Set(),
   };
   const statusOf = (scanId: string) => {
     const tracked = state.scans.get(scanId);

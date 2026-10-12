@@ -38,6 +38,27 @@ describe("result notifier retries", () => {
     expect(callsAt).toEqual([1, 2, 3, 4]);
   });
 
+  it("makes no retry before each 1, 2 and 4 second delay has passed", async () => {
+    // GIVEN
+    const fetchMock = stubCallbackFetch(() =>
+      Promise.resolve(new Response("", { status: HTTP_SERVICE_UNAVAILABLE })),
+    );
+    const { notifier } = newNotifier();
+    const notifying = notifier.notify(FAILED_RESULT);
+    const callsAt: number[] = [];
+
+    // WHEN
+    for (const step of [999, 2000, 4000]) {
+      await vi.advanceTimersByTimeAsync(step);
+      callsAt.push(fetchMock.mock.calls.length);
+    }
+    await vi.runAllTimersAsync();
+    await notifying;
+
+    // THEN
+    expect(callsAt).toEqual([1, 2, 3]);
+  });
+
   it("reports exhausted after four failed attempts", async () => {
     // GIVEN
     failingCallbackFetch();

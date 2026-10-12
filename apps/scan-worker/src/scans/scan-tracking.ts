@@ -1,17 +1,8 @@
 import type { ScanRequest } from "@refresh/scan-contracts/scan-request";
 import type { ResultNotifier } from "../callback/result-notifier.js";
-import {
-  logScanFailure,
-  logScanInterrupted,
-  type ScanRegistryLogger,
-} from "./scan-failure-log.js";
+import { logScanFailure, type ScanRegistryLogger } from "./scan-failure-log.js";
 import type { ScanLimits } from "./scan-limits.js";
-import {
-  completeRecord,
-  failRecord,
-  interruptRecord,
-  type ScanRecord,
-} from "./scan-record.js";
+import { completeRecord, failRecord, type ScanRecord } from "./scan-record.js";
 import { toResult } from "./scan-result-of.js";
 import type { ScanRunner } from "./scan-runner.js";
 import type { ScanTimers } from "./scan-timers.js";
@@ -27,6 +18,7 @@ export type TrackedScan = { record: ScanRecord; timers: ScanTimers };
 export type RegistryState = ScanRegistryOptions & {
   limits: ScanLimits;
   scans: Map<string, TrackedScan>;
+  deliveries: Set<Promise<void>>;
 };
 
 const runToEnd = async (
@@ -67,6 +59,17 @@ const reportResult = async (
   timers.finish(() => state.scans.delete(record.scanId));
 };
 
+export const trackDelivery = (
+  state: RegistryState,
+  tracked: TrackedScan,
+): Promise<void> => {
+  const delivery = reportResult(state, tracked).finally(() =>
+    state.deliveries.delete(delivery),
+  );
+  state.deliveries.add(delivery);
+  return delivery;
+};
+
 export const runTracked = async (
   state: RegistryState,
   tracked: TrackedScan,
@@ -75,17 +78,6 @@ export const runTracked = async (
   const settled = await runToEnd(state, tracked.record, request);
   state.limits.release(tracked.record.clientId);
   if (settled) {
-    await reportResult(state, tracked);
+    await trackDelivery(state, tracked);
   }
-};
-
-export const interruptRunning = async (state: RegistryState): Promise<void> => {
-  const interrupted = [...state.scans.values()].filter(({ record }) =>
-    interruptRecord(record),
-  );
-  for (const { record } of interrupted) {
-    record.controller.abort();
-    logScanInterrupted(state.logger, record);
-  }
-  await Promise.all(interrupted.map((tracked) => reportResult(state, tracked)));
 };

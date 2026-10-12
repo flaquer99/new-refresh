@@ -34,6 +34,7 @@ export type WorkerServices = {
   browser: BrowserSupervisor<Browser>;
   fetchClient: GuardedFetchClient;
   registry: ScanRegistry;
+  deliveries: AbortController;
 };
 
 export type StartServicesInput = {
@@ -68,13 +69,15 @@ export const startServices = async ({
     fetch: fetchClient.fetch,
     logger: app.log,
   });
+  const deliveries = new AbortController();
   const notifier = createResultNotifier({
     url: config.callbackUrl,
     token: config.callbackToken,
     logger: app.log,
+    signal: deliveries.signal,
   });
   const registry = createScanRegistry({ runner, logger: app.log, notifier });
-  return { guard, browser, fetchClient, registry };
+  return { guard, browser, fetchClient, registry, deliveries };
 };
 
 export const serverDeps = (

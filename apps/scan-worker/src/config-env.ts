@@ -15,7 +15,7 @@ export const LOG_LEVELS = [
 ] as const;
 const ALLOWLIST_ENTRY = /^[^\s:]+:\d+$/;
 const HTTP_PROTOCOL = /^https?$/;
-const DEFAULT_CALLBACK_URL = "http://127.0.0.1:3000/api/internal/scans";
+export const DEFAULT_CALLBACK_URL = "http://127.0.0.1:3000/api/internal/scans";
 const TOKEN_LENGTH_MESSAGE = `must be at least ${MIN_TOKEN_LENGTH} characters`;
 
 const parseAllowlist = (raw: string): string[] =>
@@ -47,7 +47,7 @@ export const EnvSchema = z.object({
   SCAN_WORKER_TOKEN: TokenSchema,
   SCAN_CALLBACK_URL: z
     .url({ protocol: HTTP_PROTOCOL, error: "must be an http(s) URL" })
-    .default(DEFAULT_CALLBACK_URL),
+    .optional(),
   SCAN_CALLBACK_TOKEN: TokenSchema,
   SCAN_EGRESS_ALLOWLIST: AllowlistSchema,
   LOG_LEVEL: z.enum(LOG_LEVELS).default(DEFAULT_LOG_LEVEL),

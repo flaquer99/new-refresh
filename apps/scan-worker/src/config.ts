@@ -1,8 +1,14 @@
 import type { z } from "zod";
-import { EnvSchema, type LOG_LEVELS, type ParsedEnv } from "./config-env.js";
+import {
+  DEFAULT_CALLBACK_URL,
+  EnvSchema,
+  type LOG_LEVELS,
+  type ParsedEnv,
+} from "./config-env.js";
 
 const DISTINCT_TOKENS_MESSAGE =
   "SCAN_CALLBACK_TOKEN must differ from SCAN_WORKER_TOKEN";
+const PRODUCTION = "production";
 
 export type WorkerConfig = {
   host: string;
@@ -21,12 +27,22 @@ const describeIssues = (error: z.ZodError): string =>
     .map((issue) => `${issue.path.join(".")} ${issue.message}`)
     .join("; ");
 
-const assertSafeEnvironment = (env: ParsedEnv) => {
-  if (env.NODE_ENV === "production" && env.SCAN_EGRESS_ALLOWLIST.length > 0) {
+const assertProductionSettings = (env: ParsedEnv) => {
+  if (env.NODE_ENV !== PRODUCTION) {
+    return;
+  }
+  if (env.SCAN_EGRESS_ALLOWLIST.length > 0) {
     throw new Error(
       "SCAN_EGRESS_ALLOWLIST must not be set when NODE_ENV=production",
     );
   }
+  if (env.SCAN_CALLBACK_URL === undefined) {
+    throw new Error("SCAN_CALLBACK_URL must be set when NODE_ENV=production");
+  }
+};
+
+const assertSafeEnvironment = (env: ParsedEnv) => {
+  assertProductionSettings(env);
   if (env.SCAN_CALLBACK_TOKEN === env.SCAN_WORKER_TOKEN) {
     throw new Error(DISTINCT_TOKENS_MESSAGE);
   }
@@ -42,7 +58,7 @@ export const loadConfig = (env: WorkerEnv): WorkerConfig => {
     host: parsed.data.SCAN_WORKER_HOST,
     port: parsed.data.SCAN_WORKER_PORT,
     token: parsed.data.SCAN_WORKER_TOKEN,
-    callbackUrl: parsed.data.SCAN_CALLBACK_URL,
+    callbackUrl: parsed.data.SCAN_CALLBACK_URL ?? DEFAULT_CALLBACK_URL,
     callbackToken: parsed.data.SCAN_CALLBACK_TOKEN,
     egressAllowlist: new Set(parsed.data.SCAN_EGRESS_ALLOWLIST),
     logLevel: parsed.data.LOG_LEVEL,
