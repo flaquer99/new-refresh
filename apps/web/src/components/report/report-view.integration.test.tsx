@@ -17,7 +17,7 @@ const report = buildReport({
 describe("ReportView with real filters and cards", () => {
 	it("updates the cards and the result count when a filter changes", async () => {
 		// GIVEN
-		render(<ReportView report={report} />);
+		render(<ReportView scanId="scan-1" report={report} />);
 		const user = userEvent.setup();
 
 		// WHEN
@@ -32,7 +32,7 @@ describe("ReportView with real filters and cards", () => {
 
 	it("keeps the severity text label on the filtered card", async () => {
 		// GIVEN
-		render(<ReportView report={report} />);
+		render(<ReportView scanId="scan-1" report={report} />);
 		const user = userEvent.setup();
 
 		// WHEN

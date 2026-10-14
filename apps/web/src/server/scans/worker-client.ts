@@ -2,7 +2,7 @@ import "server-only";
 import { errorResponse } from "./error-response";
 import { readWorkerConfig, type WorkerConfig } from "./worker-config";
 
-const WORKER_TIMEOUT_MS = 10_000;
+const DEFAULT_WORKER_TIMEOUT_MS = 10_000;
 const HTTP_UNAUTHORIZED = 401;
 const WORKER_UNAVAILABLE_MESSAGE =
 	"The scanner is not available right now. Try again in a moment.";
@@ -14,6 +14,7 @@ export type WorkerRequest = {
 	path: string;
 	clientId: string;
 	body?: unknown;
+	timeoutMs?: number;
 };
 
 type WorkerCall = {
@@ -80,7 +81,10 @@ export const forwardToWorker = async (
 		return errorResponse("INTERNAL_ERROR", MISCONFIGURED_MESSAGE);
 	}
 	const controller = new AbortController();
-	const timer = setTimeout(() => controller.abort(), WORKER_TIMEOUT_MS);
+	const timer = setTimeout(
+		() => controller.abort(),
+		request.timeoutMs ?? DEFAULT_WORKER_TIMEOUT_MS,
+	);
 	try {
 		return await callWorker({ request, config, signal: controller.signal });
 	} catch {

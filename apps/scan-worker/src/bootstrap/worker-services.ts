@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyBaseLogger, FastifyInstance } from "fastify";
 import type { Browser } from "playwright";
 import type { TargetPolicy } from "../audit/settle-refusal.js";
 import {
@@ -22,6 +22,7 @@ import {
 } from "../scans/scan-registry.js";
 import { createScanRunner } from "../scans/scan-runner.js";
 import type { ServerDeps } from "../server/server-deps.js";
+import { createFetchPreview } from "./preview-deps.js";
 
 export type WorkerRuntime = {
   startGuard: StartEgressGuard;
@@ -82,9 +83,15 @@ export const startServices = async ({
 
 export const serverDeps = (
   { config, runtime }: Omit<StartServicesInput, "app">,
-  { browser, registry }: WorkerServices,
+  { browser, registry, fetchClient }: WorkerServices,
+  logger: FastifyBaseLogger,
 ): ServerDeps => ({
   registry,
+  fetchPreview: createFetchPreview({
+    fetch: fetchClient.fetch,
+    policy: { resolve: runtime.resolve, allowlist: config.egressAllowlist },
+    logger,
+  }),
   token: config.token,
   browserConnected: browser.isConnected,
   validateTarget: (url) =>

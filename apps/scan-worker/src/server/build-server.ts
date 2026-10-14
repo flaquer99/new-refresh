@@ -6,6 +6,7 @@ import Fastify, {
 import { createAuthHook } from "./auth-hook.js";
 import { handleError } from "./error-handler.js";
 import { registerHealthRoute } from "./routes/health.js";
+import { registerPreviewRoutes } from "./routes/previews.js";
 import { registerScanRoutes } from "./routes/scans.js";
 import type { ServerDeps } from "./server-deps.js";
 
@@ -28,6 +29,7 @@ export const mountRoutes = (app: FastifyInstance, deps: ServerDeps) => {
   app.register((scoped, _options, done) => {
     scoped.addHook("onRequest", createAuthHook(deps.token));
     registerScanRoutes(scoped, deps);
+    registerPreviewRoutes(scoped, deps);
     done();
   });
 };

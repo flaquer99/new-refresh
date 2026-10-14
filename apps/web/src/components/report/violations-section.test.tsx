@@ -31,7 +31,7 @@ const violationsRegion = (): HTMLElement =>
 	screen.getByRole("region", { name: "Violations" });
 
 const setup = () => {
-	render(<ViolationsSection violations={violations} />);
+	render(<ViolationsSection scanId="scan-1" violations={violations} />);
 	return userEvent.setup();
 };
 

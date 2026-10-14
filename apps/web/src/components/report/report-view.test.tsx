@@ -10,7 +10,7 @@ describe("ReportView", () => {
 		const report = buildReport({ violations: [] });
 
 		// WHEN
-		render(<ReportView report={report} />);
+		render(<ReportView scanId="scan-1" report={report} />);
 
 		// THEN
 		expect(screen.getByRole("note").textContent).toContain(
@@ -20,7 +20,7 @@ describe("ReportView", () => {
 
 	it("presents the sections in reading order under a focused report heading", () => {
 		// GIVEN / WHEN
-		render(<ReportView report={buildReport()} />);
+		render(<ReportView scanId="scan-1" report={buildReport()} />);
 
 		// THEN
 		const headings = screen.getAllByRole("heading", { level: 2 });
@@ -37,7 +37,7 @@ describe("ReportView", () => {
 
 	it("offers a new scan as a plain link to the form", () => {
 		// GIVEN / WHEN
-		render(<ReportView report={buildReport()} />);
+		render(<ReportView scanId="scan-1" report={buildReport()} />);
 
 		// THEN
 		expect(
@@ -47,7 +47,7 @@ describe("ReportView", () => {
 
 	it("does not ask for confirmation before a new scan", () => {
 		// GIVEN / WHEN
-		render(<ReportView report={buildReport()} />);
+		render(<ReportView scanId="scan-1" report={buildReport()} />);
 
 		// THEN
 		expect(screen.queryByRole("alertdialog", { hidden: true })).toBeNull();

@@ -7,10 +7,14 @@ import { ViolationGroups } from "./violation-groups";
 const HEADING_ID = "violations-heading";
 
 type ViolationsSectionProps = {
+	scanId: string;
 	violations: readonly Violation[];
 };
 
-export function ViolationsSection({ violations }: ViolationsSectionProps) {
+export function ViolationsSection({
+	violations,
+	scanId,
+}: ViolationsSectionProps) {
 	const view = useReportFilters(violations);
 	return (
 		<section aria-labelledby={HEADING_ID} className="flex flex-col gap-4">
@@ -31,7 +35,7 @@ export function ViolationsSection({ violations }: ViolationsSectionProps) {
 						total={violations.length}
 						visible={view.visibleCount}
 					/>
-					<ViolationGroups groups={view.groups} />
+					<ViolationGroups groups={view.groups} scanId={scanId} />
 				</>
 			)}
 		</section>

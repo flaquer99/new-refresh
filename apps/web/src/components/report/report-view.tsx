@@ -13,9 +13,10 @@ import { ViolationsSection } from "./violations-section";
 
 type ReportViewProps = {
 	report: ScanReport;
+	scanId: string;
 };
 
-export function ReportView({ report }: ReportViewProps) {
+export function ReportView({ report, scanId }: ReportViewProps) {
 	const headingRef = useFocusOnMount<HTMLHeadingElement>();
 	return (
 		<div className="flex flex-col gap-8">
@@ -36,10 +37,11 @@ export function ReportView({ report }: ReportViewProps) {
 			</div>
 			<ReportSummary report={report} />
 			<ReportDisclaimer />
-			<ViolationsSection violations={report.violations} />
+			<ViolationsSection scanId={scanId} violations={report.violations} />
 			<NeedsReviewSection
 				manualChecks={report.manualChecks}
 				reviewItems={report.reviewItems}
+				scanId={scanId}
 			/>
 			<PageCoverage pages={report.pages} />
 		</div>

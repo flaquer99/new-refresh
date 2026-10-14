@@ -1,5 +1,6 @@
 import type { Violation } from "@refresh/scan-contracts/findings";
 import { useId } from "react";
+import { FindingPreview } from "@/components/preview/finding-preview";
 import { Card } from "@/components/ui/card";
 import { CriteriaList } from "./criteria-list";
 import { FindingDetails } from "./finding-details";
@@ -7,10 +8,11 @@ import { GuidanceBlock } from "./guidance-block";
 import { SeverityBadge } from "./severity-badge";
 
 type ViolationCardProps = {
+	scanId: string;
 	violation: Violation;
 };
 
-export function ViolationCard({ violation }: ViolationCardProps) {
+export function ViolationCard({ violation, scanId }: ViolationCardProps) {
 	const headingId = useId();
 	return (
 		<article aria-labelledby={headingId}>
@@ -27,6 +29,13 @@ export function ViolationCard({ violation }: ViolationCardProps) {
 					html={violation.html}
 					pageUrl={violation.pageUrl}
 					selector={violation.selector}
+					viewports={violation.viewports}
+				/>
+				<FindingPreview
+					findingId={violation.id}
+					headingId={headingId}
+					pageUrl={violation.pageUrl}
+					scanId={scanId}
 					viewports={violation.viewports}
 				/>
 				<GuidanceBlock text={violation.fixGuidance} title="How to fix" />

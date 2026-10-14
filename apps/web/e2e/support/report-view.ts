@@ -1,4 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
+import { FindingPreviewView } from "./finding-preview-view";
 
 export const definitionOf = (scope: Locator | Page, term: string): Locator =>
 	scope
@@ -22,6 +23,16 @@ export class ReportView {
 			.getByRole("article")
 			.filter({ hasText: `${criterionId} ` })
 			.first();
+	}
+
+	previewOf(articleName: string | RegExp): FindingPreviewView {
+		const card = this.page.getByRole("article", { name: articleName });
+		return new FindingPreviewView(this.page, card);
+	}
+
+	firstViolationPreview(): FindingPreviewView {
+		const card = this.violationsRegion().getByRole("article").first();
+		return new FindingPreviewView(this.page, card);
 	}
 
 	violationGroupHeadings(): Locator {

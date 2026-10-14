@@ -17,3 +17,11 @@ export const removeScans = (scanIds: readonly string[]): void => {
 		runSeedScript(["remove", ...scanIds]);
 	}
 };
+
+export const seedPreviewScan = (origins: {
+	fixtures: string;
+	closed: string;
+}): string =>
+	JSON.parse(
+		runSeedScript(["seed-preview", origins.fixtures, origins.closed]),
+	) as string;

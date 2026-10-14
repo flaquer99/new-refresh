@@ -38,7 +38,8 @@ Site-wide, zero setup. One URL, no browser extension, no login, no configuration
 - Report: summary first (URL, depth, pages scanned / skipped / failed, counts by severity and level, completion state: complete, partial/cancelled, or limited by the page cap), then violations (group by criterion or page; filter by severity, level, viewport), then needs-review items, then coverage (skipped and failed pages).
 - A disclaimer that automated testing cannot prove conformance is always shown.
 - Crawl limits: depth ≤ 3, ≤ 50 pages, same origin only, respects `robots.txt`, skips non-HTML, records HTTP failures.
-- Security: never requests private, loopback, link-local, or metadata addresses (SSRF guard). Anonymous use is rate-limited.
+- Preview: each finding offers an on-demand live preview of its page in a sandboxed frame with the failing element highlighted (desktop and mobile widths); the page is fetched when opened and never stored.
+- Security: never requests private, loopback, link-local, or metadata addresses (SSRF guard). Anonymous use of scans is rate-limited; previews are not (they are limited to stored-finding URLs; accepted risk for this version).
 - Scans and reports are stored in PostgreSQL and listed publicly; no personal data is collected.
 - UI copy is English only.
 - Out of scope today: accounts, exports (JSON/CSV/PDF), authenticated pages, cross-origin crawling, sitemaps, scheduled scans, scan comparison, CI or issue-tracker integration, automatic fixes, conformance certification.

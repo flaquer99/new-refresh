@@ -18,7 +18,7 @@ describe("ViolationGroups", () => {
 		const groups = groupViolations([shared], "criterion");
 
 		// WHEN
-		render(<ViolationGroups groups={groups} />);
+		render(<ViolationGroups scanId="scan-1" groups={groups} />);
 
 		// THEN
 		const ids = screen
@@ -32,7 +32,7 @@ describe("ViolationGroups", () => {
 		const groups = groupViolations([shared], "criterion");
 
 		// WHEN
-		render(<ViolationGroups groups={groups} />);
+		render(<ViolationGroups scanId="scan-1" groups={groups} />);
 
 		// THEN
 		expect(
