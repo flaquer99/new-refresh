@@ -12,7 +12,7 @@ const PROGRESS = {
 describe("ScanProgress", () => {
 	it("announces the counts and the current URL in a polite live region", () => {
 		// GIVEN / WHEN
-		render(<ScanProgress onCancel={vi.fn()} progress={PROGRESS} />);
+		render(<ScanProgress canCancel onCancel={vi.fn()} progress={PROGRESS} />);
 
 		// THEN
 		const output = screen.getByRole("status");
@@ -23,7 +23,7 @@ describe("ScanProgress", () => {
 
 	it("gives the progress bar its value as text", () => {
 		// GIVEN / WHEN
-		render(<ScanProgress onCancel={vi.fn()} progress={PROGRESS} />);
+		render(<ScanProgress canCancel onCancel={vi.fn()} progress={PROGRESS} />);
 
 		// THEN
 		const bar = screen.getByRole("progressbar", { name: "Pages scanned" });
@@ -34,6 +34,7 @@ describe("ScanProgress", () => {
 		// GIVEN / WHEN
 		render(
 			<ScanProgress
+				canCancel
 				onCancel={vi.fn()}
 				progress={{ ...PROGRESS, currentUrl: null }}
 			/>,
@@ -47,7 +48,7 @@ describe("ScanProgress", () => {
 
 	it("moves focus to the progress heading when it appears", () => {
 		// GIVEN / WHEN
-		render(<ScanProgress onCancel={vi.fn()} progress={PROGRESS} />);
+		render(<ScanProgress canCancel onCancel={vi.fn()} progress={PROGRESS} />);
 
 		// THEN
 		expect(document.activeElement).toBe(
@@ -59,7 +60,7 @@ describe("ScanProgress", () => {
 		// GIVEN
 		const onCancel = vi.fn();
 		const user = userEvent.setup();
-		render(<ScanProgress onCancel={onCancel} progress={PROGRESS} />);
+		render(<ScanProgress canCancel onCancel={onCancel} progress={PROGRESS} />);
 
 		// WHEN
 		await user.click(screen.getByRole("button", { name: "Cancel scan" }));
@@ -72,7 +73,7 @@ describe("ScanProgress", () => {
 		// GIVEN
 		const user = userEvent.setup();
 		const onCancel = vi.fn().mockResolvedValue(true);
-		render(<ScanProgress onCancel={onCancel} progress={PROGRESS} />);
+		render(<ScanProgress canCancel onCancel={onCancel} progress={PROGRESS} />);
 
 		// WHEN
 		await user.click(screen.getByRole("button", { name: "Cancel scan" }));
@@ -82,5 +83,15 @@ describe("ScanProgress", () => {
 			name: "Cancelling…",
 		});
 		expect(button.disabled).toBe(true);
+	});
+
+	it("hides the cancel button when the viewer cannot manage the scan", () => {
+		// GIVEN / WHEN
+		render(
+			<ScanProgress canCancel={false} onCancel={vi.fn()} progress={PROGRESS} />,
+		);
+
+		// THEN
+		expect(screen.queryByRole("button", { name: "Cancel scan" })).toBeNull();
 	});
 });

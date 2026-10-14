@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ScanStore } from "./scan-store-types.js";
 import { buildSeedHistory, seedScans } from "./testing/seed-scans.js";
+import { TEST_ORGANIZATION_ID } from "./testing/test-owner.js";
 import { useTestStore } from "./testing/use-test-store.js";
 
 const PAGE_SIZE = 20;
@@ -15,7 +16,11 @@ const readAllPages = async (store: ScanStore): Promise<string[][]> => {
   const pages: string[][] = [];
   let before: string | null = null;
   do {
-    const page = await store.list({ before, limit: PAGE_SIZE });
+    const page = await store.list({
+      organizationId: TEST_ORGANIZATION_ID,
+      before,
+      limit: PAGE_SIZE,
+    });
     pages.push(page.entries.map((entry) => entry.scanId));
     before = page.nextBefore;
   } while (before !== null);
@@ -52,16 +57,22 @@ describe("ScanStore history", () => {
     // GIVEN
     const seeded = seedHistory(25);
     await seedScans(db.databaseUrl(), seeded);
-    const first = await db.store().list({ before: null, limit: PAGE_SIZE });
+    const first = await db.store().list({
+      organizationId: TEST_ORGANIZATION_ID,
+      before: null,
+      limit: PAGE_SIZE,
+    });
     await seedScans(
       db.databaseUrl(),
       seedHistory(3, new Date("2026-10-10T00:00:00.000Z")),
     );
 
     // WHEN
-    const second = await db
-      .store()
-      .list({ before: first.nextBefore, limit: PAGE_SIZE });
+    const second = await db.store().list({
+      organizationId: TEST_ORGANIZATION_ID,
+      before: first.nextBefore,
+      limit: PAGE_SIZE,
+    });
 
     // THEN
     expect(second.entries.map((entry) => entry.scanId)).toEqual(
@@ -75,7 +86,11 @@ describe("ScanStore history", () => {
     await seedScans(db.databaseUrl(), seeded);
 
     // WHEN
-    const page = await db.store().list({ before: "garbage", limit: PAGE_SIZE });
+    const page = await db.store().list({
+      organizationId: TEST_ORGANIZATION_ID,
+      before: "garbage",
+      limit: PAGE_SIZE,
+    });
 
     // THEN
     expect(page.entries[0]?.scanId).toBe(seeded[0]?.scanId);

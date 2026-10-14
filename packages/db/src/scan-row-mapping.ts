@@ -44,6 +44,9 @@ export const toStoredScan = (
 ): StoredScan => {
   const base = {
     scanId: row.id,
+    organizationId: row.organizationId,
+    startedByUserId: row.startedByUserId,
+    startedByName: row.startedByName,
     startUrl: row.startUrl,
     depth: row.depth,
     status: row.status,
@@ -63,6 +66,8 @@ export const toStoredScan = (
 
 export const toHistoryEntry = (row: ScanSummaryRow): ScanHistoryEntry => ({
   scanId: row.id,
+  startedByUserId: row.startedByUserId,
+  startedByName: row.startedByName,
   startUrl: row.startUrl,
   status: row.status,
   outcome: fromOutcomeColumn(row.outcome),

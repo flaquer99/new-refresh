@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import type { PlaywrightTestConfig } from "@playwright/test";
+import { clerkServerEnv } from "./clerk-env";
 import {
 	CLOSED_PORT,
 	FIXTURES_ORIGIN,
@@ -73,6 +74,7 @@ export const WEB_SERVERS: PlaywrightTestConfig["webServer"] = [
 			SCAN_WORKER_URL: WORKER_ORIGIN,
 			SCAN_WORKER_TOKEN: workerToken,
 			SCAN_CALLBACK_TOKEN: callbackToken,
+			...clerkServerEnv(),
 		},
 		gracefulShutdown,
 		timeout: WEB_BUILD_TIMEOUT_MS,

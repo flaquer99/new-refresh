@@ -3,6 +3,7 @@ import {
 	createFakeScanStore,
 	useFakeScanStore,
 } from "@/testing/fake-scan-store";
+import { MEMBER_ACTOR } from "@/testing/scan-actors";
 import { SCAN_ID } from "@/testing/scan-route-requests";
 import { spyOnServerLog } from "@/testing/server-log-spy";
 import { RUNNING_STORED_SCAN } from "@/testing/stored-scans";
@@ -65,7 +66,7 @@ describe("interruption logging", () => {
 		stubWorker(404, { error: { code: "SCAN_NOT_FOUND", message: "Gone." } });
 
 		// WHEN
-		await readScanStatus({ scanId: SCAN_ID, clientId: "198.51.100.4" });
+		await readScanStatus({ scanId: SCAN_ID, actor: MEMBER_ACTOR });
 
 		// THEN
 		expect(serverLog()).toContainEqual(

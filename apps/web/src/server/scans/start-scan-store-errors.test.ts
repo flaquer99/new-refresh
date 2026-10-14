@@ -1,13 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useFakeScanStore } from "@/testing/fake-scan-store";
+import { MEMBER_ACTOR } from "@/testing/scan-actors";
 import { SCAN_ID, VALID_SCAN_BODY } from "@/testing/scan-route-requests";
 import { spyOnServerLog } from "@/testing/server-log-spy";
 import { stubWorker } from "@/testing/stub-worker";
 import { startScan } from "./start-scan";
 
+vi.mock("@/server/auth/resolve-starter-name", () => ({
+	resolveStarterName: vi.fn(() => Promise.resolve("Ana Souza")),
+}));
 vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
 
-const START = { request: VALID_SCAN_BODY, clientId: "203.0.113.7" };
+const START = { request: VALID_SCAN_BODY, actor: MEMBER_ACTOR };
 const DATABASE_DOWN = new Error("Can't reach database server");
 
 describe("startScan when the database fails", () => {

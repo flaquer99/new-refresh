@@ -17,20 +17,21 @@ pnpm + Turborepo monorepo. Workspaces: `apps/*` and `packages/*`. Package names 
 │   └── skills/                # on-demand skills (e.g. react-rules)
 ├── apps/
 │   ├── web/                   # @refresh/web — Next.js frontend, scan persistence owner, /api/scans proxy
-│   │   ├── src/app/           # App Router: layout.tsx, page.tsx (form), scans/ (history, [id] scan link, actions.ts), api/scans/ and api/internal/scans/ Route Handlers
-│   │   ├── src/components/    # ui/ (vendored shadcn primitives), theme/ (provider, theme menu), hud/ (HudPanel, HudStat, MonoValue, CodeBlock, StatusIndicator), layout/ (shell, header), scan/ (form, live scan, failure), report/, history/ components
+│   │   ├── src/proxy.ts       # Clerk: clerkMiddleware() only, no authorization
+│   │   ├── src/app/           # App Router: layout.tsx (ClerkProvider), page.tsx (landing or form), sign-in/, sign-up/, onboarding/, join/, account/, organization/ (+ actions.ts invite), scans/ (history, [id] scan link, actions.ts), api/scans/, api/internal/scans/ and api/webhooks/clerk/ Route Handlers
+│   │   ├── src/components/    # ui/ (vendored shadcn primitives), theme/ (provider, theme menu), hud/ (HudPanel, HudStat, MonoValue, CodeBlock, StatusIndicator), layout/ (shell, header), auth/ (AuthControls, OrganizationBadge, user menu, AuthPageFrame), landing/ (signed-out landing view), organization/ (invite form, one-organization notice), scan/ (form, live scan, failure), report/, history/ components
 │   │   ├── src/hooks/         # one hook per file (use-scan, use-scan-polling, ...)
 │   │   ├── src/lib/           # client-side helpers (scan API wrappers, report filtering/grouping, cn), theme/ (theme options)
 │   │   ├── components.json    # shadcn config (base-maia style, preset b2aUNZqRPM, Phosphor icons)
-│   │   ├── src/server/        # server-only code: db/ (scan store singleton), scans/ (start, status, callback, delete, worker client), log/
-│   │   ├── src/testing/       # Vitest helpers and fixtures (excluded from coverage)
-│   │   ├── e2e/               # Playwright specs; e2e/support/ holds page objects, helpers, the web servers list, and the Testcontainers database launcher
+│   │   ├── src/server/        # server-only code: auth/ (scan actor, page and API guards, canManageScan), organizations/ (invite member, one-organization check), clerk-webhooks/ (verify, single membership, scan purge), db/ (scan store singleton), scans/ (start, status, callback, delete, worker client), log/
+│   │   ├── src/testing/       # Vitest helpers and fixtures, including fake-clerk.ts (excluded from coverage)
+│   │   ├── e2e/               # Playwright specs and Clerk setup/teardown; e2e/support/ holds page objects, Clerk user factory and sign-in fixtures, helpers, the web servers list, and the Testcontainers database launcher
 │   │   ├── public/            # static assets
 │   │   ├── next.config.ts
 │   │   ├── playwright.config.ts # starts database, fixtures, worker, and web for the E2E suite
 │   │   ├── vitest.config.ts
 │   │   ├── tsconfig.json
-│   │   ├── .env.example       # SCAN_WORKER_URL, SCAN_WORKER_TOKEN, SCAN_CALLBACK_TOKEN, DATABASE_URL (copy to .env.local)
+│   │   ├── .env.example       # SCAN_WORKER_URL, SCAN_WORKER_TOKEN, SCAN_CALLBACK_TOKEN, DATABASE_URL, Clerk keys, paths, and webhook secret (copy to .env.local)
 │   │   ├── biome.json         # extends @refresh/config/biome/next
 │   │   └── AGENTS.md          # Next.js-specific agent rules
 │   └── scan-worker/           # @refresh/scan-worker — Fastify HTTP service (127.0.0.1:3001) + Playwright/axe scanner
@@ -67,6 +68,11 @@ pnpm + Turborepo monorepo. Workspaces: `apps/*` and `packages/*`. Package names 
 | Kind of code | Location |
 | --- | --- |
 | Pages, layouts, routes, Route Handlers | `apps/web/src/app/` |
+| Clerk middleware | `apps/web/src/proxy.ts` |
+| Authorization (actor, guards, permissions) | `apps/web/src/server/auth/` |
+| Organization invitations | `apps/web/src/server/organizations/` |
+| Clerk webhook handling | `apps/web/src/server/clerk-webhooks/` |
+| Auth, landing, and organization components | `apps/web/src/components/auth/`, `landing/`, `organization/` |
 | React components / hooks / client helpers | `apps/web/src/components/`, `apps/web/src/hooks/`, `apps/web/src/lib/` |
 | Server-only web code (scan store access, worker client, callback) | `apps/web/src/server/` |
 | Database schema, migrations, data access (scan store) | `packages/db/` (`@refresh/db`); the web app uses it only from `src/server/` |

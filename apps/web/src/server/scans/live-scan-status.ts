@@ -57,6 +57,7 @@ const recordTerminal = async (
 const interrupted = async (
 	store: ScanStore,
 	scanId: string,
+	organizationId: string,
 ): Promise<Response> => {
 	if (await store.markInterrupted(scanId, new Date())) {
 		logServerEvent("warn", {
@@ -65,7 +66,7 @@ const interrupted = async (
 			reason: "worker-404",
 		});
 	}
-	const stored = await store.get(scanId);
+	const stored = await store.get({ scanId, organizationId });
 	return stored ? Response.json(toScanStatus(stored)) : scanNotFound();
 };
 
@@ -83,7 +84,7 @@ export const liveScanStatus = async ({
 	const path = scanPath(stored.scanId);
 	const response = await forwardToWorker({ method: "GET", path, clientId });
 	if (response.status === HTTP_NOT_FOUND) {
-		return await interrupted(store, stored.scanId);
+		return await interrupted(store, stored.scanId, stored.organizationId);
 	}
 	if (!response.ok) {
 		return response;

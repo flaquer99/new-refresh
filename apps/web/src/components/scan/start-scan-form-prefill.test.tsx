@@ -5,6 +5,12 @@ import { URL_LABEL } from "@/testing/render-scan-form";
 import { mockRouter } from "@/testing/router";
 
 vi.mock("next/navigation", () => ({ useRouter: vi.fn() }));
+vi.mock("@/server/auth/get-scan-actor", () => ({
+	getScanActor: vi.fn().mockResolvedValue({
+		ok: true,
+		actor: { userId: "user_test", organizationId: "org_test", role: "member" },
+	}),
+}));
 
 const PREFILLED = { url: "https://www.example.org/", depth: "2" };
 

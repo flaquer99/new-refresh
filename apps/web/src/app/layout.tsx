@@ -1,3 +1,5 @@
+import { ClerkProvider } from "@clerk/nextjs";
+import { shadcn } from "@clerk/ui/themes";
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter, Public_Sans } from "next/font/google";
 import { HudBackdrop } from "@/components/layout/hud-backdrop";
@@ -33,6 +35,8 @@ export const metadata: Metadata = {
 		"Scan a website for WCAG 2.2 Level A and AA accessibility issues and get guidance on how to fix them.",
 };
 
+const CHOOSE_ORGANIZATION_TASK_URL = "/onboarding";
+const AFTER_SIGN_OUT_URL = "/";
 const LIGHT_THEME_COLOR = "#f6f8fb";
 const DARK_THEME_COLOR = "#0a0f16";
 
@@ -52,12 +56,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 			className={`${inter.variable} ${publicSans.variable} ${geistMono.variable} h-full antialiased`}
 		>
 			<body className="flex min-h-full flex-col font-sans">
-				<ThemeProvider>
-					<SkipLink />
-					<HudBackdrop />
-					<SiteHeader />
-					{children}
-				</ThemeProvider>
+				<ClerkProvider
+					afterSignOutUrl={AFTER_SIGN_OUT_URL}
+					appearance={{ theme: shadcn }}
+					taskUrls={{ "choose-organization": CHOOSE_ORGANIZATION_TASK_URL }}
+				>
+					<ThemeProvider>
+						<SkipLink />
+						<HudBackdrop />
+						<SiteHeader />
+						{children}
+					</ThemeProvider>
+				</ClerkProvider>
 			</body>
 		</html>
 	);

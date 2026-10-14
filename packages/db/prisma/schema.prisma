@@ -29,6 +29,9 @@ enum ReportOutcomeValue {
 
 model Scan {
   id                 String              @id @db.Uuid
+  organizationId     String              @map("organization_id")
+  startedByUserId    String              @map("started_by_user_id")
+  startedByName      String?             @map("started_by_name")
   startUrl           String              @map("start_url")
   depth              Int
   status             ScanStatusValue
@@ -49,7 +52,7 @@ model Scan {
   finishedAt         DateTime?           @map("finished_at") @db.Timestamptz(3)
   updatedAt          DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
 
-  @@index([startedAt(sort: Desc), id(sort: Desc)])
+  @@index([organizationId, startedAt(sort: Desc), id(sort: Desc)], map: "scans_organization_started_at_idx")
   @@index([status, startedAt])
   @@map("scans")
 }

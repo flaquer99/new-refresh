@@ -13,7 +13,10 @@ describe("ScanView", () => {
 
 		// WHEN
 		render(
-			<ScanView scan={buildStoredScan({ status: "running", report: null })} />,
+			<ScanView
+				canManage
+				scan={buildStoredScan({ status: "running", report: null })}
+			/>,
 		);
 
 		// THEN
@@ -24,7 +27,7 @@ describe("ScanView", () => {
 
 	it("shows the stored report of a finished scan", () => {
 		// WHEN
-		render(<ScanView scan={buildStoredScan()} />);
+		render(<ScanView canManage scan={buildStoredScan()} />);
 
 		// THEN
 		expect(
@@ -38,6 +41,7 @@ describe("ScanView", () => {
 		// WHEN
 		render(
 			<ScanView
+				canManage
 				scan={buildStoredScan({
 					status: "failed",
 					report: null,
@@ -54,6 +58,7 @@ describe("ScanView", () => {
 		// WHEN
 		render(
 			<ScanView
+				canManage
 				scan={buildStoredScan({ status: "cancelled", report: null })}
 			/>,
 		);

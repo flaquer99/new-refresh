@@ -16,6 +16,8 @@
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.9.0",
+		"@clerk/nextjs": "^7.9.14",
+		"@clerk/ui": "^1.40.0",
 		"@phosphor-icons/react": "^2.1.10",
 		"@refresh/db": "workspace:*",
 		"@refresh/scan-contracts": "workspace:*",
@@ -32,6 +34,7 @@
 	"devDependencies": {
 		"@axe-core/playwright": "^4.13.0",
 		"@biomejs/biome": "catalog:",
+		"@clerk/testing": "^2.2.45",
 		"@playwright/test": "catalog:",
 		"@refresh/a11y-fixtures": "workspace:*",
 		"@refresh/config": "workspace:*",

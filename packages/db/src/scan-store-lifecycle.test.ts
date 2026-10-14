@@ -7,12 +7,14 @@ import {
   SAMPLE_START_URL,
   SAMPLE_STARTED_AT,
 } from "./testing/sample-result.js";
+import { TEST_ORGANIZATION_ID, TEST_OWNER } from "./testing/test-owner.js";
 import { useTestStore } from "./testing/use-test-store.js";
 
 const RUNNING_INPUT = {
   scanId: SAMPLE_SCAN_ID,
   request: { url: SAMPLE_START_URL, depth: 1 },
   startedAt: SAMPLE_STARTED_AT,
+  owner: TEST_OWNER,
 };
 
 describe("ScanStore lifecycle", () => {
@@ -23,10 +25,13 @@ describe("ScanStore lifecycle", () => {
     await db.store().createRunning(RUNNING_INPUT);
 
     // WHEN
-    const stored = await db.store().get(SAMPLE_SCAN_ID);
+    const stored = await db
+      .store()
+      .get({ scanId: SAMPLE_SCAN_ID, organizationId: TEST_ORGANIZATION_ID });
 
     // THEN
     expect(stored).toEqual({
+      ...TEST_OWNER,
       scanId: SAMPLE_SCAN_ID,
       startUrl: SAMPLE_START_URL,
       depth: 1,
@@ -55,7 +60,9 @@ describe("ScanStore lifecycle", () => {
     await db.store().recordResult(buildCompletedResult());
 
     // WHEN
-    const stored = await db.store().get(SAMPLE_SCAN_ID);
+    const stored = await db
+      .store()
+      .get({ scanId: SAMPLE_SCAN_ID, organizationId: TEST_ORGANIZATION_ID });
 
     // THEN
     expect(stored?.report).toEqual(buildSampleReport());
@@ -80,7 +87,9 @@ describe("ScanStore lifecycle", () => {
     await db.store().recordResult(buildInterruptedResult());
 
     // WHEN
-    const stored = await db.store().get(SAMPLE_SCAN_ID);
+    const stored = await db
+      .store()
+      .get({ scanId: SAMPLE_SCAN_ID, organizationId: TEST_ORGANIZATION_ID });
 
     // THEN
     expect(stored?.status).toBe("completed");

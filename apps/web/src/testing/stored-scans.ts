@@ -6,6 +6,9 @@ export const buildStoredScan = (
 	overrides: Partial<StoredScan> = {},
 ): StoredScan => ({
 	scanId: SCAN_ID,
+	organizationId: "org_test",
+	startedByUserId: "user_test",
+	startedByName: "Ana Souza",
 	startUrl: "https://www.example.org/",
 	depth: 1,
 	status: "completed",

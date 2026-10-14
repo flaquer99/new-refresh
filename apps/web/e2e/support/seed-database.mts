@@ -15,8 +15,9 @@ if (!databaseUrl) {
 const [command, ...args] = process.argv.slice(2);
 
 if (command === "seed") {
-	const [count, startUrl] = args;
+	const [count, startUrl, ownerJson] = args;
 	const scans = buildSeedHistory({
+		owner: JSON.parse(String(ownerJson)),
 		count: Number(count),
 		newest: FUTURE_NEWEST,
 		stepMs: MINUTE_MS,

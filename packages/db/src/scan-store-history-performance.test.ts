@@ -6,6 +6,7 @@ import {
   explainQuery,
   seedScans,
 } from "./testing/seed-scans.js";
+import { TEST_ORGANIZATION_ID } from "./testing/test-owner.js";
 import { useTestStore } from "./testing/use-test-store.js";
 
 const PAGE_SIZE = 20;
@@ -15,8 +16,8 @@ const P95_BUDGET_MS = 50;
 const P95_INDEX = Math.ceil(RUNS * 0.95) - 1;
 // Matches an index scan whose Index Cond bounds started_at at the cursor
 const OLDER_PAGE_INDEX_RANGE =
-  /Index Scan using scans_started_at_id_idx[\s\S]*Index Cond: \(.*started_at <=/;
-const FIRST_PAGE_SQL = `SELECT * FROM "scans" ORDER BY "started_at" DESC, "id" DESC LIMIT ${PAGE_SIZE + 1}`;
+  /Index Scan using scans_organization_started_at_idx[\s\S]*Index Cond: \(.*started_at <=/;
+const FIRST_PAGE_SQL = `SELECT * FROM "scans" WHERE "organization_id" = '${TEST_ORGANIZATION_ID}' ORDER BY "started_at" DESC, "id" DESC LIMIT ${PAGE_SIZE + 1}`;
 
 describe("ScanStore history performance", () => {
   const db = useTestStore();
@@ -33,20 +34,25 @@ describe("ScanStore history performance", () => {
     );
   });
 
-  it("reads the first history page through the started_at index", async () => {
+  it("reads the first history page through the organization index", async () => {
     // WHEN
     const plan = await explainQuery(db.databaseUrl(), FIRST_PAGE_SQL);
 
     // THEN
-    expect(plan).toContain("scans_started_at_id_idx");
+    expect(plan).toContain("scans_organization_started_at_idx");
   });
 
-  it("starts an older history page at the cursor through the started_at index", async () => {
+  it("starts an older history page at the cursor through the organization index", async () => {
     // GIVEN
-    const firstPage = await db.store().list({ before: null, limit: PAGE_SIZE });
+    const firstPage = await db.store().list({
+      organizationId: TEST_ORGANIZATION_ID,
+      before: null,
+      limit: PAGE_SIZE,
+    });
 
     // WHEN
     const plan = await explainHistoryPage(db.databaseUrl(), {
+      organizationId: TEST_ORGANIZATION_ID,
       before: firstPage.nextBefore,
       limit: PAGE_SIZE,
     });
@@ -57,13 +63,21 @@ describe("ScanStore history performance", () => {
 
   it("reads the first history page of 1,000 scans within the p95 budget", async () => {
     // GIVEN
-    await db.store().list({ before: null, limit: PAGE_SIZE });
+    await db.store().list({
+      organizationId: TEST_ORGANIZATION_ID,
+      before: null,
+      limit: PAGE_SIZE,
+    });
     const durations: number[] = [];
 
     // WHEN
     for (let run = 0; run < RUNS; run += 1) {
       const start = performance.now();
-      await db.store().list({ before: null, limit: PAGE_SIZE });
+      await db.store().list({
+        organizationId: TEST_ORGANIZATION_ID,
+        before: null,
+        limit: PAGE_SIZE,
+      });
       durations.push(performance.now() - start);
     }
 

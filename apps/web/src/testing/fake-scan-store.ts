@@ -21,6 +21,9 @@ export const createFakeScanStore = (): FakeScanStore => ({
 	deleteFinished: vi.fn<ScanStore["deleteFinished"]>(() =>
 		Promise.resolve("deleted"),
 	),
+	deleteByOrganization: vi.fn<ScanStore["deleteByOrganization"]>(() =>
+		Promise.resolve(0),
+	),
 	close: vi.fn<ScanStore["close"]>(() => Promise.resolve()),
 });
 

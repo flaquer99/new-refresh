@@ -12,6 +12,8 @@
 			"!test-results",
 			"!playwright-report",
 			"!.vitest",
+			"!.agents",
+			"!skills-lock.json",
 			"!.impeccable/hook.cache.json"
 		]
 	},
