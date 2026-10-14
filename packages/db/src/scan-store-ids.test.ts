@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { TEST_ORGANIZATION_ID } from "./testing/test-owner.js";
 import { useTestStore } from "./testing/use-test-store.js";
 
 const NOT_A_UUID = "scan-1";
@@ -9,7 +10,9 @@ describe("ScanStore with an id that is not a uuid", () => {
 
   it("finds no scan", async () => {
     // WHEN
-    const stored = await db.store().get(NOT_A_UUID);
+    const stored = await db
+      .store()
+      .get({ scanId: NOT_A_UUID, organizationId: TEST_ORGANIZATION_ID });
 
     // THEN
     expect(stored).toBeNull();
@@ -25,7 +28,10 @@ describe("ScanStore with an id that is not a uuid", () => {
 
   it("reports the scan as not found on delete", async () => {
     // WHEN
-    const outcome = await db.store().deleteFinished(NOT_A_UUID);
+    const outcome = await db.store().deleteFinished({
+      scanId: NOT_A_UUID,
+      organizationId: TEST_ORGANIZATION_ID,
+    });
 
     // THEN
     expect(outcome).toBe("not-found");

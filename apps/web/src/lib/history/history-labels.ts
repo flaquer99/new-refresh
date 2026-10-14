@@ -1,6 +1,8 @@
 import type { ReportOutcome } from "@refresh/scan-contracts/report";
 import type { ScanStatusValue } from "@refresh/scan-contracts/scan-status";
 
+export const UNKNOWN_MEMBER_LABEL = "Unknown member";
+
 export const STATUS_LABELS: Record<ScanStatusValue, string> = {
 	running: "Running",
 	completed: "Completed",

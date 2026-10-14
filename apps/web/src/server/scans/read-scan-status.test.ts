@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useFakeScanStore } from "@/testing/fake-scan-store";
 import { buildReport } from "@/testing/report-fixtures";
+import { MEMBER_ACTOR } from "@/testing/scan-actors";
 import { RUNNING_STATUS, SCAN_ID } from "@/testing/scan-route-requests";
 import { spyOnServerLog } from "@/testing/server-log-spy";
 import { buildStoredScan, RUNNING_STORED_SCAN } from "@/testing/stored-scans";
@@ -9,7 +10,7 @@ import { readScanStatus } from "./read-scan-status";
 
 vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
 
-const READ = { scanId: SCAN_ID, clientId: "198.51.100.4" };
+const READ = { scanId: SCAN_ID, actor: MEMBER_ACTOR };
 
 describe("readScanStatus", () => {
 	const store = useFakeScanStore();

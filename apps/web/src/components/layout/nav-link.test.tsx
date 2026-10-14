@@ -1,15 +1,24 @@
 import { render, screen } from "@testing-library/react";
 import { usePathname } from "next/navigation";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { clerkView } from "@/testing/clerk-components";
 import { SiteHeader } from "./site-header";
 
 vi.mock("next/navigation", () => ({ usePathname: vi.fn() }));
+vi.mock("@clerk/nextjs", async () => {
+	const { clerkComponentsMock } = await import("@/testing/clerk-components");
+	return clerkComponentsMock;
+});
 
 const currentLinks = () =>
 	screen
 		.getAllByRole("link")
 		.filter((link) => link.getAttribute("aria-current") === "page")
 		.map((link) => link.textContent);
+
+beforeEach(() => {
+	clerkView.signedIn = true;
+});
 
 describe("SiteHeader navigation", () => {
 	it("marks Scan history as the current page on the history route", () => {

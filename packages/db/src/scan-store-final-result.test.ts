@@ -7,12 +7,14 @@ import {
   SAMPLE_START_URL,
   SAMPLE_STARTED_AT,
 } from "./testing/sample-result.js";
+import { TEST_OWNER } from "./testing/test-owner.js";
 import { useTestStore } from "./testing/use-test-store.js";
 
 const RUNNING_INPUT = {
   scanId: SAMPLE_SCAN_ID,
   request: { url: SAMPLE_START_URL, depth: 1 },
   startedAt: SAMPLE_STARTED_AT,
+  owner: TEST_OWNER,
 };
 
 describe("ScanStore final result", () => {

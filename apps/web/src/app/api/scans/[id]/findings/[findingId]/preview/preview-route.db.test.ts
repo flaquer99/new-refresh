@@ -1,12 +1,19 @@
 import { describe, expect, it, vi } from "vitest";
 import { getScanStore } from "@/server/db/scan-store";
+import { TEST_ORGANIZATION_ID, TEST_USER_ID } from "@/testing/fake-clerk";
 import { buildViolation } from "@/testing/finding-fixtures";
 import { buildReport } from "@/testing/report-fixtures";
 import { SCAN_ID } from "@/testing/scan-route-requests";
 import { spyOnServerLog } from "@/testing/server-log-spy";
 import { stubWorker } from "@/testing/stub-worker";
+import { useFakeClerk } from "@/testing/use-fake-clerk";
 import { useTestDatabase } from "@/testing/use-test-database";
 import { GET } from "./route";
+
+vi.mock("@clerk/nextjs/server", () => ({
+	auth: vi.fn(),
+	currentUser: vi.fn(),
+}));
 
 const FINDING_ID = "violation-1";
 const PAGE_URL = "https://www.example.org/";
@@ -18,6 +25,11 @@ const seedCompletedScan = async () => {
 		scanId: SCAN_ID,
 		request: { url: PAGE_URL, depth: 0 },
 		startedAt: STARTED_AT,
+		owner: {
+			organizationId: TEST_ORGANIZATION_ID,
+			startedByUserId: TEST_USER_ID,
+			startedByName: null,
+		},
 	});
 	await store.recordResult({
 		scanId: SCAN_ID,
@@ -38,6 +50,7 @@ const getPreview = (findingId: string) =>
 
 describe("finding preview route with a real database", () => {
 	useTestDatabase();
+	useFakeClerk();
 
 	it("serves a loaded preview for a stored finding", async () => {
 		// GIVEN

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { TEST_USER_ID } from "@/testing/fake-clerk";
 import { useFakeScanStore } from "@/testing/fake-scan-store";
 import {
 	SCAN_ID,
@@ -11,11 +12,17 @@ import {
 	STUB_WORKER_URL,
 	stubWorker,
 } from "@/testing/stub-worker";
+import { useFakeClerk } from "@/testing/use-fake-clerk";
 import { POST } from "./route";
 
+vi.mock("@clerk/nextjs/server", () => ({
+	auth: vi.fn(),
+	currentUser: vi.fn(),
+}));
 vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
 
 describe("POST /api/scans", () => {
+	useFakeClerk();
 	useFakeScanStore();
 
 	beforeEach(() => {
@@ -28,11 +35,7 @@ describe("POST /api/scans", () => {
 		const calls = stubWorker(201, { scanId: SCAN_ID });
 
 		// WHEN
-		await POST(
-			startScanRequest(VALID_SCAN_BODY, {
-				"x-forwarded-for": "203.0.113.7, 10.0.0.1",
-			}),
-		);
+		await POST(startScanRequest(VALID_SCAN_BODY));
 
 		// THEN
 		expect(calls).toEqual([
@@ -42,7 +45,7 @@ describe("POST /api/scans", () => {
 				headers: {
 					authorization: `Bearer ${STUB_WORKER_TOKEN}`,
 					"content-type": "application/json",
-					"x-client-id": "203.0.113.7",
+					"x-client-id": TEST_USER_ID,
 				},
 				body: { scanId: SCAN_ID, ...VALID_SCAN_BODY },
 			},

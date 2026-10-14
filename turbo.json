@@ -3,17 +3,31 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
       "outputs": [
         ".next/**",
         "!.next/cache/**",
         "dist/**",
         "src/generated/**"
+      ],
+      "env": [
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL"
       ]
     },
     "dev": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "cache": false,
       "persistent": true,
       "passThroughEnv": [
@@ -26,11 +40,20 @@
         "SCAN_CALLBACK_TOKEN",
         "DATABASE_URL",
         "LOG_LEVEL",
-        "NODE_ENV"
+        "NODE_ENV",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL",
+        "CLERK_WEBHOOK_SIGNING_SECRET"
       ]
     },
     "start": {
-      "dependsOn": ["build"],
+      "dependsOn": [
+        "build"
+      ],
       "cache": false,
       "persistent": true,
       "passThroughEnv": [
@@ -43,21 +66,37 @@
         "SCAN_CALLBACK_TOKEN",
         "DATABASE_URL",
         "LOG_LEVEL",
-        "NODE_ENV"
+        "NODE_ENV",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL",
+        "CLERK_WEBHOOK_SIGNING_SECRET"
       ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": [
+        "^lint"
+      ]
     },
     "format": {
       "cache": false
     },
     "check-types": {
-      "dependsOn": ["^build", "^check-types"]
+      "dependsOn": [
+        "^build",
+        "^check-types"
+      ]
     },
     "test": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"],
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "coverage/**"
+      ],
       "passThroughEnv": [
         "SCAN_WORKER_URL",
         "SCAN_WORKER_TOKEN",
@@ -70,11 +109,20 @@
         "DOCKER_HOST",
         "TESTCONTAINERS_*",
         "LOG_LEVEL",
-        "NODE_ENV"
+        "NODE_ENV",
+        "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+        "CLERK_SECRET_KEY",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL",
+        "NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL",
+        "CLERK_WEBHOOK_SIGNING_SECRET"
       ]
     },
     "test:e2e": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "cache": false,
       "passThroughEnv": [
         "E2E_WEB_PORT",
@@ -83,6 +131,8 @@
         "E2E_CLOSED_PORT",
         "E2E_SCAN_WORKER_TOKEN",
         "E2E_SCAN_CALLBACK_TOKEN",
+        "E2E_CLERK_PUBLISHABLE_KEY",
+        "E2E_CLERK_SECRET_KEY",
         "DOCKER_HOST",
         "TESTCONTAINERS_*",
         "CI"

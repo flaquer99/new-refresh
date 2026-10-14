@@ -5,9 +5,17 @@ import {
   SAMPLE_START_URL,
   SAMPLE_STARTED_AT,
 } from "./sample-result.js";
+import {
+  TEST_ORGANIZATION_ID,
+  TEST_USER_ID,
+  TEST_USER_NAME,
+} from "./test-owner.js";
 
 export const buildScanRow = (overrides: Partial<Scan> = {}): Scan => ({
   id: SAMPLE_SCAN_ID,
+  organizationId: TEST_ORGANIZATION_ID,
+  startedByUserId: TEST_USER_ID,
+  startedByName: TEST_USER_NAME,
   startUrl: SAMPLE_START_URL,
   depth: 1,
   status: "completed",

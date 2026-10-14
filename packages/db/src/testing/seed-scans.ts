@@ -2,12 +2,15 @@ import { randomUUID } from "node:crypto";
 import type { ScanStatusValue } from "@refresh/scan-contracts/scan-status";
 import { createPrismaClient } from "../create-prisma-client.js";
 import type { PrismaClient } from "../generated/prisma/client.js";
+import type { ScanOwner } from "../scan-store-types.js";
+import { TEST_OWNER } from "./test-owner.js";
 
 export type SeedScan = {
   scanId: string;
   startUrl: string;
   status: ScanStatusValue;
   startedAt: Date;
+  owner?: ScanOwner;
 };
 
 export type SeedHistoryOptions = {
@@ -15,6 +18,7 @@ export type SeedHistoryOptions = {
   newest: Date;
   stepMs: number;
   startUrl: string;
+  owner?: ScanOwner;
 };
 
 const withPrisma = async (
@@ -34,12 +38,14 @@ export const buildSeedHistory = ({
   newest,
   stepMs,
   startUrl,
+  owner,
 }: SeedHistoryOptions): SeedScan[] =>
   Array.from({ length: count }, (_, index) => ({
     scanId: randomUUID(),
     startUrl,
     status: "completed",
     startedAt: new Date(newest.getTime() - index * stepMs),
+    owner,
   }));
 
 export const seedScans = (
@@ -48,7 +54,8 @@ export const seedScans = (
 ): Promise<void> =>
   withPrisma(databaseUrl, (prisma) =>
     prisma.scan.createMany({
-      data: scans.map(({ scanId, startUrl, status, startedAt }) => ({
+      data: scans.map(({ scanId, startUrl, status, startedAt, owner }) => ({
+        ...(owner ?? TEST_OWNER),
         id: scanId,
         startUrl,
         depth: 0,

@@ -6,13 +6,18 @@ import { ScanProgress } from "./scan-progress";
 
 type LiveScanProps = {
 	scanId: string;
+	canCancel: boolean;
 };
 
-export function LiveScan({ scanId }: LiveScanProps) {
+export function LiveScan({ scanId, canCancel }: LiveScanProps) {
 	const { progress, pollError, cancel, retry } = useLiveScan(scanId);
 	return (
 		<div className="flex flex-col gap-4">
-			<ScanProgress onCancel={cancel} progress={progress} />
+			<ScanProgress
+				canCancel={canCancel}
+				onCancel={cancel}
+				progress={progress}
+			/>
 			{pollError ? <PollErrorNotice error={pollError} onRetry={retry} /> : null}
 		</div>
 	);

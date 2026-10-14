@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { MEMBER_ACTOR } from "@/testing/scan-actors";
 import { useFakeScanStore } from "@/testing/fake-scan-store";
 import { buildViolation } from "@/testing/finding-fixtures";
 import { buildReport } from "@/testing/report-fixtures";
@@ -16,7 +17,7 @@ vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
 
 const FINDING_ID = "violation-1";
 const PAGE_URL = "https://www.example.org/";
-const PARAMS = { scanId: SCAN_ID, findingId: FINDING_ID, clientId: "c" };
+const PARAMS = { scanId: SCAN_ID, findingId: FINDING_ID, actor: MEMBER_ACTOR };
 const WORKER_TIMEOUT_MS = 12_000;
 
 const describeResponse = async (response: Response) => {
@@ -32,6 +33,39 @@ describe("loadFindingPreview", () => {
 		readLog = spyOnServerLog();
 		const report = buildReport({ violations: [buildViolation()] });
 		store().get.mockResolvedValue(buildStoredScan({ report }));
+	});
+
+	it("looks the scan up in the actor's organization", async () => {
+		// GIVEN
+		stubWorker(200, {
+			kind: "unavailable",
+			reason: "not-html",
+			httpStatus: 200,
+		});
+
+		// WHEN
+		await loadFindingPreview(PARAMS);
+
+		// THEN
+		expect(store().get).toHaveBeenCalledWith({
+			scanId: SCAN_ID,
+			organizationId: MEMBER_ACTOR.organizationId,
+		});
+	});
+
+	it("forwards the actor's user id to the worker as client id", async () => {
+		// GIVEN
+		const calls = stubWorker(200, {
+			kind: "unavailable",
+			reason: "not-html",
+			httpStatus: 200,
+		});
+
+		// WHEN
+		await loadFindingPreview(PARAMS);
+
+		// THEN
+		expect(calls[0]?.headers["x-client-id"]).toBe(MEMBER_ACTOR.userId);
 	});
 
 	it("answers SCAN_NOT_FOUND for an unknown scan", async () => {

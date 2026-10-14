@@ -18,8 +18,9 @@ if (!databaseUrl) {
 const [command, ...args] = process.argv.slice(2);
 
 if (command === "seed") {
-	const [count, startUrl] = args;
+	const [count, startUrl, ownerJson] = args;
 	const scans = buildSeedHistory({
+		owner: JSON.parse(String(ownerJson)),
 		count: Number(count),
 		newest: FUTURE_NEWEST,
 		stepMs: MINUTE_MS,
@@ -34,12 +35,16 @@ if (command === "remove") {
 }
 
 if (command === "seed-preview") {
-	const [fixtures, closed] = args;
+	const [fixtures, closed, ownerJson] = args;
 	const scanId = randomUUID();
 	const report = buildPreviewReport({
 		fixtures: String(fixtures),
 		closed: String(closed),
 	});
-	await seedReportScan(databaseUrl, { scanId, report });
+	await seedReportScan(databaseUrl, {
+		scanId,
+		report,
+		owner: JSON.parse(String(ownerJson)),
+	});
 	process.stdout.write(JSON.stringify(scanId));
 }

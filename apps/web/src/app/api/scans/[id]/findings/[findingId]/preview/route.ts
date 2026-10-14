@@ -1,18 +1,18 @@
+import { requireApiActor } from "@/server/auth/require-api-actor";
 import { loadFindingPreview } from "@/server/previews/load-finding-preview";
-import { resolveClientId } from "@/server/scans/client-id";
 import { withStoreErrors } from "@/server/scans/store-errors";
 
 export async function GET(
-	request: Request,
+	_request: Request,
 	context: RouteContext<"/api/scans/[id]/findings/[findingId]/preview">,
 ): Promise<Response> {
+	const auth = await requireApiActor();
+	if (!auth.ok) {
+		return auth.response;
+	}
 	const { id, findingId } = await context.params;
 	const response = await withStoreErrors("loadFindingPreview", () =>
-		loadFindingPreview({
-			scanId: id,
-			findingId,
-			clientId: resolveClientId(request.headers),
-		}),
+		loadFindingPreview({ scanId: id, findingId, actor: auth.actor }),
 	);
 	response.headers.set("cache-control", "no-store");
 	return response;

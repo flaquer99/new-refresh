@@ -1,5 +1,5 @@
 import { ScanHistoryPage } from "./support/scan-history-page";
-import { removeScans, seedNewestScans } from "./support/seed-scans";
+import { ownerOf, removeScans, seedNewestScans } from "./support/seed-scans";
 import { expect, test } from "./support/test";
 
 const SEEDED_SCANS = 45;
@@ -37,10 +37,11 @@ test.describe("E2E-07 — a user pages through the scan history", () => {
 
 	test("shows the newest scans 20 at a time through Older scans", async ({
 		page,
+		world,
 	}, testInfo) => {
 		// GIVEN
 		const seedUrl = `https://seeded-${testInfo.testId}.example/`;
-		seeded = seedNewestScans(SEEDED_SCANS, seedUrl);
+		seeded = seedNewestScans(SEEDED_SCANS, seedUrl, ownerOf(world.admin));
 		const history = new ScanHistoryPage(page);
 		await history.open();
 
@@ -53,11 +54,13 @@ test.describe("E2E-07 — a user pages through the scan history", () => {
 
 	test("titles an older page so users know where they are", async ({
 		page,
+		world,
 	}, testInfo) => {
 		// GIVEN
 		seeded = seedNewestScans(
 			SEEDED_SCANS,
 			`https://titled-${testInfo.testId}.example/`,
+			ownerOf(world.admin),
 		);
 		const history = new ScanHistoryPage(page);
 		await history.open();

@@ -25,7 +25,7 @@ export function ScanHistoryEntry({ entry, now }: ScanHistoryEntryProps) {
 				</Link>
 			</h2>
 			<ScanEntryDetails entry={entry} now={now} />
-			{entry.deletable ? (
+			{entry.canDelete ? (
 				<DeleteScanButton scanId={entry.scanId} startUrl={entry.startUrl} />
 			) : null}
 		</article>

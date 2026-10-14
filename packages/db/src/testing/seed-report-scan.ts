@@ -1,20 +1,24 @@
 import type { ScanReport } from "@refresh/scan-contracts/report";
 import { createPrismaClient } from "../create-prisma-client.js";
 import { resultColumns } from "../result-columns.js";
+import type { ScanOwner } from "../scan-store-types.js";
+import { TEST_OWNER } from "./test-owner.js";
 
 export type SeedReportScan = {
   scanId: string;
   report: ScanReport;
+  owner?: ScanOwner;
 };
 
 export const seedReportScan = async (
   databaseUrl: string,
-  { scanId, report }: SeedReportScan,
+  { scanId, report, owner }: SeedReportScan,
 ): Promise<void> => {
   const prisma = createPrismaClient(databaseUrl);
   try {
     await prisma.scan.create({
       data: {
+        ...(owner ?? TEST_OWNER),
         id: scanId,
         startUrl: report.startUrl,
         depth: report.depth,

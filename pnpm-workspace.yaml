@@ -11,6 +11,7 @@ allowBuilds:
   ssh2: false
   cpu-features: false
   protobufjs: false
+  core-js: false
 
 catalog:
   "@biomejs/biome": 2.5.15

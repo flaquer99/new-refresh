@@ -9,9 +9,14 @@ const HEADING_ID = "scan-progress-heading";
 type ScanProgressProps = {
 	progress: Progress;
 	onCancel: () => Promise<boolean>;
+	canCancel: boolean;
 };
 
-export function ScanProgress({ progress, onCancel }: ScanProgressProps) {
+export function ScanProgress({
+	progress,
+	onCancel,
+	canCancel,
+}: ScanProgressProps) {
 	const headingRef = useFocusOnMount<HTMLHeadingElement>();
 	return (
 		<HudPanel labelledBy={HEADING_ID} title="Scan console">
@@ -24,7 +29,7 @@ export function ScanProgress({ progress, onCancel }: ScanProgressProps) {
 				Scan in progress
 			</h2>
 			<ProgressStatus progress={progress} />
-			<CancelScanButton onCancel={onCancel} />
+			{canCancel ? <CancelScanButton onCancel={onCancel} /> : null}
 		</HudPanel>
 	);
 }

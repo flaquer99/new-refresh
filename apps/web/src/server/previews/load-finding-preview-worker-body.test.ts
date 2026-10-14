@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { MEMBER_ACTOR } from "@/testing/scan-actors";
 import { useFakeScanStore } from "@/testing/fake-scan-store";
 import { buildViolation } from "@/testing/finding-fixtures";
 import { buildReport } from "@/testing/report-fixtures";
@@ -12,7 +13,11 @@ vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
 
 const PAGE_URL = "https://www.example.org/";
 const FINAL_URL = "https://www.example.org/home";
-const PARAMS = { scanId: SCAN_ID, findingId: "violation-1", clientId: "c" };
+const PARAMS = {
+	scanId: SCAN_ID,
+	findingId: "violation-1",
+	actor: MEMBER_ACTOR,
+};
 const TOKEN = "11111111-1111-4111-8111-111111111111";
 
 describe("loadFindingPreview worker bodies", () => {

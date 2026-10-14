@@ -11,11 +11,12 @@ const MISSING_RESULT: ScanError = {
 
 type ScanViewProps = {
 	scan: StoredScan;
+	canManage: boolean;
 };
 
-export function ScanView({ scan }: ScanViewProps) {
+export function ScanView({ scan, canManage }: ScanViewProps) {
 	if (scan.status === "running") {
-		return <LiveScan scanId={scan.scanId} />;
+		return <LiveScan canCancel={canManage} scanId={scan.scanId} />;
 	}
 	if (scan.report) {
 		return <ReportView report={scan.report} scanId={scan.scanId} />;

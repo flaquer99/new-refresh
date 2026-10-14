@@ -1,13 +1,13 @@
 # Accessibility Scan
 
-`refresh` checks a website against WCAG 2.2 Level A and AA and tells the user what is wrong, where, and how to fix it. Decisions behind it: [ADR-0001](./docs/adr/0001-wcag-accessibility-scan.md), [ADR-0002](./docs/adr/0002-persist-scans-in-web-owned-postgres.md).
+`refresh` checks a website against WCAG 2.2 Level A and AA and tells the user what is wrong, where, and how to fix it. Decisions behind it: [ADR-0001](./docs/adr/0001-wcag-accessibility-scan.md), [ADR-0002](./docs/adr/0002-persist-scans-in-web-owned-postgres.md), [ADR-0003](./docs/adr/0003-clerk-auth-and-organization-tenancy.md).
 
 ## Language
 
 ### Scanning
 
 **Scan**:
-One run of the checker, started from a single submitted URL and a crawl depth, producing one report. Scans are anonymous: no one owns a scan, and every scan is visible to everyone through the scan history.
+One run of the checker, started from a single submitted URL and a crawl depth, producing one report. Every scan belongs to one organization and records who started it. Only members of that organization can see it.
 _Avoid_: Audit, job, test run
 
 **Scan link**:
@@ -15,7 +15,7 @@ The permanent, unguessable address of one scan. Opening it shows the scan's prog
 _Avoid_: Share link, permalink, report URL
 
 **Scan history**:
-The list of all scans, newest first, open to every visitor. Each entry leads to its scan link. Any visitor can delete a scan that is no longer running, which removes it and its report for good.
+The list of the organization's scans, newest first, with the name of whoever started each. Each entry leads to its scan link. An admin can delete any finished scan of the organization and a member only their own, which removes it and its report for good.
 _Avoid_: Dashboard, audit log, my scans
 
 **Start URL**:

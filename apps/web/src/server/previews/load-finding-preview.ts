@@ -1,5 +1,6 @@
 import "server-only";
 import type { FindingPreview } from "@refresh/scan-contracts/preview-ui";
+import type { ScanActor } from "../auth/get-scan-actor";
 import { getScanStore } from "../db/scan-store";
 import { logServerEvent } from "../log/server-log";
 import { errorResponse } from "../scans/error-response";
@@ -17,7 +18,7 @@ const FINDING_NOT_FOUND_MESSAGE =
 export type LoadFindingPreviewParams = {
 	scanId: string;
 	findingId: string;
-	clientId: string;
+	actor: ScanActor;
 };
 
 const findingNotFound = (): Response =>
@@ -48,9 +49,12 @@ const toPreview = (
 export const loadFindingPreview = async ({
 	scanId,
 	findingId,
-	clientId,
+	actor,
 }: LoadFindingPreviewParams): Promise<Response> => {
-	const stored = await getScanStore().get(scanId);
+	const stored = await getScanStore().get({
+		scanId,
+		organizationId: actor.organizationId,
+	});
 	if (!stored) {
 		return scanNotFound();
 	}
@@ -60,7 +64,7 @@ export const loadFindingPreview = async ({
 	}
 	const outcome = await requestPreviewPage({
 		pageUrl: finding.pageUrl,
-		clientId,
+		clientId: actor.userId,
 	});
 	if (outcome.kind === "worker-error") {
 		logServerEvent("warn", { event: "preview.worker_unavailable" });

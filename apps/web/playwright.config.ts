@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { exposeClerkKeysToTestRunner } from "./e2e/support/clerk-env";
 import { WEB_ORIGIN } from "./e2e/support/ports";
 import { WEB_SERVERS } from "./e2e/support/servers";
 
@@ -13,6 +14,10 @@ const THEME_COVERAGE_SPECS = [
 	"theme-first-paint.spec.ts",
 ];
 const isCi = Boolean(process.env.CI);
+const SETUP_PROJECT = "clerk-setup";
+const TEARDOWN_PROJECT = "clerk-teardown";
+
+exposeClerkKeysToTestRunner();
 
 export default defineConfig({
 	testDir: "./e2e",
@@ -25,11 +30,19 @@ export default defineConfig({
 	use: { baseURL: WEB_ORIGIN, trace: "retain-on-failure" },
 	projects: [
 		{
+			name: SETUP_PROJECT,
+			testMatch: "clerk.setup.ts",
+			teardown: TEARDOWN_PROJECT,
+		},
+		{ name: TEARDOWN_PROJECT, testMatch: "clerk.teardown.ts" },
+		{
 			name: "desktop-chromium",
+			dependencies: [SETUP_PROJECT],
 			use: { ...devices["Desktop Chrome"], viewport: DESKTOP_VIEWPORT },
 		},
 		{
 			name: "mobile-chromium",
+			dependencies: [SETUP_PROJECT],
 			testMatch: [
 				"dogfooding.spec.ts",
 				"dogfooding-persistence.spec.ts",
@@ -39,11 +52,13 @@ export default defineConfig({
 		},
 		{
 			name: "tablet-chromium",
+			dependencies: [SETUP_PROJECT],
 			testMatch: THEME_COVERAGE_SPECS,
 			use: { ...devices["Desktop Chrome"], viewport: TABLET_VIEWPORT },
 		},
 		{
 			name: "desktop-dark",
+			dependencies: [SETUP_PROJECT],
 			testMatch: THEME_COVERAGE_SPECS,
 			use: {
 				...devices["Desktop Chrome"],
@@ -53,6 +68,7 @@ export default defineConfig({
 		},
 		{
 			name: "tablet-dark",
+			dependencies: [SETUP_PROJECT],
 			testMatch: THEME_COVERAGE_SPECS,
 			use: {
 				...devices["Desktop Chrome"],
@@ -62,6 +78,7 @@ export default defineConfig({
 		},
 		{
 			name: "mobile-dark",
+			dependencies: [SETUP_PROJECT],
 			testMatch: THEME_COVERAGE_SPECS,
 			use: {
 				...devices["Desktop Chrome"],

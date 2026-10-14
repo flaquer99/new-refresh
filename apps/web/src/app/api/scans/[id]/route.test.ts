@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { TEST_USER_ID } from "@/testing/fake-clerk";
 import { useFakeScanStore } from "@/testing/fake-scan-store";
 import {
 	RUNNING_STATUS,
@@ -13,8 +14,13 @@ import {
 	STUB_WORKER_URL,
 	stubWorker,
 } from "@/testing/stub-worker";
+import { useFakeClerk } from "@/testing/use-fake-clerk";
 import { GET } from "./route";
 
+vi.mock("@clerk/nextjs/server", () => ({
+	auth: vi.fn(),
+	currentUser: vi.fn(),
+}));
 vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
 
 const readResponse = async (response: Response) => ({
@@ -24,6 +30,7 @@ const readResponse = async (response: Response) => ({
 });
 
 describe("GET /api/scans/[id]", () => {
+	useFakeClerk();
 	const store = useFakeScanStore();
 
 	beforeEach(() => {
@@ -36,10 +43,7 @@ describe("GET /api/scans/[id]", () => {
 		const calls = stubWorker(200, RUNNING_STATUS);
 
 		// WHEN
-		await GET(
-			scanRequest("GET", { "x-real-ip": "198.51.100.4" }),
-			scanRouteContext(SCAN_ID),
-		);
+		await GET(scanRequest("GET"), scanRouteContext(SCAN_ID));
 
 		// THEN
 		expect(calls).toEqual([
@@ -48,7 +52,7 @@ describe("GET /api/scans/[id]", () => {
 				method: "GET",
 				headers: {
 					authorization: `Bearer ${STUB_WORKER_TOKEN}`,
-					"x-client-id": "198.51.100.4",
+					"x-client-id": TEST_USER_ID,
 				},
 				body: null,
 			},

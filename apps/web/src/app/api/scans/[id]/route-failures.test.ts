@@ -9,8 +9,13 @@ import {
 import { spyOnServerLog } from "@/testing/server-log-spy";
 import { RUNNING_STORED_SCAN } from "@/testing/stored-scans";
 import { stubUnreachableWorker, stubWorker } from "@/testing/stub-worker";
+import { useFakeClerk } from "@/testing/use-fake-clerk";
 import { GET } from "./route";
 
+vi.mock("@clerk/nextjs/server", () => ({
+	auth: vi.fn(),
+	currentUser: vi.fn(),
+}));
 vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
 
 const readResponse = async (response: Response) => ({
@@ -20,6 +25,7 @@ const readResponse = async (response: Response) => ({
 });
 
 describe("GET /api/scans/[id] failures", () => {
+	useFakeClerk();
 	const store = useFakeScanStore();
 
 	beforeEach(() => {
