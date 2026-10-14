@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="0; url=/preview/escaped.html" />
+    <base href="/preview/" target="_top" />
+    <title>Hostile page</title>
+  </head>
+  <body>
+    <main>
+      <h1>Hostile page</h1>
+      <p id="target">This paragraph is the finding target.</p>
+      <form id="trap" method="post" action="/preview/form-sink.html">
+        <input type="hidden" name="probe" value="1" />
+      </form>
+      <script>
+        window.open("/preview/popup.html", "_blank");
+        try {
+          window.top.location = "/preview/escaped.html";
+        } catch (error) {
+          document.title = "blocked";
+        }
+        document.getElementById("trap").submit();
+      </script>
+    </main>
+  </body>
+</html>

@@ -52,7 +52,7 @@ export const startWorker = async ({
   const logger = loggerOptions(config.logLevel);
   const app = createApp({ logger, loggerInstance });
   const services = await startServices({ app, config, runtime });
-  mountRoutes(app, serverDeps({ config, runtime }, services));
+  mountRoutes(app, serverDeps({ config, runtime }, services, app.log));
   const address = await listenOrStop(app, config, services);
   const stop = async () => {
     await app.close();

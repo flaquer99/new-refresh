@@ -41,3 +41,21 @@ export const removeScans = (scanIds: readonly string[]): void => {
 		runSeedScript(["remove", ...scanIds]);
 	}
 };
+
+type SeedPreviewScanParams = {
+	origins: { fixtures: string; closed: string };
+	owner: ScanOwnerInput;
+};
+
+export const seedPreviewScan = ({
+	origins,
+	owner,
+}: SeedPreviewScanParams): string =>
+	JSON.parse(
+		runSeedScript([
+			"seed-preview",
+			origins.fixtures,
+			origins.closed,
+			JSON.stringify(owner),
+		]),
+	) as string;

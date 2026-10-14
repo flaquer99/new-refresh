@@ -1,6 +1,8 @@
 import { test as base } from "@playwright/test";
 import { readWorld, type World } from "./clerk-world";
+import { CLOSED_ORIGIN, FIXTURES_ORIGIN } from "./ports";
 import { ScanApp } from "./scan-app";
+import { ownerOf, removeScans, seedPreviewScan } from "./seed-scans";
 import { signInAs } from "./sign-in";
 import { createTeam, destroyTeam, type Team } from "./team";
 
@@ -14,6 +16,7 @@ type ScanFixtures = {
 	app: ScanApp;
 	world: World;
 	team: Team;
+	previewScanPath: string;
 };
 
 export const test = base.extend<ScanOptions & ScanFixtures>({
@@ -33,6 +36,14 @@ export const test = base.extend<ScanOptions & ScanFixtures>({
 			await signInAs(page, world[actor]);
 		}
 		await use(page);
+	},
+	previewScanPath: async ({ page: _page, world }, use) => {
+		const scanId = seedPreviewScan({
+			origins: { fixtures: FIXTURES_ORIGIN, closed: CLOSED_ORIGIN },
+			owner: ownerOf(world.admin),
+		});
+		await use(`/scans/${scanId}`);
+		removeScans([scanId]);
 	},
 	app: async ({ page }, use) => {
 		const app = new ScanApp(page);

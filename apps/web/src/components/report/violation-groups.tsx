@@ -2,10 +2,11 @@ import type { ViolationGroup } from "@/lib/report/group-violations";
 import { ViolationCard } from "./violation-card";
 
 type ViolationGroupsProps = {
+	scanId: string;
 	groups: readonly ViolationGroup[];
 };
 
-export function ViolationGroups({ groups }: ViolationGroupsProps) {
+export function ViolationGroups({ groups, scanId }: ViolationGroupsProps) {
 	if (groups.length === 0) {
 		return <p>No violations match the selected filters.</p>;
 	}
@@ -19,7 +20,7 @@ export function ViolationGroups({ groups }: ViolationGroupsProps) {
 					<ul className="flex flex-col gap-3">
 						{group.violations.map((violation) => (
 							<li key={violation.id}>
-								<ViolationCard violation={violation} />
+								<ViolationCard scanId={scanId} violation={violation} />
 							</li>
 						))}
 					</ul>

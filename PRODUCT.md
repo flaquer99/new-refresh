@@ -43,7 +43,8 @@ Site-wide, zero setup. One URL, no browser extension, no configuration, and an a
 - Report: summary first (URL, depth, pages scanned / skipped / failed, counts by severity and level, completion state: complete, partial/cancelled, or limited by the page cap), then violations (group by criterion or page; filter by severity, level, viewport), then needs-review items, then coverage (skipped and failed pages).
 - A disclaimer that automated testing cannot prove conformance is always shown.
 - Crawl limits: depth ≤ 3, ≤ 50 pages, same origin only, respects `robots.txt`, skips non-HTML, records HTTP failures.
-- Security: never requests private, loopback, link-local, or metadata addresses (SSRF guard). One running scan per user.
+- Preview: each finding offers an on-demand live preview of its page in a sandboxed frame with the failing element highlighted (desktop and mobile widths); the page is fetched when opened and never stored.
+- Security: never requests private, loopback, link-local, or metadata addresses (SSRF guard). One running scan per user. Previews are limited to stored-finding URLs of the viewer's own organization.
 - Scans and reports are stored in PostgreSQL, owned by an organization, and visible only to its members. Another organization's scan link answers "not found". Each scan records the organization, the Clerk user ID of whoever started it, and a name snapshot taken at the start.
 - Personal data (names, emails, phone numbers, passwords, sessions) is managed by Clerk and is not copied into the refresh database, which holds only Clerk IDs and the starter's name snapshot. Scans of a removed member stay in the organization's history; deleting an organization purges its scans.
 - The first release deleted all pre-existing public scans when ownership was introduced.

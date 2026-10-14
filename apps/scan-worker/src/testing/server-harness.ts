@@ -1,3 +1,4 @@
+import type { PreviewFetchResult } from "@refresh/scan-contracts/preview";
 import type { FastifyBaseLogger } from "fastify";
 import { afterEach, beforeEach, vi } from "vitest";
 import { validateTarget } from "../network/validate-target.js";
@@ -18,7 +19,15 @@ export type TestServerOptions = {
   browserConnected?: boolean;
   loggerInstance?: FastifyBaseLogger;
   validate?: (url: string) => Promise<void>;
+  fetchPreview?: (url: string, clientId: string) => Promise<PreviewFetchResult>;
 };
+
+const loadedPreview = (): Promise<PreviewFetchResult> =>
+  Promise.resolve({
+    kind: "loaded",
+    finalUrl: PUBLIC_URL,
+    html: "<html></html>",
+  });
 
 const validatePublicTarget = (url: string) =>
   validateTarget({ url, resolve: RESOLVER, allowlist: new Set() });
@@ -27,6 +36,7 @@ export const startTestServer = ({
   browserConnected = true,
   loggerInstance,
   validate = validatePublicTarget,
+  fetchPreview = loadedPreview,
 }: TestServerOptions = {}) => {
   const controlled = createControlledRunner();
   const app = createApp({ loggerInstance });
@@ -36,6 +46,7 @@ export const startTestServer = ({
       logger: app.log,
     }),
     validateTarget: validate,
+    fetchPreview,
     token: WORKER_TOKEN,
     browserConnected: () => browserConnected,
   });
@@ -57,6 +68,16 @@ export const postScan = (
     url: "/scans",
     headers: { ...AUTH_HEADERS, "x-client-id": clientId },
     payload: { scanId, url: PUBLIC_URL, depth: 1 },
+  });
+
+export const postPreview = (app: TestApp, body: unknown, clientId?: string) =>
+  app.inject({
+    method: "POST",
+    url: "/previews",
+    headers: clientId
+      ? { ...AUTH_HEADERS, "x-client-id": clientId }
+      : AUTH_HEADERS,
+    payload: body as object,
   });
 
 export const scanRequest = (

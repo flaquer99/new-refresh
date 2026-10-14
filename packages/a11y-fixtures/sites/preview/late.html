@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Late target</title>
+  </head>
+  <body>
+    <main>
+      <h1>Late target</h1>
+      <div id="late-slot"></div>
+      <script>
+        setTimeout(() => {
+          const paragraph = document.createElement("p");
+          paragraph.id = "late-target";
+          paragraph.textContent = "Injected one second after load.";
+          document.getElementById("late-slot").append(paragraph);
+        }, 1000);
+      </script>
+    </main>
+  </body>
+</html>

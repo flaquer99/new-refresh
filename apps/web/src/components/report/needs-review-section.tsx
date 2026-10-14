@@ -5,6 +5,7 @@ import { ReviewList } from "./review-list";
 const HEADING_ID = "needs-review-heading";
 
 type NeedsReviewSectionProps = {
+	scanId: string;
 	reviewItems: readonly ReviewItem[];
 	manualChecks: readonly ManualCheck[];
 };
@@ -12,6 +13,7 @@ type NeedsReviewSectionProps = {
 export function NeedsReviewSection({
 	reviewItems,
 	manualChecks,
+	scanId,
 }: NeedsReviewSectionProps) {
 	return (
 		<section
@@ -24,7 +26,7 @@ export function NeedsReviewSection({
 			<p className="text-muted-foreground">
 				These success criteria need human judgment. Check each one by hand.
 			</p>
-			<ReviewList items={reviewItems} />
+			<ReviewList items={reviewItems} scanId={scanId} />
 			<ManualCheckList checks={manualChecks} />
 		</section>
 	);

@@ -6,7 +6,7 @@ import { ViolationCard } from "./violation-card";
 const violation = buildViolation();
 
 const renderCard = () => {
-	render(<ViolationCard violation={violation} />);
+	render(<ViolationCard scanId="scan-1" violation={violation} />);
 	return screen.getByRole("article");
 };
 

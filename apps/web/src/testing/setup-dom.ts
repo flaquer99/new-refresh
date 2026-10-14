@@ -18,3 +18,11 @@ if (!window.matchMedia) {
 afterEach(() => {
 	cleanup();
 });
+
+if (!window.ResizeObserver) {
+	window.ResizeObserver = class {
+		observe = () => undefined;
+		unobserve = () => undefined;
+		disconnect = () => undefined;
+	};
+}

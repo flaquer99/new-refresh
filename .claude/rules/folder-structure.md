@@ -18,12 +18,12 @@ pnpm + Turborepo monorepo. Workspaces: `apps/*` and `packages/*`. Package names 
 ├── apps/
 │   ├── web/                   # @refresh/web — Next.js frontend, scan persistence owner, /api/scans proxy
 │   │   ├── src/proxy.ts       # Clerk: clerkMiddleware() only, no authorization
-│   │   ├── src/app/           # App Router: layout.tsx (ClerkProvider), page.tsx (landing or form), sign-in/, sign-up/, onboarding/, join/, account/, organization/ (+ actions.ts invite), scans/ (history, [id] scan link, actions.ts), api/scans/, api/internal/scans/ and api/webhooks/clerk/ Route Handlers
-│   │   ├── src/components/    # ui/ (vendored shadcn primitives), theme/ (provider, theme menu), hud/ (HudPanel, HudStat, MonoValue, CodeBlock, StatusIndicator), layout/ (shell, header), auth/ (AuthControls, OrganizationBadge, user menu, AuthPageFrame), landing/ (signed-out landing view), organization/ (invite form, one-organization notice), scan/ (form, live scan, failure), report/, history/ components
+│   │   ├── src/app/           # App Router: layout.tsx (ClerkProvider), page.tsx (landing or form), sign-in/, sign-up/, onboarding/, join/, account/, organization/ (+ actions.ts invite), scans/ (history, [id] scan link, actions.ts), api/scans/ (incl. [id]/findings/[findingId]/preview/), api/internal/scans/ and api/webhooks/clerk/ Route Handlers
+│   │   ├── src/components/    # ui/ (vendored shadcn primitives), theme/ (provider, theme menu), hud/ (HudPanel, HudStat, MonoValue, CodeBlock, StatusIndicator), layout/ (shell, header), auth/ (AuthControls, OrganizationBadge, user menu, AuthPageFrame), landing/ (signed-out landing view), organization/ (invite form, one-organization notice), scan/ (form, live scan, failure), report/, history/, preview/ (finding preview toggle, frame, toolbar, status) components
 │   │   ├── src/hooks/         # one hook per file (use-scan, use-scan-polling, ...)
-│   │   ├── src/lib/           # client-side helpers (scan API wrappers, report filtering/grouping, cn), theme/ (theme options)
+│   │   ├── src/lib/           # client-side helpers (scan API wrappers, preview/ (preview API, messages, highlight-runtime/ serialized into the frame), report filtering/grouping, cn), theme/ (theme options)
 │   │   ├── components.json    # shadcn config (base-maia style, preset b2aUNZqRPM, Phosphor icons)
-│   │   ├── src/server/        # server-only code: auth/ (scan actor, page and API guards, canManageScan), organizations/ (invite member, one-organization check), clerk-webhooks/ (verify, single membership, scan purge), db/ (scan store singleton), scans/ (start, status, callback, delete, worker client), log/
+│   │   ├── src/server/        # server-only code: auth/ (scan actor, page and API guards, canManageScan), organizations/ (invite member, one-organization check), clerk-webhooks/ (verify, single membership, scan purge), db/ (scan store singleton), scans/ (start, status, callback, delete, worker client), previews/ (load a finding preview, build the srcdoc document), log/
 │   │   ├── src/testing/       # Vitest helpers and fixtures, including fake-clerk.ts (excluded from coverage)
 │   │   ├── e2e/               # Playwright specs and Clerk setup/teardown; e2e/support/ holds page objects, Clerk user factory and sign-in fixtures, helpers, the web servers list, and the Testcontainers database launcher
 │   │   ├── public/            # static assets
@@ -43,6 +43,7 @@ pnpm + Turborepo monorepo. Workspaces: `apps/*` and `packages/*`. Package names 
 │       ├── src/callback/      # result notifier: posts each final ScanResult to web, with retries
 │       ├── src/crawl/         # crawl frontier, URL normalization, link extraction, robots.txt
 │       ├── src/audit/         # page loading, axe runner, manual probes
+│       ├── src/preview/       # live page fetch for previews through the egress guard (size cap, charset decoding, classification)
 │       ├── src/network/       # IP policy, DNS, target validation, egress guard, guarded fetch
 │       ├── src/browser/       # guarded Chromium launch and supervisor
 │       ├── src/wcag/          # WCAG 2.2 A/AA catalog and manual checks
@@ -60,7 +61,7 @@ pnpm + Turborepo monorepo. Workspaces: `apps/*` and `packages/*`. Package names 
     │   └── vitest/base.mjs    # exported as @refresh/config/vitest/base (80% coverage floor)
     ├── scan-contracts/        # @refresh/scan-contracts — zod schemas, types, limits shared by web and worker (compiled to dist/)
     ├── db/                    # @refresh/db — Prisma 7 schema + migrations (prisma/), scan store (src/), Testcontainers test helpers (src/testing/); generated client in src/generated/ (gitignored)
-    └── a11y-fixtures/         # @refresh/a11y-fixtures — fixture sites (sites/) + serveFixtures() for tests only
+    └── a11y-fixtures/         # @refresh/a11y-fixtures — fixture sites (sites/, including sites/preview/ for the preview suite) + serveFixtures() for tests only
 ```
 
 ## Where things go

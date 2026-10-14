@@ -27,7 +27,13 @@ const listUnder = (heading: string): HTMLElement => {
 describe("NeedsReviewSection", () => {
 	it("shows each inconclusive automated check with its criterion, element, and guidance", () => {
 		// GIVEN / WHEN
-		render(<NeedsReviewSection manualChecks={[]} reviewItems={[reviewItem]} />);
+		render(
+			<NeedsReviewSection
+				scanId="scan-1"
+				manualChecks={[]}
+				reviewItems={[reviewItem]}
+			/>,
+		);
 
 		// THEN
 		const section = listUnder("Inconclusive automated checks");
@@ -39,7 +45,11 @@ describe("NeedsReviewSection", () => {
 	it("shows each manual check with its criterion, scope, pages, and guidance", () => {
 		// GIVEN / WHEN
 		render(
-			<NeedsReviewSection manualChecks={[manualCheck]} reviewItems={[]} />,
+			<NeedsReviewSection
+				scanId="scan-1"
+				manualChecks={[manualCheck]}
+				reviewItems={[]}
+			/>,
 		);
 
 		// THEN
@@ -55,7 +65,11 @@ describe("NeedsReviewSection", () => {
 	it("links a manual check to its Understanding document", () => {
 		// GIVEN / WHEN
 		render(
-			<NeedsReviewSection manualChecks={[manualCheck]} reviewItems={[]} />,
+			<NeedsReviewSection
+				scanId="scan-1"
+				manualChecks={[manualCheck]}
+				reviewItems={[]}
+			/>,
 		);
 
 		// THEN
@@ -65,7 +79,9 @@ describe("NeedsReviewSection", () => {
 
 	it("says when there is nothing to review in a list", () => {
 		// GIVEN / WHEN
-		render(<NeedsReviewSection manualChecks={[]} reviewItems={[]} />);
+		render(
+			<NeedsReviewSection scanId="scan-1" manualChecks={[]} reviewItems={[]} />,
+		);
 
 		// THEN
 		expect(listUnder("Inconclusive automated checks").textContent).toContain(

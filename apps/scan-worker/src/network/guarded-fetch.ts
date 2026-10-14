@@ -1,7 +1,10 @@
 import { fetch, ProxyAgent, type Response } from "undici";
 import type { EgressGuard } from "./egress-guard.js";
 
-export type GuardedFetchInit = { signal?: AbortSignal };
+export type GuardedFetchInit = {
+  signal?: AbortSignal;
+  headers?: Record<string, string>;
+};
 
 export type GuardedFetch = (
   url: string,
@@ -18,7 +21,12 @@ export const createGuardedFetch = (
 ): GuardedFetchClient => {
   const dispatcher = new ProxyAgent({ uri: guard.url });
   return {
-    fetch: (url, init) => fetch(url, { signal: init?.signal, dispatcher }),
+    fetch: (url, init) =>
+      fetch(url, {
+        signal: init?.signal,
+        headers: init?.headers,
+        dispatcher,
+      }),
     close: () => dispatcher.close(),
   };
 };

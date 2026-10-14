@@ -19,7 +19,7 @@ export function ScanView({ scan, canManage }: ScanViewProps) {
 		return <LiveScan canCancel={canManage} scanId={scan.scanId} />;
 	}
 	if (scan.report) {
-		return <ReportView report={scan.report} />;
+		return <ReportView report={scan.report} scanId={scan.scanId} />;
 	}
 	return (
 		<ScanFailure

@@ -5,7 +5,7 @@ import { ViolationsSection } from "./violations-section";
 describe("ViolationsSection for a clean report", () => {
 	it("says no automated violations were found", () => {
 		// GIVEN / WHEN
-		render(<ViolationsSection violations={[]} />);
+		render(<ViolationsSection scanId="scan-1" violations={[]} />);
 
 		// THEN
 		expect(screen.getByRole("region", { name: "Violations" }).textContent).toBe(
@@ -15,7 +15,7 @@ describe("ViolationsSection for a clean report", () => {
 
 	it("does not offer filters", () => {
 		// GIVEN / WHEN
-		render(<ViolationsSection violations={[]} />);
+		render(<ViolationsSection scanId="scan-1" violations={[]} />);
 
 		// THEN
 		expect(screen.queryByLabelText("Severity")).toBeNull();

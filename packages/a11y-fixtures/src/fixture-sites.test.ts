@@ -34,6 +34,10 @@ describe("fixture sites", () => {
     "/long-selectors/",
     "/popups/",
     "/popups/opener.html",
+    "/preview/hostile.html",
+    "/preview/duplicates.html",
+    "/preview/hidden.html",
+    "/preview/late.html",
   ])("serves the %s scenario page", async (path) => {
     // WHEN
     const response = await fetch(`${fixtures.origin}${path}`);
