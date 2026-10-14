@@ -3,12 +3,17 @@ import userEvent from "@testing-library/user-event";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { clerkView, resetClerkView } from "@/testing/clerk-components";
 import { PageMain } from "./page-main";
 import { SiteHeader } from "./site-header";
 import { SkipLink } from "./skip-link";
 
 vi.mock("next/navigation", () => ({ usePathname: vi.fn() }));
 vi.mock("next-themes", () => ({ useTheme: vi.fn() }));
+vi.mock("@clerk/nextjs", async () => {
+	const { clerkComponentsMock } = await import("@/testing/clerk-components");
+	return clerkComponentsMock;
+});
 
 const TAB_STOPS = 5;
 
@@ -25,6 +30,8 @@ const renderLayout = () =>
 
 describe("layout tree", () => {
 	beforeEach(() => {
+		resetClerkView();
+		clerkView.signedIn = true;
 		vi.mocked(usePathname).mockReturnValue("/");
 		vi.mocked(useTheme).mockReturnValue({
 			theme: "system",

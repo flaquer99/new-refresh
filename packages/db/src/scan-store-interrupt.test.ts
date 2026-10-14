@@ -5,6 +5,7 @@ import {
   SAMPLE_START_URL,
   SAMPLE_STARTED_AT,
 } from "./testing/sample-result.js";
+import { TEST_ORGANIZATION_ID, TEST_OWNER } from "./testing/test-owner.js";
 import { useTestStore } from "./testing/use-test-store.js";
 
 const FINISHED_AT = new Date("2026-10-09T12:12:00.000Z");
@@ -13,6 +14,7 @@ const RUNNING_INPUT = {
   scanId: SAMPLE_SCAN_ID,
   request: { url: SAMPLE_START_URL, depth: 0 },
   startedAt: SAMPLE_STARTED_AT,
+  owner: TEST_OWNER,
 };
 
 describe("ScanStore markInterrupted", () => {
@@ -52,7 +54,9 @@ describe("ScanStore markInterrupted", () => {
     await db.store().markInterrupted(SAMPLE_SCAN_ID, FINISHED_AT);
 
     // WHEN
-    const stored = await db.store().get(SAMPLE_SCAN_ID);
+    const stored = await db
+      .store()
+      .get({ scanId: SAMPLE_SCAN_ID, organizationId: TEST_ORGANIZATION_ID });
 
     // THEN
     expect(stored?.status).toBe("completed");

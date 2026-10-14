@@ -1,5 +1,8 @@
 import "server-only";
+import type { ScanOwner } from "@refresh/db/scan-store-types";
 import type { ScanRequest } from "@refresh/scan-contracts/scan-request";
+import type { ScanActor } from "../auth/get-scan-actor";
+import { resolveStarterName } from "../auth/resolve-starter-name";
 import { getScanStore } from "../db/scan-store";
 import { logServerEvent } from "../log/server-log";
 import { errorResponse } from "./error-response";
@@ -8,17 +11,25 @@ import { forwardToWorker, isWorkerTimeout } from "./worker-client";
 
 const HTTP_CREATED = 201;
 
-export type StartScanInput = { request: ScanRequest; clientId: string };
+export type StartScanInput = { request: ScanRequest; actor: ScanActor };
 
-const insertRunning = async (
-	scanId: string,
-	request: ScanRequest,
-): Promise<boolean> => {
+type InsertRunning = {
+	scanId: string;
+	request: ScanRequest;
+	owner: ScanOwner;
+};
+
+const insertRunning = async ({
+	scanId,
+	request,
+	owner,
+}: InsertRunning): Promise<boolean> => {
 	try {
 		await getScanStore().createRunning({
 			scanId,
 			request,
 			startedAt: new Date(),
+			owner,
 		});
 		return true;
 	} catch (error) {
@@ -40,16 +51,21 @@ const discardRejected = async (scanId: string, response: Response) => {
 
 export const startScan = async ({
 	request,
-	clientId,
+	actor,
 }: StartScanInput): Promise<Response> => {
 	const scanId = crypto.randomUUID();
-	if (!(await insertRunning(scanId, request))) {
+	const owner: ScanOwner = {
+		organizationId: actor.organizationId,
+		startedByUserId: actor.userId,
+		startedByName: await resolveStarterName(),
+	};
+	if (!(await insertRunning({ scanId, request, owner }))) {
 		return errorResponse("INTERNAL_ERROR", STORE_UNAVAILABLE_MESSAGE);
 	}
 	const response = await forwardToWorker({
 		method: "POST",
 		path: "/scans",
-		clientId,
+		clientId: actor.userId,
 		body: { scanId, ...request },
 	});
 	if (response.status !== HTTP_CREATED) {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { SAMPLE_START_URL } from "./testing/sample-result.js";
 import { seedScans } from "./testing/seed-scans.js";
+import { TEST_ORGANIZATION_ID } from "./testing/test-owner.js";
 import { useTestStore } from "./testing/use-test-store.js";
 
 const CUTOFF = new Date("2026-10-09T12:00:00.000Z");
@@ -55,7 +56,9 @@ describe("ScanStore settleStale", () => {
     await db.store().settleStale(CUTOFF, FINISHED_AT);
 
     // WHEN
-    const stored = await db.store().get(OLD_RUNNING_ID);
+    const stored = await db
+      .store()
+      .get({ scanId: OLD_RUNNING_ID, organizationId: TEST_ORGANIZATION_ID });
 
     // THEN
     expect(stored).toMatchObject({
@@ -71,7 +74,9 @@ describe("ScanStore settleStale", () => {
     await db.store().settleStale(CUTOFF, FINISHED_AT);
 
     // WHEN
-    const stored = await db.store().get(NEW_RUNNING_ID);
+    const stored = await db
+      .store()
+      .get({ scanId: NEW_RUNNING_ID, organizationId: TEST_ORGANIZATION_ID });
 
     // THEN
     expect(stored?.status).toBe("running");

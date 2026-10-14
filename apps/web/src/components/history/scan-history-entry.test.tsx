@@ -5,8 +5,6 @@ import { ScanHistoryEntry } from "./scan-history-entry";
 
 vi.mock("@/app/scans/actions", () => ({ deleteScanAction: vi.fn() }));
 
-const DELETE_NAME = "Delete scan of https://www.example.org/";
-
 const renderEntry = (overrides = {}) =>
 	render(
 		<ScanHistoryEntry entry={buildHistoryEntry(overrides)} now={HISTORY_NOW} />,
@@ -75,23 +73,5 @@ describe("ScanHistoryEntry", () => {
 		expect(screen.queryAllByText("We couldn't reach the site.")).toHaveLength(
 			1,
 		);
-	});
-
-	it("offers a Delete action named after the start url", () => {
-		// WHEN
-		renderEntry();
-
-		// THEN
-		expect(screen.queryAllByRole("button", { name: DELETE_NAME })).toHaveLength(
-			1,
-		);
-	});
-
-	it("offers no Delete action for a running scan", () => {
-		// WHEN
-		renderEntry({ status: "running", outcome: null, deletable: false });
-
-		// THEN
-		expect(screen.queryByRole("button", { name: DELETE_NAME })).toBeNull();
 	});
 });

@@ -7,11 +7,17 @@ import {
 } from "@/testing/scan-route-requests";
 import { spyOnServerLog } from "@/testing/server-log-spy";
 import { stubUnreachableWorker, stubWorker } from "@/testing/stub-worker";
+import { useFakeClerk } from "@/testing/use-fake-clerk";
 import { POST } from "./route";
 
+vi.mock("@clerk/nextjs/server", () => ({
+	auth: vi.fn(),
+	currentUser: vi.fn(),
+}));
 vi.mock("@/server/db/scan-store", () => ({ getScanStore: vi.fn() }));
 
 describe("POST /api/scans worker errors", () => {
+	useFakeClerk();
 	useFakeScanStore();
 
 	beforeEach(() => {

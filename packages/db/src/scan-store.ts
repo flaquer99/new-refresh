@@ -6,12 +6,14 @@ import { listScans } from "./scan-history-query.js";
 import { toStoredScan } from "./scan-row-mapping.js";
 import type {
   CreateRunningInput,
+  ScanKey,
   ScanStore,
   ScanStoreOptions,
   StoredScan,
   UnreadableReportHandler,
 } from "./scan-store-types.js";
 import {
+  deleteByOrganization,
   deleteFinished,
   discardRunning,
   markInterrupted,
@@ -25,7 +27,7 @@ const isScanId = (value: string): boolean =>
 
 const createRunning = async (
   prisma: PrismaClient,
-  { scanId, request, startedAt }: CreateRunningInput,
+  { scanId, request, startedAt, owner }: CreateRunningInput,
 ): Promise<void> => {
   await prisma.scan.create({
     data: {
@@ -34,19 +36,22 @@ const createRunning = async (
       depth: request.depth,
       status: "running",
       startedAt,
+      ...owner,
     },
   });
 };
 
 const getScan = async (
   prisma: PrismaClient,
-  scanId: string,
+  { scanId, organizationId }: ScanKey,
   onUnreadableReport?: UnreadableReportHandler,
 ): Promise<StoredScan | null> => {
   if (!isScanId(scanId)) {
     return null;
   }
-  const row = await prisma.scan.findUnique({ where: { id: scanId } });
+  const row = await prisma.scan.findFirst({
+    where: { id: scanId, organizationId },
+  });
   return row === null ? null : toStoredScan(row, onUnreadableReport);
 };
 
@@ -60,15 +65,17 @@ export const createScanStore = ({
     discard: async (scanId) =>
       isScanId(scanId) ? await discardRunning(prisma, scanId) : undefined,
     recordResult: (result) => recordResult(prisma, result),
-    get: (scanId) => getScan(prisma, scanId, onUnreadableReport),
+    get: (key) => getScan(prisma, key, onUnreadableReport),
     list: (page) => listScans(prisma, page),
     settleStale: (cutoff, finishedAt) =>
       settleStale(prisma, { cutoff, finishedAt }),
     markInterrupted: async (scanId, finishedAt) =>
       isScanId(scanId) &&
       (await markInterrupted(prisma, { scanId, finishedAt })),
-    deleteFinished: async (scanId) =>
-      isScanId(scanId) ? await deleteFinished(prisma, scanId) : "not-found",
+    deleteFinished: async (key) =>
+      isScanId(key.scanId) ? await deleteFinished(prisma, key) : "not-found",
+    deleteByOrganization: (organizationId) =>
+      deleteByOrganization(prisma, organizationId),
     close: () => prisma.$disconnect(),
   };
 };

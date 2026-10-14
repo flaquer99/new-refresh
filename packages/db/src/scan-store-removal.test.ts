@@ -5,12 +5,14 @@ import {
   SAMPLE_START_URL,
   SAMPLE_STARTED_AT,
 } from "./testing/sample-result.js";
+import { TEST_ORGANIZATION_ID, TEST_OWNER } from "./testing/test-owner.js";
 import { useTestStore } from "./testing/use-test-store.js";
 
 const RUNNING_INPUT = {
   scanId: SAMPLE_SCAN_ID,
   request: { url: SAMPLE_START_URL, depth: 0 },
   startedAt: SAMPLE_STARTED_AT,
+  owner: TEST_OWNER,
 };
 
 describe("ScanStore deleteFinished", () => {
@@ -22,7 +24,10 @@ describe("ScanStore deleteFinished", () => {
     await db.store().recordResult(buildCompletedResult());
 
     // WHEN
-    const outcome = await db.store().deleteFinished(SAMPLE_SCAN_ID);
+    const outcome = await db.store().deleteFinished({
+      scanId: SAMPLE_SCAN_ID,
+      organizationId: TEST_ORGANIZATION_ID,
+    });
 
     // THEN
     expect(outcome).toBe("deleted");
@@ -32,10 +37,15 @@ describe("ScanStore deleteFinished", () => {
     // GIVEN
     await db.store().createRunning(RUNNING_INPUT);
     await db.store().recordResult(buildCompletedResult());
-    await db.store().deleteFinished(SAMPLE_SCAN_ID);
+    await db.store().deleteFinished({
+      scanId: SAMPLE_SCAN_ID,
+      organizationId: TEST_ORGANIZATION_ID,
+    });
 
     // WHEN
-    const stored = await db.store().get(SAMPLE_SCAN_ID);
+    const stored = await db
+      .store()
+      .get({ scanId: SAMPLE_SCAN_ID, organizationId: TEST_ORGANIZATION_ID });
 
     // THEN
     expect(stored).toBeNull();
@@ -46,7 +56,10 @@ describe("ScanStore deleteFinished", () => {
     await db.store().createRunning(RUNNING_INPUT);
 
     // WHEN
-    const outcome = await db.store().deleteFinished(SAMPLE_SCAN_ID);
+    const outcome = await db.store().deleteFinished({
+      scanId: SAMPLE_SCAN_ID,
+      organizationId: TEST_ORGANIZATION_ID,
+    });
 
     // THEN
     expect(outcome).toBe("running");
@@ -54,7 +67,10 @@ describe("ScanStore deleteFinished", () => {
 
   it("reports a scan that does not exist as not found", async () => {
     // WHEN
-    const outcome = await db.store().deleteFinished(SAMPLE_SCAN_ID);
+    const outcome = await db.store().deleteFinished({
+      scanId: SAMPLE_SCAN_ID,
+      organizationId: TEST_ORGANIZATION_ID,
+    });
 
     // THEN
     expect(outcome).toBe("not-found");
@@ -72,7 +88,11 @@ describe("ScanStore discard", () => {
     await db.store().discard(SAMPLE_SCAN_ID);
 
     // THEN
-    expect(await db.store().get(SAMPLE_SCAN_ID)).toBeNull();
+    expect(
+      await db
+        .store()
+        .get({ scanId: SAMPLE_SCAN_ID, organizationId: TEST_ORGANIZATION_ID }),
+    ).toBeNull();
   });
 
   it("keeps a finished scan", async () => {
@@ -84,6 +104,12 @@ describe("ScanStore discard", () => {
     await db.store().discard(SAMPLE_SCAN_ID);
 
     // THEN
-    expect((await db.store().get(SAMPLE_SCAN_ID))?.status).toBe("completed");
+    expect(
+      (
+        await db
+          .store()
+          .get({ scanId: SAMPLE_SCAN_ID, organizationId: TEST_ORGANIZATION_ID })
+      )?.status,
+    ).toBe("completed");
   });
 });

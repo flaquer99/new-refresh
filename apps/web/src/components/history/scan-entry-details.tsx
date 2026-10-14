@@ -1,3 +1,4 @@
+import { UNKNOWN_MEMBER_LABEL } from "@/lib/history/history-labels";
 import type { ScanHistoryEntry } from "@/server/scans/scan-read-models";
 import { HistoryStatus } from "./history-status";
 import { RelativeTime } from "./relative-time";
@@ -22,6 +23,8 @@ export function ScanEntryDetails({ entry, now }: ScanEntryDetailsProps) {
 			<dd>
 				<RelativeTime iso={entry.startedAt} now={now} />
 			</dd>
+			<dt className={TERM_CLASSES}>Started by</dt>
+			<dd>{entry.startedByName ?? UNKNOWN_MEMBER_LABEL}</dd>
 			<dt className={TERM_CLASSES}>Depth</dt>
 			<dd className="font-mono">{entry.depth}</dd>
 			<dt className={TERM_CLASSES}>Pages scanned</dt>

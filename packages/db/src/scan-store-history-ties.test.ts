@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ScanStore } from "./scan-store-types.js";
 import { buildSeedHistory, seedScans } from "./testing/seed-scans.js";
+import { TEST_ORGANIZATION_ID } from "./testing/test-owner.js";
 import { useTestStore } from "./testing/use-test-store.js";
 
 const PAGE_SIZE = 20;
@@ -22,7 +23,11 @@ const readAllPages = async (store: ScanStore): Promise<string[][]> => {
   const pages: string[][] = [];
   let before: string | null = null;
   do {
-    const page = await store.list({ before, limit: PAGE_SIZE });
+    const page = await store.list({
+      organizationId: TEST_ORGANIZATION_ID,
+      before,
+      limit: PAGE_SIZE,
+    });
     pages.push(page.entries.map((entry) => entry.scanId));
     before = page.nextBefore;
   } while (before !== null);

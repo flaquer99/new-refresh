@@ -1,6 +1,7 @@
 import { SCAN_INTERRUPTED_MESSAGE } from "@refresh/scan-contracts/errors";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useFakeScanStore } from "@/testing/fake-scan-store";
+import { MEMBER_ACTOR } from "@/testing/scan-actors";
 import { RUNNING_STATUS, SCAN_ID } from "@/testing/scan-route-requests";
 import { spyOnServerLog } from "@/testing/server-log-spy";
 import { buildStoredScan, RUNNING_STORED_SCAN } from "@/testing/stored-scans";
@@ -38,7 +39,7 @@ describe("readScanStatus interruptions", () => {
 		stubWorker(404, { error: { code: "SCAN_NOT_FOUND", message: "Gone." } });
 
 		// WHEN
-		await readScanStatus({ scanId: SCAN_ID, clientId: "c" });
+		await readScanStatus({ scanId: SCAN_ID, actor: MEMBER_ACTOR });
 
 		// THEN
 		expect(store().markInterrupted).toHaveBeenCalledWith(SCAN_ID, NOW);
@@ -52,7 +53,10 @@ describe("readScanStatus interruptions", () => {
 		stubWorker(404, { error: { code: "SCAN_NOT_FOUND", message: "Gone." } });
 
 		// WHEN
-		const response = await readScanStatus({ scanId: SCAN_ID, clientId: "c" });
+		const response = await readScanStatus({
+			scanId: SCAN_ID,
+			actor: MEMBER_ACTOR,
+		});
 
 		// THEN
 		expect(await response.json()).toMatchObject({
@@ -67,7 +71,7 @@ describe("readScanStatus interruptions", () => {
 		stubWorker(200, RUNNING_STATUS);
 
 		// WHEN
-		await readScanStatus({ scanId: SCAN_ID, clientId: "c" });
+		await readScanStatus({ scanId: SCAN_ID, actor: MEMBER_ACTOR });
 
 		// THEN
 		expect(store().settleStale).toHaveBeenCalledWith(TWELVE_MINUTES_AGO, NOW);
@@ -78,7 +82,10 @@ describe("readScanStatus interruptions", () => {
 		stubWorker(200, RUNNING_STATUS);
 
 		// WHEN
-		const response = await readScanStatus({ scanId: SCAN_ID, clientId: "c" });
+		const response = await readScanStatus({
+			scanId: SCAN_ID,
+			actor: MEMBER_ACTOR,
+		});
 
 		// THEN
 		expect((await response.json()).error.code).toBe("SCAN_NOT_FOUND");

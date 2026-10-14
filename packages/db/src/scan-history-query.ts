@@ -30,11 +30,11 @@ const olderThan = (cursor: HistoryCursor | null): Prisma.ScanWhereInput => {
 
 export const listScans = async (
   prisma: PrismaClient,
-  { before, limit }: HistoryPageRequest,
+  { organizationId, before, limit }: HistoryPageRequest,
 ): Promise<ScanHistoryPage> => {
   const cursor = before === null ? null : decodeCursor(before);
   const rows = await prisma.scan.findMany({
-    where: olderThan(cursor),
+    where: { organizationId, ...olderThan(cursor) },
     orderBy: NEWEST_FIRST,
     take: limit + 1,
     omit: { report: true },

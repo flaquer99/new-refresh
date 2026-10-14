@@ -1,20 +1,37 @@
-import { test as base, type TestInfo } from "@playwright/test";
+import { test as base } from "@playwright/test";
+import { readWorld, type World } from "./clerk-world";
 import { ScanApp } from "./scan-app";
+import { signInAs } from "./sign-in";
+import { createTeam, destroyTeam, type Team } from "./team";
 
-export const CLIENT_ID_HEADER = "x-forwarded-for";
+export type Actor = "admin" | "member" | "outsider" | "visitor";
 
-export const clientIdFor = (testInfo: TestInfo): string =>
-	`e2e-${testInfo.project.name}-${testInfo.testId}`;
+type ScanOptions = {
+	actor: Actor;
+};
 
 type ScanFixtures = {
 	app: ScanApp;
+	world: World;
+	team: Team;
 };
 
-export const test = base.extend<ScanFixtures>({
-	page: async ({ page }, use, testInfo) => {
-		await page.setExtraHTTPHeaders({
-			[CLIENT_ID_HEADER]: clientIdFor(testInfo),
-		});
+export const test = base.extend<ScanOptions & ScanFixtures>({
+	actor: ["admin", { option: true }],
+	// biome-ignore lint/correctness/noEmptyPattern: Playwright requires destructuring
+	world: async ({}, use) => {
+		await use(readWorld());
+	},
+	// biome-ignore lint/correctness/noEmptyPattern: Playwright requires destructuring
+	team: async ({}, use) => {
+		const team = await createTeam();
+		await use(team);
+		await destroyTeam(team);
+	},
+	page: async ({ page, world, actor }, use) => {
+		if (actor !== "visitor") {
+			await signInAs(page, world[actor]);
+		}
 		await use(page);
 	},
 	app: async ({ page }, use) => {

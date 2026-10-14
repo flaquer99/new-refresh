@@ -1,6 +1,6 @@
 import { fixtureUrl } from "./support/ports";
 import { ScanHistoryPage } from "./support/scan-history-page";
-import { CLIENT_ID_HEADER, clientIdFor, expect, test } from "./support/test";
+import { expect, test } from "./support/test";
 
 const CLEAN_URL = fixtureUrl("/clean/");
 const LARGE_SITE_URL = fixtureUrl("/large/");
@@ -52,7 +52,7 @@ test.describe("E2E-14 — a second scan cannot start while one runs", () => {
 		await app.cancelToReport();
 	});
 
-	test("rejects a direct API request with 409", async ({ app }, testInfo) => {
+	test("rejects a direct API request with 409", async ({ app }) => {
 		// GIVEN
 		await app.submit({ url: LARGE_SITE_URL, depth: 1 });
 		await expect(app.progressHeading()).toBeVisible();
@@ -60,7 +60,6 @@ test.describe("E2E-14 — a second scan cannot start while one runs", () => {
 		// WHEN
 		const response = await app.page.request.post("/api/scans", {
 			data: { url: CLEAN_URL, depth: 0 },
-			headers: { [CLIENT_ID_HEADER]: clientIdFor(testInfo) },
 		});
 
 		// THEN
@@ -77,9 +76,6 @@ test.describe("E2E-14 — a second scan cannot start while one runs", () => {
 		await app.submit({ url: LARGE_SITE_URL, depth: 1 });
 		await expect(app.progressHeading()).toBeVisible();
 		const second = await context.newPage();
-		await second.setExtraHTTPHeaders({
-			[CLIENT_ID_HEADER]: clientIdFor(testInfo),
-		});
 		await second.goto("/");
 
 		// WHEN

@@ -1,7 +1,7 @@
 import type { PrismaClient } from "./generated/prisma/client.js";
-import { RUNNING, scanExists } from "./record-result.js";
+import { RUNNING } from "./record-result.js";
 import { interruptedColumns } from "./result-columns.js";
-import type { DeleteOutcome } from "./scan-store-types.js";
+import type { DeleteOutcome, ScanKey } from "./scan-store-types.js";
 
 type StaleWindow = { cutoff: Date; finishedAt: Date };
 
@@ -31,15 +31,26 @@ export const markInterrupted = async (
 
 export const deleteFinished = async (
   prisma: PrismaClient,
-  scanId: string,
+  { scanId, organizationId }: ScanKey,
 ): Promise<DeleteOutcome> => {
   const { count } = await prisma.scan.deleteMany({
-    where: { id: scanId, status: { not: RUNNING } },
+    where: { id: scanId, organizationId, status: { not: RUNNING } },
   });
   if (count === 1) {
     return "deleted";
   }
-  return (await scanExists(prisma, scanId)) ? "running" : "not-found";
+  const owned = await prisma.scan.count({
+    where: { id: scanId, organizationId },
+  });
+  return owned > 0 ? "running" : "not-found";
+};
+
+export const deleteByOrganization = async (
+  prisma: PrismaClient,
+  organizationId: string,
+): Promise<number> => {
+  const { count } = await prisma.scan.deleteMany({ where: { organizationId } });
+  return count;
 };
 
 export const discardRunning = async (
